@@ -1,6 +1,7 @@
 ﻿using Systems.Action;
 using Systems.Initializable;
 using Systems.Runtime;
+using Cinemachine;
 using Helpers;
 using Infrastructure.Factories.Impl;
 using Services.Impl;
@@ -14,10 +15,13 @@ namespace Installers
     {
         [SerializeField] private GameSceneHandler sceneHandler;
         [SerializeField] private GameInputManager playerInput;
+        [SerializeField] private CinemachineVirtualCamera virtualCamera;
+        [SerializeField] private Camera gameCamera;
         
         public override void InstallBindings()
         {
             BindSignals();
+            BindCamera();
             BindInputSystems();
             BindSceneComponents();
             BindFactories();
@@ -32,6 +36,13 @@ namespace Installers
             Container.DeclareSignal<PlayerSpawnSignal>();
             Container.DeclareSignal<EatBoxSignal>();
             Container.DeclareSignal<MergeBoxSignal>();
+            Container.DeclareSignal<CameraUpdateSignal>();
+        }
+
+        private void BindCamera()
+        {
+            Container.Bind<Camera>().FromInstance(gameCamera).AsSingle();
+            Container.Bind<CinemachineVirtualCamera>().FromInstance(virtualCamera).AsSingle();
         }
 
         private void BindInputSystems()
@@ -47,11 +58,12 @@ namespace Installers
         private void BindFactories()
         {
             Container.Bind<BoxEntityFactory>().AsSingle().NonLazy();
-            Container.Bind<BoxStateFactory>().AsSingle().NonLazy();
+            Container.Bind<BoxStateFactory>().AsSingle();
         }
 
         private void InstallSystems()
         {
+            Container.BindInterfacesAndSelfTo<CameraUpdateSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<SpawnBoxesSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<PlayerSpawnSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle().NonLazy();

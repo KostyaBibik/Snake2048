@@ -1,5 +1,6 @@
 ﻿using Components.Boxes.States;
 using Components.Boxes.States.Impl;
+using Database;
 using Enums;
 using Services.Impl;
 using UnityEngine;
@@ -12,25 +13,33 @@ namespace Infrastructure.Factories.Impl
     {
         private readonly GameInputManager _inputManager;
         private readonly BoxService _boxService;
-        private readonly BoxEntityFactory _boxEntityFactory;
+        private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly SignalBus _signalBus;
-        
+
+        private BoxEntityFactory _boxEntityFactory;
+
         public BoxStateFactory(
             BoxService boxService,
             GameInputManager inputManager,
-            BoxEntityFactory boxEntityFactory,
+            GameSettingsConfig gameSettingsConfig,
             SignalBus signalBus
-            )
+        )
         {
             _boxService = boxService;
             _inputManager = inputManager;
-            _boxEntityFactory = boxEntityFactory;
             _signalBus = signalBus;
+            _gameSettingsConfig = gameSettingsConfig;
+        }
+
+        [Inject]
+        private void Construct(BoxEntityFactory boxEntityFactory)
+        {
+            _boxEntityFactory = boxEntityFactory;
         }
         
         public IBoxState CreateFollowState(Transform leader)
         {
-            return new BoxFollowState(leader);
+            return new BoxFollowState(_gameSettingsConfig, leader);
         }
 
         public IBoxState CreateIdleState()
@@ -40,7 +49,7 @@ namespace Infrastructure.Factories.Impl
 
         public IBoxState CreateMoveState()
         {
-            return new BoxMoveState(_boxService, _inputManager);
+            return new BoxMoveState(_boxService, _inputManager, _gameSettingsConfig);
         }
 
         public IBoxState CreateMergeState(BoxView boxToMerge, EBoxGrade targetGrade)
@@ -49,6 +58,7 @@ namespace Infrastructure.Factories.Impl
                 _boxService,
                 _boxEntityFactory,
                 this,
+                _gameSettingsConfig,
                 _signalBus,
                 boxToMerge,
                 targetGrade

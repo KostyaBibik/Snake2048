@@ -1,5 +1,4 @@
-﻿using System;
-using Components.Boxes;
+﻿using Components.Boxes;
 using Enums;
 using Signals;
 using UnityEngine;

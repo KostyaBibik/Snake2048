@@ -1,10 +1,8 @@
 ﻿using System;
-using Components.Boxes.States.Impl;
 using Enums;
 using Infrastructure.Factories.Impl;
 using Services.Impl;
 using Signals;
-using UnityEngine;
 using Zenject;
 
 namespace Systems.Action
@@ -43,6 +41,11 @@ namespace Systems.Action
             boxView.stateContext.SetState(state);
             boxView.isPlayer = true;
             boxView.name = "Player";
+            
+            _signalBus.Fire(new CameraUpdateSignal
+            {
+                followTarget = boxView.transform
+            });
         }
 
         public void Dispose()

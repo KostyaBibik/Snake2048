@@ -1,24 +1,35 @@
 ﻿using System.Collections.Generic;
+using Database;
 using UnityEngine;
 
 namespace Components.Boxes.States.Impl
 {
     public class BoxFollowState : IBoxState
     {
-        private Transform _leader;
-        private float speed = 5f;
-        private float _followDistance = 1;
-        private readonly Queue<Vector3> _positionHistory;
-        private readonly int _historyLength = 10;
+        private float _speed;
+        private float _followDistance;
+        private Queue<Vector3> _positionHistory;
+
+        private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly Transform _leader;
         
-        public BoxFollowState(Transform leader)
+        private const int _historyLength = 10;
+
+        public BoxFollowState(
+            GameSettingsConfig gameSettingsConfig,
+            Transform leader
+        )
         {
             _leader = leader;
-            _positionHistory = new Queue<Vector3>();
+            _gameSettingsConfig = gameSettingsConfig;
         }
 
         public void EnterState(BoxContext context)
         {
+            _positionHistory = new Queue<Vector3>();
+            _speed = _gameSettingsConfig.BoxMoveSpeed;
+            _followDistance = _gameSettingsConfig.BoxFollowDistance;
+            
             for (var i = 0; i < _historyLength; i++)
             {
                 _positionHistory.Enqueue(_leader.position);
@@ -45,16 +56,16 @@ namespace Components.Boxes.States.Impl
                 return;
             }
             
-            var newPosition = Vector3.Lerp(boxTransform.position, targetPosition, speed * Time.deltaTime);
+            var newPosition = Vector3.Lerp(boxTransform.position, targetPosition, _speed * Time.deltaTime);
             boxTransform.position = newPosition;
             
-            var direction = (targetPosition - boxTransform.position).normalized;
+            var direction = (targetPosition - newPosition).normalized;
             direction.y = 0; 
             
             if (direction != Vector3.zero)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-                boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, speed * Time.deltaTime);
+                var targetRotation = Quaternion.LookRotation(direction);
+                boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, _speed * Time.deltaTime);
             }
         }
 

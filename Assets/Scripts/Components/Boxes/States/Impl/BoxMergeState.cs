@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Database;
+using Enums;
 using Infrastructure.Factories.Impl;
 using Services.Impl;
 using Signals;
@@ -13,16 +14,19 @@ namespace Components.Boxes.States.Impl
         private readonly BoxService _boxService;
         private readonly BoxEntityFactory _boxEntityFactory;
         private readonly BoxStateFactory _boxStateFactory;
-        private readonly BoxView _boxToMerge;
+        private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly SignalBus _signalBus;
+        private readonly BoxView _boxToMerge;
         private readonly EBoxGrade _targetGrade;
 
-        private float _mergeSpeed = 10f;
+        private float _mergeSpeed;
+        private float _distanceForMerge;
 
         public BoxMergeState(
             BoxService boxService,
             BoxEntityFactory boxEntityFactory,
             BoxStateFactory boxStateFactory,
+            GameSettingsConfig gameSettingsConfig,
             SignalBus signalBus,
             BoxView boxToMerge,
             EBoxGrade targetGrade
@@ -31,6 +35,7 @@ namespace Components.Boxes.States.Impl
             _boxService = boxService;
             _boxEntityFactory = boxEntityFactory;
             _boxStateFactory = boxStateFactory;
+            _gameSettingsConfig = gameSettingsConfig;
             _boxToMerge = boxToMerge;
             _signalBus = signalBus;
             _targetGrade = targetGrade;
@@ -38,6 +43,8 @@ namespace Components.Boxes.States.Impl
 
         public void EnterState(BoxContext context)
         {
+            _mergeSpeed = _gameSettingsConfig.BoxMoveSpeedOnMerge;
+            _distanceForMerge = _gameSettingsConfig.DistanceForMerge;
         }
 
         public void UpdateState(BoxContext context)
@@ -45,7 +52,7 @@ namespace Components.Boxes.States.Impl
             var boxTransform = context.BoxView.transform;
             var targetBoxTransform = _boxToMerge.transform;
             var distance = Vector3.Distance(boxTransform.position, targetBoxTransform.position);
-            if (distance > 0.1f)
+            if (distance > _distanceForMerge)
             {
                 var boxPos = boxTransform.position;
                 var targetBoxPos = targetBoxTransform.position;
@@ -79,8 +86,17 @@ namespace Components.Boxes.States.Impl
 
             var newBox = _boxEntityFactory.Create(newGrade);
             newBox.transform.position = mergePosition;
-            newBox.isPlayer = box2.isPlayer;
+            
+            if (box2.isPlayer)
+            {
+                newBox.isPlayer = box2.isPlayer;
 
+                _signalBus.Fire(new CameraUpdateSignal
+                {
+                    followTarget = newBox.transform
+                });
+            }
+            
             var team = _boxService.GetTeam(box1);
             _boxService.AddBoxToTeam(team[0], newBox);
 
