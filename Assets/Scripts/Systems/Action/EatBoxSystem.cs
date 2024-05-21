@@ -1,4 +1,5 @@
-﻿using Infrastructure.Factories.Impl;
+﻿using Database;
+using Infrastructure.Factories.Impl;
 using Services.Impl;
 using Signals;
 using Zenject;
@@ -10,19 +11,22 @@ namespace Systems.Action
         private readonly SignalBus _signalBus;
         private readonly BoxService _boxService;
         private readonly BoxEntityFactory _boxEntityFactory;
-        private readonly BoxStateFactory _boxStateFactory;
-        
+        private readonly BotService _botService;
+        private readonly GameSettingsConfig _gameSettingsConfig;
+
         public EatBoxSystem(
             SignalBus signalBus,
             BoxService boxService,
             BoxEntityFactory boxEntityFactory,
-            BoxStateFactory boxStateFactory
+            BotService botService,
+            GameSettingsConfig settingsConfig
         )
         {
             _signalBus = signalBus;
             _boxService = boxService;
             _boxEntityFactory = boxEntityFactory;
-            _boxStateFactory = boxStateFactory;
+            _botService = botService;
+            _gameSettingsConfig = settingsConfig;
         }   
         
         public void Initialize()
@@ -37,8 +41,14 @@ namespace Systems.Action
             
             if (_boxService.AreInSameTeam(eatenBox, owner))
                 return;
+
+            if(owner.isIdle)
+                return;
+                
+            if(!eatenBox.isIdle && eatenBox.Grade >= owner.Grade)
+                return;
             
-            if(eatenBox.Grade >= owner.Grade)
+            if(eatenBox.isIdle && eatenBox.Grade > owner.Grade)
                 return;
 
             var ownerTransform = owner.transform;
@@ -48,20 +58,16 @@ namespace Systems.Action
             var directionSpawn = (ownerPos - eatenBox.transform.position).normalized;
             directionSpawn.y = 0;
             
-            var ownerTeam = _boxService.GetTeam(owner);
-            var lastBoxInTeam = ownerTeam[^1];
-
-            newBox.transform.position = ownerPos + directionSpawn * ownerTeam.Count * 2;
-            var state = _boxStateFactory.CreateFollowState(lastBoxInTeam.transform);
-            newBox.stateContext.SetState(state);
+            newBox.transform.position = ownerPos + directionSpawn * _gameSettingsConfig.BoxFollowDistance;
+            
+            if (owner.isBot)
+            {
+                _botService.AddEntityOnService(newBox);
+            }
             
             _boxService.AddBoxToTeam(owner, newBox);
             _boxService.RemoveEntity(eatBoxSignal.eatenBox);
-            
-            _signalBus.Fire(new MergeBoxSignal
-            {
-                mergingBox = newBox
-            });
+            _boxService.UpdateTeamStates(owner);
         }
     }
 }

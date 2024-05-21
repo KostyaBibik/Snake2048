@@ -11,5 +11,6 @@ namespace Infrastructure.Factories
         IBoxState CreateIdleState();
         IBoxState CreateMoveState();
         IBoxState CreateMergeState(BoxView boxToMerge, EBoxGrade targetGrade);
+        IBoxState CreateBotMoveState();
     }
 }

@@ -2,6 +2,7 @@
 using Components.Boxes.States.Impl;
 using Database;
 using Enums;
+using Helpers;
 using Services.Impl;
 using UnityEngine;
 using Views.Impl;
@@ -12,29 +13,37 @@ namespace Infrastructure.Factories.Impl
     public class BoxStateFactory : IStateFactory
     {
         private readonly GameInputManager _inputManager;
-        private readonly BoxService _boxService;
+        private BoxService _boxService;
+        private readonly BotService _botService;
         private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly GameSceneHandler _sceneHandler;
         private readonly SignalBus _signalBus;
 
         private BoxEntityFactory _boxEntityFactory;
 
         public BoxStateFactory(
-            BoxService boxService,
+            BotService botService,
             GameInputManager inputManager,
             GameSettingsConfig gameSettingsConfig,
+            GameSceneHandler sceneHandler,
             SignalBus signalBus
         )
         {
-            _boxService = boxService;
+            _botService = botService;
             _inputManager = inputManager;
-            _signalBus = signalBus;
+            _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
+            _signalBus = signalBus;
         }
 
         [Inject]
-        private void Construct(BoxEntityFactory boxEntityFactory)
+        private void Construct(
+            BoxEntityFactory boxEntityFactory,
+            BoxService boxService
+        )
         {
             _boxEntityFactory = boxEntityFactory;
+            _boxService = boxService;
         }
         
         public IBoxState CreateFollowState(Transform leader)
@@ -56,12 +65,21 @@ namespace Infrastructure.Factories.Impl
         {
             return new BoxMergeState(
                 _boxService,
+                _botService,
                 _boxEntityFactory,
-                this,
                 _gameSettingsConfig,
                 _signalBus,
                 boxToMerge,
                 targetGrade
+            );
+        }
+
+        public IBoxState CreateBotMoveState()
+        {
+            return new BotMoveState(
+                _boxService,
+                _gameSettingsConfig,
+                _sceneHandler
             );
         }
     }

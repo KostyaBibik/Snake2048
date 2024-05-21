@@ -40,6 +40,7 @@ namespace Systems.Action
             var state = _boxStateFactory.CreateMoveState();
             boxView.stateContext.SetState(state);
             boxView.isPlayer = true;
+            boxView.SetNickname("Player");
             boxView.name = "Player";
             
             _signalBus.Fire(new CameraUpdateSignal

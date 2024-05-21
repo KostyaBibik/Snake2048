@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: ConfigInstaller
   m_EditorClassIdentifier: 
   boxPrefabsConfig: {fileID: 11400000, guid: 8b19a4d7a92b6914089c631461517421, type: 2}
+  gameSettingsConfig: {fileID: 11400000, guid: 0a3a206f990cc494ab77a4344957ea0f, type: 2}

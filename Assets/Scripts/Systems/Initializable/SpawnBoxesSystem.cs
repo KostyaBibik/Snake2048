@@ -7,7 +7,6 @@ using Infrastructure.Factories.Impl;
 using Services.Impl;
 using UniRx;
 using UnityEngine;
-using Views.Impl;
 using Zenject;
 using Random = UnityEngine.Random;
 
@@ -24,6 +23,8 @@ namespace Systems.Initializable
 
         private float _spawnRadius;
         private float _spawnInterval;
+        private int _initialCount;
+        private Bounds _boundsArea;
         private readonly Collider[] _overlapResults = new Collider[10];
         private const string BoxLayerMask = "Box";
         
@@ -43,54 +44,76 @@ namespace Systems.Initializable
         public void Initialize()
         {
             _spawnRadius = _gameSettingsConfig.SpawnRadius;
-            _spawnInterval = _gameSettingsConfig.SpawnInterval;
-                
+            _spawnInterval = _gameSettingsConfig.MinSpawnInterval;
+            _initialCount = _gameSettingsConfig.InitialIdleBoxCount;
+            _boundsArea = _sceneHandler.FieldView.Collider.bounds;
+            
+            SpawnInitialBoxes(_initialCount);    
+            
             _observer?.Dispose();
 
             _observer = Observable.FromCoroutine(SpawnBoxesWithDelay)
                 .Subscribe();
         }
-
-        private IEnumerator SpawnBoxesWithDelay()
+        
+        private void SpawnInitialBoxes(int count)
         {
-            var delay = new WaitForSeconds(_spawnInterval);
-            var bounds = _sceneHandler.FieldView.Collider.bounds;
+            for (var i = 0; i < count; i++)
+            {
+                SpawnBox();
+            }
+        }
+
+        private void SpawnBox()
+        {
+            Vector3 spawnPosition;
+            var attempts = 0;
+            const int maxAttempts = 10;
             
             do
             {
-                yield return delay;
+                spawnPosition = GetRandomPositionInBounds();
+                attempts++;
+            }
+            while (IsPositionOccupied(spawnPosition) && attempts < maxAttempts);
+            
+            if (attempts >= maxAttempts)
+            {
+                return;
+            }
                 
-                Vector3 spawnPosition;
-                var attempts = 0;
-                const int maxAttempts = 10;
+            var idleBox = _boxEntityFactory.Create(EBoxGrade.Grade_2);
+            idleBox.transform.position = spawnPosition;
+            idleBox.isIdle = true;
 
-                do
-                {
-                    spawnPosition = GetRandomPositionInBounds(bounds);
-                    attempts++;
-                }
-                while (IsPositionOccupied(spawnPosition) && attempts < maxAttempts);
-
-                if (attempts >= maxAttempts)
-                {
-                    continue;
-                }
+            _boxService.RegisterNewTeam(idleBox);
+        }
+        
+        private IEnumerator SpawnBoxesWithDelay()
+        {
+            do
+            {
+                var delay = Random.Range(_gameSettingsConfig.MinSpawnInterval, _gameSettingsConfig.MaxSpawnInterval);
                 
-                var idleBox = _boxEntityFactory.Create(EBoxGrade.Grade_2);
-                idleBox.transform.position = spawnPosition;
+                yield return new WaitForSeconds(delay);
 
-                _boxService.RegisterNewTeam(idleBox);
+                var spawnCount = Random.Range(_gameSettingsConfig.MinSpawnCount, _gameSettingsConfig.MaxSpawnCount);
+
+                for (var i = 0; i < spawnCount; i++)
+                {
+                    SpawnBox();
+                }
 
             } while (true);
             
             yield return null;
         }
 
-        private Vector3 GetRandomPositionInBounds(Bounds bounds)
+        private Vector3 GetRandomPositionInBounds()
         {
-            var x = Random.Range(bounds.min.x, bounds.max.x);
-            var y = bounds.max.y * 2;
-            var z = Random.Range(bounds.min.z, bounds.max.z);
+            var x = Random.Range(_boundsArea.min.x, _boundsArea.max.x);
+            var y = _boundsArea.max.y * 2;
+            var z = Random.Range(_boundsArea.min.z, _boundsArea.max.z);
             return new Vector3(x, y, z);
         }
         

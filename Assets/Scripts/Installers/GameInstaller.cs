@@ -69,11 +69,13 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<EatBoxSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<MergeBoxSystem>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<BotSpawnSystem>().AsSingle().NonLazy();
         }
 
         private void BindServices()
         {
             Container.BindInterfacesAndSelfTo<BoxService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BotService>().AsSingle();
         }
     }
 }

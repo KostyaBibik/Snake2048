@@ -12,8 +12,8 @@ namespace Components.Boxes.States.Impl
     public class BoxMergeState : IBoxState
     {
         private readonly BoxService _boxService;
+        private readonly BotService _botService;
         private readonly BoxEntityFactory _boxEntityFactory;
-        private readonly BoxStateFactory _boxStateFactory;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly SignalBus _signalBus;
         private readonly BoxView _boxToMerge;
@@ -24,8 +24,8 @@ namespace Components.Boxes.States.Impl
 
         public BoxMergeState(
             BoxService boxService,
+            BotService botService,
             BoxEntityFactory boxEntityFactory,
-            BoxStateFactory boxStateFactory,
             GameSettingsConfig gameSettingsConfig,
             SignalBus signalBus,
             BoxView boxToMerge,
@@ -33,8 +33,8 @@ namespace Components.Boxes.States.Impl
         )
         {
             _boxService = boxService;
+            _botService = botService;
             _boxEntityFactory = boxEntityFactory;
-            _boxStateFactory = boxStateFactory;
             _gameSettingsConfig = gameSettingsConfig;
             _boxToMerge = boxToMerge;
             _signalBus = signalBus;
@@ -49,6 +49,9 @@ namespace Components.Boxes.States.Impl
 
         public void UpdateState(BoxContext context)
         {
+            if(_boxToMerge == null || _boxToMerge.isDestroyed)
+                return;
+            
             var boxTransform = context.BoxView.transform;
             var targetBoxTransform = _boxToMerge.transform;
             var distance = Vector3.Distance(boxTransform.position, targetBoxTransform.position);
@@ -75,10 +78,6 @@ namespace Components.Boxes.States.Impl
             }
         }
 
-        public void ExitState(BoxContext context)
-        {
-        }
-
         private void MergeBoxes(BoxView box1, BoxView box2, EBoxGrade targetGrade)
         {
             var newGrade = (EBoxGrade)((int)targetGrade + 1);
@@ -86,41 +85,35 @@ namespace Components.Boxes.States.Impl
 
             var newBox = _boxEntityFactory.Create(newGrade);
             newBox.transform.position = mergePosition;
+            newBox.isPlayer = box1.isPlayer || box2.isPlayer;
+            newBox.isBot = !newBox.isPlayer;
             
-            if (box2.isPlayer)
+            if (newBox.isPlayer)
             {
-                newBox.isPlayer = box2.isPlayer;
-
                 _signalBus.Fire(new CameraUpdateSignal
                 {
                     followTarget = newBox.transform
                 });
             }
-            
-            var team = _boxService.GetTeam(box1);
-            _boxService.AddBoxToTeam(team[0], newBox);
 
+            if (newBox.isBot)
+            {
+                _botService.AddEntityOnService(newBox);
+            }
+
+            _boxService.AddBoxToTeam(_boxService.GetTeam(box1)[0], newBox);
+
+            _botService.RemoveEntity(box1);
+            _botService.RemoveEntity(box2);
+            
             _boxService.RemoveEntity(box1);
             _boxService.RemoveEntity(box2);
-
-            team = _boxService.GetTeam(newBox);
-
-            if (team.Count > 1)
-            {
-                var lastBoxInTeam = team[^2];
-                var state = _boxStateFactory.CreateFollowState(lastBoxInTeam.transform);
-                newBox.stateContext.SetState(state);
-            }
-            else
-            {
-                var state = _boxStateFactory.CreateMoveState();
-                newBox.stateContext.SetState(state);
-            }
             
-            _signalBus.Fire(new MergeBoxSignal
-            {
-                mergingBox = newBox
-            });
+            _boxService.UpdateTeamStates(newBox);
+        }
+
+        public void ExitState(BoxContext context)
+        {
         }
     }
 }

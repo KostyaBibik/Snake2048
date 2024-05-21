@@ -8,11 +8,12 @@ namespace Components.Boxes.States.Impl
     {
         private float _speed;
         private float _followDistance;
-        private Queue<Vector3> _positionHistory;
-
+        private List<Vector3> _positionHistory;
+        private Vector3 _velocity = Vector3.zero;
+        
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly Transform _leader;
-        
+
         private const int _historyLength = 10;
 
         public BoxFollowState(
@@ -26,13 +27,13 @@ namespace Components.Boxes.States.Impl
 
         public void EnterState(BoxContext context)
         {
-            _positionHistory = new Queue<Vector3>();
+            _positionHistory = new List<Vector3>(_historyLength);
             _speed = _gameSettingsConfig.BoxMoveSpeed;
             _followDistance = _gameSettingsConfig.BoxFollowDistance;
-            
+
             for (var i = 0; i < _historyLength; i++)
             {
-                _positionHistory.Enqueue(_leader.position);
+                _positionHistory.Add(_leader.position);
             }
         }
 
@@ -43,23 +44,31 @@ namespace Components.Boxes.States.Impl
             
             if (_positionHistory.Count >= _historyLength)
             {
-                _positionHistory.Dequeue();
+                _positionHistory.RemoveAt(0);
             }
-            _positionHistory.Enqueue(_leader.position);
+            _positionHistory.Add(_leader.position);
             
-            var targetPosition = _positionHistory.Peek();
+            var targetPosition = _positionHistory[0];
             var boxTransform = context.BoxView.transform;
             
-            float distanceToTarget = Vector3.Distance(boxTransform.position, targetPosition);
+            var distanceToTarget = Vector3.Distance(boxTransform.position, targetPosition);
             if (distanceToTarget < _followDistance)
             {
-                return;
+                targetPosition = Vector3.SmoothDamp(boxTransform.position, targetPosition, ref _velocity, 0.3f, _speed / 2);
+            }
+            else
+            {
+                targetPosition = Vector3.SmoothDamp(boxTransform.position, targetPosition, ref _velocity, 0.3f, _speed);
+            }
+
+            if (distanceToTarget < _followDistance)
+            {
+                targetPosition = boxTransform.position;
             }
             
-            var newPosition = Vector3.Lerp(boxTransform.position, targetPosition, _speed * Time.deltaTime);
-            boxTransform.position = newPosition;
+            boxTransform.position = targetPosition;
             
-            var direction = (targetPosition - newPosition).normalized;
+            var direction = (targetPosition - boxTransform.position).normalized;
             direction.y = 0; 
             
             if (direction != Vector3.zero)

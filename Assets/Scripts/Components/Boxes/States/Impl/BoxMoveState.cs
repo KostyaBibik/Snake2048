@@ -31,7 +31,7 @@ namespace Components.Boxes.States.Impl
 
         public void UpdateState(BoxContext context)
         {
-            var playerView = _boxService.Boxes.FirstOrDefault(box => box.isPlayer);
+            var playerView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
             if (playerView == null)
                 return;
             

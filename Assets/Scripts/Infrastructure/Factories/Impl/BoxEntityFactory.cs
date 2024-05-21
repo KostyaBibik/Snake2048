@@ -15,26 +15,28 @@ namespace Infrastructure.Factories.Impl
     {
         private readonly Vector3[] _waypoints;
         private readonly BoxPrefabsConfig _boxPrefabsConfig;
-        private readonly BoxService _boxService;
         
+        private BoxService _boxService;
         private BoxStateFactory _boxStateFactory;
         
         public BoxEntityFactory(
             GameSceneHandler sceneHandler,
-            BoxPrefabsConfig boxPrefabsConfig,
-            BoxService boxService
+            BoxPrefabsConfig boxPrefabsConfig
         )
         {
             _waypoints = sceneHandler.FieldView.GetWaypoints().Select(t => t.transform.position).ToArray();
 
             _boxPrefabsConfig = boxPrefabsConfig;
-            _boxService = boxService;
         }
         
         [Inject]
-        private void Construct(BoxStateFactory boxStateFactory)
+        private void Construct(
+            BoxStateFactory boxStateFactory,
+            BoxService boxService
+        )
         {
             _boxStateFactory = boxStateFactory;
+            _boxService = boxService;
         }
 
         public BoxView Create(EBoxGrade grade)

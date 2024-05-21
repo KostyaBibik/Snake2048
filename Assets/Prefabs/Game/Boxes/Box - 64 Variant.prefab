@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 860260022202706771, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: m_Name
-      value: Box - 64
+      value: Box - 64 Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2506669758411646977, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
@@ -72,5 +72,10 @@ PrefabInstance:
       propertyPath: grade
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 8005675014759179712, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6e507570808e05747a2693ebcc182377, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8b91192adbb77f949807b4a74a6901ec, type: 3}
