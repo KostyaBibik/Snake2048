@@ -7,6 +7,10 @@ namespace Helpers
 {
     public static class BotPathEvaluator
     {
+        private const float ThreatRadiusSquared = 4f;
+        private const float PathStep = 1f; 
+        private const int MaxIterations = 25; 
+
         public static bool IsPathSafe(BoxService boxService, BoxView botView, BoxView targetBox)
         {
             var path = CalculatePath(botView.transform.position, targetBox.transform.position);
@@ -27,17 +31,16 @@ namespace Helpers
             var path = new List<Vector3>();
             var direction = (end - start).normalized;
             var currentPosition = start;
-            var maxIterations = 50; 
             var iterationCount = 0;
         
-            while (Vector3.Distance(currentPosition, end) > .75f)
+            while (Vector3.SqrMagnitude(currentPosition - end) > 0.5625f)
             {
-                if (iterationCount >= maxIterations)
+                if (iterationCount >= MaxIterations)
                 {
                     return null;
                 }
 
-                currentPosition += direction * .5f; 
+                currentPosition += direction * PathStep; 
                 path.Add(currentPosition);
 
                 iterationCount++;
@@ -48,7 +51,6 @@ namespace Helpers
 
         private static bool IsThreatNearby(BoxService boxService, BoxView botView, Vector3 position)
         {
-            var threatRadius = 2f; 
             var boxes = boxService.GetAllBoxes();
         
             foreach (var box in boxes)
@@ -58,7 +60,7 @@ namespace Helpers
             
                 if (!boxService.AreInSameTeam(botView, box) && box.Grade > botView.Grade)
                 {
-                    if (Vector3.Distance(box.transform.position, position) < threatRadius)
+                    if (Vector3.SqrMagnitude(box.transform.position - position) < ThreatRadiusSquared)
                     {
                         return true;
                     }

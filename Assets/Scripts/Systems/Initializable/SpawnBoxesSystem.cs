@@ -6,6 +6,7 @@ using Helpers;
 using Infrastructure.Factories.Impl;
 using Services.Impl;
 using UniRx;
+using UniRx.Toolkit;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -20,6 +21,7 @@ namespace Systems.Initializable
         private readonly BoxService _boxService;
         private readonly GameSceneHandler _sceneHandler;
         private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly BoxPool _boxPool;
 
         private float _spawnRadius;
         private float _spawnInterval;
@@ -32,13 +34,15 @@ namespace Systems.Initializable
             BoxEntityFactory boxEntityFactory,
             BoxService boxService,
             GameSceneHandler sceneHandler,
-            GameSettingsConfig gameSettingsConfig
+            GameSettingsConfig gameSettingsConfig,
+            BoxPool boxPool
         )
         {
             _boxEntityFactory = boxEntityFactory;
             _boxService = boxService;
             _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
+            _boxPool = boxPool;
         }
         
         public void Initialize()
@@ -82,9 +86,14 @@ namespace Systems.Initializable
                 return;
             }
                 
-            var idleBox = _boxEntityFactory.Create(EBoxGrade.Grade_2);
+            //var idleBox = _boxEntityFactory.Create(EBoxGrade.Grade_2);
+            var idleBox = _boxPool.GetBox(EBoxGrade.Grade_2);
+            idleBox.gameObject.SetActive(true);
             idleBox.transform.position = spawnPosition;
             idleBox.isIdle = true;
+            idleBox.isDestroyed = false;
+            idleBox.isPlayer = false;
+            idleBox.isBot = false;
 
             _boxService.RegisterNewTeam(idleBox);
         }

@@ -13,13 +13,13 @@ namespace Infrastructure.Factories.Impl
     public class BoxStateFactory : IStateFactory
     {
         private readonly GameInputManager _inputManager;
-        private BoxService _boxService;
         private readonly BotService _botService;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly GameSceneHandler _sceneHandler;
         private readonly SignalBus _signalBus;
 
-        private BoxEntityFactory _boxEntityFactory;
+        private BoxService _boxService;
+        private BoxPool _boxPool;
 
         public BoxStateFactory(
             BotService botService,
@@ -38,12 +38,12 @@ namespace Infrastructure.Factories.Impl
 
         [Inject]
         private void Construct(
-            BoxEntityFactory boxEntityFactory,
-            BoxService boxService
+            BoxService boxService,
+            BoxPool boxPool
         )
         {
-            _boxEntityFactory = boxEntityFactory;
             _boxService = boxService;
+            _boxPool = boxPool;
         }
         
         public IBoxState CreateFollowState(Transform leader)
@@ -58,7 +58,7 @@ namespace Infrastructure.Factories.Impl
 
         public IBoxState CreateMoveState()
         {
-            return new BoxMoveState(_boxService, _inputManager, _gameSettingsConfig);
+            return new BoxMoveState(_inputManager, _gameSettingsConfig);
         }
 
         public IBoxState CreateMergeState(BoxView boxToMerge, EBoxGrade targetGrade)
@@ -66,7 +66,7 @@ namespace Infrastructure.Factories.Impl
             return new BoxMergeState(
                 _boxService,
                 _botService,
-                _boxEntityFactory,
+                _boxPool,
                 _gameSettingsConfig,
                 _signalBus,
                 boxToMerge,

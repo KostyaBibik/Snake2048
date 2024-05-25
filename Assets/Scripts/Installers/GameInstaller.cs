@@ -1,6 +1,5 @@
 ﻿using Systems.Action;
 using Systems.Initializable;
-using Systems.Runtime;
 using Cinemachine;
 using Helpers;
 using Infrastructure.Factories.Impl;
@@ -25,6 +24,7 @@ namespace Installers
             BindInputSystems();
             BindSceneComponents();
             BindFactories();
+            BindPools();
             InstallSystems();
             BindServices();
         }
@@ -68,7 +68,6 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<PlayerSpawnSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<EatBoxSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<MergeBoxSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<BotSpawnSystem>().AsSingle().NonLazy();
         }
 
@@ -76,6 +75,11 @@ namespace Installers
         {
             Container.BindInterfacesAndSelfTo<BoxService>().AsSingle();
             Container.BindInterfacesAndSelfTo<BotService>().AsSingle();
+        }
+
+        private void BindPools()
+        {
+            Container.BindInterfacesAndSelfTo<BoxPool>().AsSingle().NonLazy();
         }
     }
 }

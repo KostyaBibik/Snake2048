@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using Zenject;
 using System.Collections;
 using Database;
 using Services.Impl;
@@ -20,34 +19,31 @@ public class BotSpawnSystem : IInitializable, IDisposable
     private Bounds _locationBounds;
     private IDisposable _observer;
 
-    private readonly BoxEntityFactory _boxEntityFactory;
+    private readonly BoxPool _boxPool;
     private readonly BoxStateFactory _boxStateFactory;
     private readonly BoxService _boxService;
     private readonly BotService _botService;
     private readonly GameSettingsConfig _gameSettingsConfig;
     private readonly GameSceneHandler _sceneHandler;
-    private readonly SignalBus _signalBus;
 
     private readonly Collider[] _overlapResults = new Collider[10];
     private const string BoxLayerMask = "Box";
     
     public BotSpawnSystem(
-        BoxEntityFactory boxEntityFactory,
+        BoxPool boxPool,
         BoxStateFactory boxStateFactory,
         BoxService boxService,
         BotService botService,
         GameSettingsConfig gameSettingsConfig,
-        GameSceneHandler sceneHandler,
-        SignalBus signalBus
+        GameSceneHandler sceneHandler
     )
     {
-        _boxEntityFactory = boxEntityFactory;
+        _boxPool = boxPool;
         _boxStateFactory = boxStateFactory;
         _boxService = boxService;
         _botService = botService;
         _gameSettingsConfig = gameSettingsConfig;
         _sceneHandler = sceneHandler;
-        _signalBus = signalBus;
     }
 
     public void Initialize()
@@ -82,7 +78,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
             var spawnPosition = GetRandomPositionInBounds(_locationBounds);
             if (!IsPositionOccupied(spawnPosition))
             {
-                var bot = _boxEntityFactory.Create(EBoxGrade.Grade_2); 
+                var bot = _boxPool.GetBox(EBoxGrade.Grade_2); 
                 
                 bot.isBot = true;
                 bot.gameObject.name = "Bot"; 
@@ -130,7 +126,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
             yield return delay;
 
             yield return new WaitUntil(() => _botService.GetBotCount() < _maxBotCount);
-
+            
             SpawnBot();
         }
     }

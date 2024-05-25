@@ -1,5 +1,4 @@
-﻿using Enums;
-using Views.Impl;
+﻿using Views.Impl;
 
 namespace Signals
 {

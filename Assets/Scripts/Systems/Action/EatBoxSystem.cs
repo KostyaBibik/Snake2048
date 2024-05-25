@@ -13,13 +13,15 @@ namespace Systems.Action
         private readonly BoxEntityFactory _boxEntityFactory;
         private readonly BotService _botService;
         private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly BoxPool _boxPool;
 
         public EatBoxSystem(
             SignalBus signalBus,
             BoxService boxService,
             BoxEntityFactory boxEntityFactory,
             BotService botService,
-            GameSettingsConfig settingsConfig
+            GameSettingsConfig settingsConfig,
+            BoxPool boxPool
         )
         {
             _signalBus = signalBus;
@@ -27,6 +29,7 @@ namespace Systems.Action
             _boxEntityFactory = boxEntityFactory;
             _botService = botService;
             _gameSettingsConfig = settingsConfig;
+            _boxPool = boxPool;
         }   
         
         public void Initialize()
@@ -53,8 +56,9 @@ namespace Systems.Action
 
             var ownerTransform = owner.transform;
             var ownerPos = ownerTransform.position;
-            
-            var newBox = _boxEntityFactory.Create(eatenBox.Grade);
+
+            var newBox = _boxPool.GetBox(eatenBox.Grade);
+            //var newBox = _boxEntityFactory.Create(eatenBox.Grade);
             var directionSpawn = (ownerPos - eatenBox.transform.position).normalized;
             directionSpawn.y = 0;
             

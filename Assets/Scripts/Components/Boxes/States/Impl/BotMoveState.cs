@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Database;
 using Helpers;
 using Services.Impl;
 using UnityEngine;
 using Views.Impl;
+using Random = UnityEngine.Random;
 
 namespace Components.Boxes.States.Impl
 {
@@ -13,18 +16,18 @@ namespace Components.Boxes.States.Impl
         private readonly GameSettingsConfig _settingsConfig;
 
         private float _speed;
-        private float _changeDirectionInterval; 
+        private float _changeDirectionInterval;
         private float _timeSinceLastDirectionChange;
         private Vector3 _targetDirection;
         private Vector3 _currentDirection;
         private Transform _botTransform;
 
         private BoxView _targetAimBox;
-        private float _targetUpdateInterval = 1f; 
+        private float _targetUpdateInterval = 1f;
         private float _timeSinceLastTargetUpdate;
 
-        private float _minimumTargetDistance = 1f; 
-        private float _randomChangeChance = 0.1f; 
+        private float _minimumTargetDistance = 1f;
+        private float _randomChangeChance = 0.1f;
 
         private Bounds _gameBounds;
 
@@ -47,22 +50,18 @@ namespace Components.Boxes.States.Impl
             _changeDirectionInterval = .25f;
             _targetDirection = GetRandomDirection();
             _timeSinceLastTargetUpdate = 0f;
-            _currentDirection = _botTransform.forward; 
+            _currentDirection = _botTransform.forward;
         }
 
         public void UpdateState(BoxContext context)
         {
             var botView = context.BoxView;
             _timeSinceLastTargetUpdate += Time.deltaTime;
-
-            if (_targetAimBox == null || !_targetAimBox.gameObject.activeInHierarchy || 
-                _timeSinceLastTargetUpdate >= _targetUpdateInterval)
+            var targetIsDestroyed = _targetAimBox == null || _targetAimBox.isDestroyed;
+            
+            if (targetIsDestroyed || _timeSinceLastTargetUpdate >= _targetUpdateInterval)
             {
-                if (_targetAimBox == null || !_targetAimBox.gameObject.activeInHierarchy)
-                {
-                    _targetAimBox = FindRandomTargetBox(botView);
-                }
-                else if (_timeSinceLastTargetUpdate >= _targetUpdateInterval && Random.value < _randomChangeChance)
+                if (Random.value < _randomChangeChance)
                 {
                     _targetAimBox = FindRandomTargetBox(botView);
                 }
@@ -70,31 +69,42 @@ namespace Components.Boxes.States.Impl
                 _timeSinceLastTargetUpdate = 0f;
             }
 
-            if (_targetAimBox != null && Vector3.Distance(botView.transform.position, _targetAimBox.transform.position) > _minimumTargetDistance)
+            if (!targetIsDestroyed
+                && Vector3.Distance(botView.transform.position, _targetAimBox.transform.position) > _minimumTargetDistance)
             {
-                var direction = (_targetAimBox.transform.position - botView.transform.position).normalized;
-                _currentDirection = Vector3.Slerp(_currentDirection, direction, Time.deltaTime * _speed).normalized;
-                _currentDirection.y = 0;
-                botView.transform.Translate(_currentDirection * (_speed * Time.deltaTime), Space.World);
-                _timeSinceLastDirectionChange = 0f;
+                MoveTowardsTarget(botView);
             }
             else
             {
-                _timeSinceLastDirectionChange += Time.deltaTime;
-
-                if (_timeSinceLastDirectionChange >= _changeDirectionInterval)
-                {
-                    _targetDirection = GetRandomDirection();
-                    _timeSinceLastDirectionChange = 0f;
-                }
-                
-                _currentDirection = Vector3.Slerp(_currentDirection, _targetDirection, Time.deltaTime * _speed).normalized;
-                _currentDirection.y = 0;
-                
-                _botTransform.Translate(_currentDirection * (_speed * Time.deltaTime), Space.World);
+                Wander();
             }
 
             CheckBoundsAndAdjustDirection();
+        }
+
+        private void MoveTowardsTarget(BoxView botView)
+        {
+            var direction = (_targetAimBox.transform.position - botView.transform.position).normalized;
+            _currentDirection = Vector3.Slerp(_currentDirection, direction, Time.deltaTime * _speed).normalized;
+            _currentDirection.y = 0;
+            botView.transform.Translate(_currentDirection * (_speed * Time.deltaTime), Space.World);
+            _timeSinceLastDirectionChange = 0f;
+        }
+
+        private void Wander()
+        {
+            _timeSinceLastDirectionChange += Time.deltaTime;
+
+            if (_timeSinceLastDirectionChange >= _changeDirectionInterval)
+            {
+                _targetDirection = GetRandomDirection();
+                _timeSinceLastDirectionChange = 0f;
+            }
+
+            _currentDirection = Vector3.Slerp(_currentDirection, _targetDirection, Time.deltaTime * _speed).normalized;
+            _currentDirection.y = 0;
+
+            _botTransform.Translate(_currentDirection * (_speed * Time.deltaTime), Space.World);
         }
 
         private void CheckBoundsAndAdjustDirection()
@@ -117,31 +127,28 @@ namespace Components.Boxes.States.Impl
 
         private Vector3 GetRandomDirection()
         {
-            var direction = new Vector3(
-                Random.Range(_currentDirection.x - 1f, _currentDirection.x + 1f),
-                0,
-                Random.Range(_currentDirection.z - 1F, _currentDirection.z + 1f)
-            ).normalized;
-            return direction;
+            var randomAngle = Random.Range(0, 360);
+            return new Vector3(Mathf.Cos(randomAngle), 0, Mathf.Sin(randomAngle)).normalized;
         }
-        
-        private BoxView FindRandomTargetBox(BoxView botView)
+
+        /*private BoxView FindRandomTargetBox(BoxView botView)
         {
-            var boxes = _boxService.GetAllBoxes()
+            var validBoxes = _boxService.GetAllBoxes()
                 .Where(box => box != botView)
                 .Where(box => !_boxService.AreInSameTeam(botView, box))
                 .Where(box => (box.isIdle && box.Grade <= botView.Grade) || (box.Grade < botView.Grade))
                 .Where(box => HasHigherOrEqualGradeInTeam(box, botView))
-                .Where(box => BotPathEvaluator.IsPathSafe(_boxService, botView, box))
+                //.Where(box => BotPathEvaluator.IsPathSafe(_boxService, botView, box))
                 .OrderBy(box => Vector3.Distance(botView.transform.position, box.transform.position))
+                .Take(10) 
                 .ToList();
 
-            if (!boxes.Any())
+            if (!validBoxes.Any())
             {
                 return null;
             }
 
-            var weightedBoxes = boxes.Select(box =>
+            var weightedBoxes = validBoxes.Select(box =>
             {
                 var distance = Vector3.Distance(botView.transform.position, box.transform.position);
                 var gradeFactor = botView.Grade - box.Grade;
@@ -151,21 +158,75 @@ namespace Components.Boxes.States.Impl
 
             var randomValue = Random.Range(0, weightedBoxes.Count);
             return weightedBoxes[randomValue].box;
-        }
+        }*/
 
+        private BoxView FindRandomTargetBox(BoxView botView)
+        {
+            var allBoxes = _boxService.GetAllBoxes();
+            var validBoxes = new List<(BoxView box, float distance)>();
+
+            for (var i = 0; i < allBoxes.Count; i++)
+            {
+                var box = allBoxes[i];
+                if (box == botView || _boxService.AreInSameTeam(botView, box))
+                    continue;
+
+                if ((box.isIdle && box.Grade <= botView.Grade) || (box.Grade < botView.Grade))
+                {
+                    if (HasHigherOrEqualGradeInTeam(box, botView))
+                    {
+                        var distance = Vector3.Distance(botView.transform.position, box.transform.position);
+                        validBoxes.Add((box, distance));
+                    }
+                }
+            }
+
+            if (validBoxes.Count == 0)
+            {
+                return null;
+            }
+
+            validBoxes.Sort((a, b) => a.distance.CompareTo(b.distance));
+            var topBoxes = new (BoxView box, float distance)[Math.Min(10, validBoxes.Count)];
+            for (var i = 0; i < topBoxes.Length; i++)
+            {
+                topBoxes[i] = validBoxes[i];
+            }
+
+            var weightedBoxes = new List<(BoxView box, float weight)>();
+            for (var i = 0; i < topBoxes.Length; i++)
+            {
+                var (box, distance) = topBoxes[i];
+                var gradeFactor = botView.Grade - box.Grade;
+                var weight = gradeFactor / distance;
+                weightedBoxes.Add((box, weight));
+            }
+
+            weightedBoxes.Sort((a, b) => b.weight.CompareTo(a.weight));
+            var randomValue = Random.Range(0, weightedBoxes.Count);
+            return weightedBoxes[randomValue].box;
+        }
+        
         private bool HasHigherOrEqualGradeInTeam(BoxView targetBox, BoxView selfBox)
         {
             if (targetBox.isIdle)
                 return true;
-            
+
             var team = _boxService.GetTeam(targetBox);
             if (!team.Any())
                 return false;
-            
-            var highestGradeInTeam = team.Max(teammate => teammate.Grade);
+
+            var highestGradeInTeam = team[0].Grade;
+            for (var i = 1; i < team.Count; i++)
+            {
+                if (team[i].Grade > highestGradeInTeam)
+                {
+                    highestGradeInTeam = team[i].Grade;
+                }
+            }
             return highestGradeInTeam < selfBox.Grade;
         }
-        
+
         public void ExitState(BoxContext context)
         {
         }

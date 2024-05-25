@@ -13,7 +13,7 @@ namespace Components.Boxes.States.Impl
     {
         private readonly BoxService _boxService;
         private readonly BotService _botService;
-        private readonly BoxEntityFactory _boxEntityFactory;
+        private readonly BoxPool _boxPool;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly SignalBus _signalBus;
         private readonly BoxView _boxToMerge;
@@ -25,7 +25,7 @@ namespace Components.Boxes.States.Impl
         public BoxMergeState(
             BoxService boxService,
             BotService botService,
-            BoxEntityFactory boxEntityFactory,
+            BoxPool boxPool,
             GameSettingsConfig gameSettingsConfig,
             SignalBus signalBus,
             BoxView boxToMerge,
@@ -34,7 +34,7 @@ namespace Components.Boxes.States.Impl
         {
             _boxService = boxService;
             _botService = botService;
-            _boxEntityFactory = boxEntityFactory;
+            _boxPool = boxPool;
             _gameSettingsConfig = gameSettingsConfig;
             _boxToMerge = boxToMerge;
             _signalBus = signalBus;
@@ -60,8 +60,9 @@ namespace Components.Boxes.States.Impl
                 var boxPos = boxTransform.position;
                 var targetBoxPos = targetBoxTransform.position;
                 var direction = (targetBoxPos - boxPos).normalized;
-                
-                boxPos += direction * (_mergeSpeed * Time.deltaTime);
+
+                var speedTranslate = _mergeSpeed * Time.deltaTime;
+                boxPos += direction * speedTranslate;
                 boxTransform.position = boxPos;
 
                 var lookDirection = (targetBoxPos - boxPos).normalized;
@@ -69,7 +70,7 @@ namespace Components.Boxes.States.Impl
                 if (lookDirection != Vector3.zero)
                 {
                     var targetRotation = Quaternion.LookRotation(lookDirection);
-                    boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, _mergeSpeed * Time.deltaTime);
+                    boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, speedTranslate);
                 }
             }
             else
@@ -81,10 +82,9 @@ namespace Components.Boxes.States.Impl
         private void MergeBoxes(BoxView box1, BoxView box2, EBoxGrade targetGrade)
         {
             var newGrade = (EBoxGrade)((int)targetGrade + 1);
-            var mergePosition = (box1.transform.position + box2.transform.position) / 2;
 
-            var newBox = _boxEntityFactory.Create(newGrade);
-            newBox.transform.position = mergePosition;
+            var newBox = _boxPool.GetBox(newGrade);
+            newBox.transform.position = box2.transform.position;
             newBox.isPlayer = box1.isPlayer || box2.isPlayer;
             newBox.isBot = !newBox.isPlayer;
             
@@ -101,7 +101,7 @@ namespace Components.Boxes.States.Impl
                 _botService.AddEntityOnService(newBox);
             }
 
-            _boxService.AddBoxToTeam(_boxService.GetTeam(box1)[0], newBox);
+            _boxService.AddBoxToTeam(box1, newBox);
 
             _botService.RemoveEntity(box1);
             _botService.RemoveEntity(box2);

@@ -10,11 +10,13 @@ namespace Installers
     {
         [SerializeField] private BoxPrefabsConfig boxPrefabsConfig;
         [SerializeField] private GameSettingsConfig gameSettingsConfig;
+        [SerializeField] private BoxPoolConfig boxPoolConfig;
         
         public override void InstallBindings()
         {
             Container.BindInstance(boxPrefabsConfig);
             Container.BindInstance(gameSettingsConfig);
+            Container.BindInstance(boxPoolConfig);
         }
     }
 }

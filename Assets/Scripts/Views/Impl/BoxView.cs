@@ -23,17 +23,27 @@ namespace Views.Impl
         public bool isMerging { get; set; }
 
         private SignalBus _signalBus;
-
+        private BoxPool _boxPool;
+        
         [Inject]
-        private void Construct(SignalBus signalBus)
+        private void Construct(
+            SignalBus signalBus,
+            BoxPool boxPool
+        )
         {
             _signalBus = signalBus;
+            _boxPool = boxPool;
         }
 
         public void SetNickname(string nick, bool activeText = true)
         {
-            _nickText.gameObject.SetActive(activeText);
-            _nickText.text = nick;
+            /*_nickText.gameObject.SetActive(activeText);
+            _nickText.text = nick;*/
+        }
+
+        public void AnimateUpscale()
+        {
+            
         }
         
         private void Update()

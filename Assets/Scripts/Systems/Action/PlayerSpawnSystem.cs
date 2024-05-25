@@ -9,19 +9,19 @@ namespace Systems.Action
 {
     public class PlayerSpawnSystem : IInitializable, IDisposable
     {
-        private readonly BoxEntityFactory _boxEntityFactory;
+        private readonly BoxPool _boxPool;
         private readonly BoxStateFactory _boxStateFactory;
         private readonly BoxService _boxService;
         private readonly SignalBus _signalBus;
 
         private PlayerSpawnSystem(
-            BoxEntityFactory boxEntityFactory,
+            BoxPool boxPool,
             BoxStateFactory boxStateFactory,
             BoxService boxService,
             SignalBus signalBus
         )
         {
-            _boxEntityFactory = boxEntityFactory;
+            _boxPool = boxPool;
             _boxStateFactory = boxStateFactory;
             _boxService = boxService;
             _signalBus = signalBus;
@@ -34,7 +34,7 @@ namespace Systems.Action
 
         private void SpawnPlayer(PlayerSpawnSignal signal)
         {
-            var boxView = _boxEntityFactory.Create(EBoxGrade.Grade_4);
+            var boxView = _boxPool.GetBox(EBoxGrade.Grade_4);
             _boxService.RegisterNewTeam(boxView);
 
             var state = _boxStateFactory.CreateMoveState();

@@ -9,7 +9,7 @@ namespace Components.Boxes.States.Impl
         private float _speed;
         private float _followDistance;
         private List<Vector3> _positionHistory;
-        private Vector3 _velocity = Vector3.zero;
+        private Vector3 _velocity;
         
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly Transform _leader;
@@ -30,7 +30,8 @@ namespace Components.Boxes.States.Impl
             _positionHistory = new List<Vector3>(_historyLength);
             _speed = _gameSettingsConfig.BoxMoveSpeed;
             _followDistance = _gameSettingsConfig.BoxFollowDistance;
-
+            _velocity = Vector3.zero;
+            
             for (var i = 0; i < _historyLength; i++)
             {
                 _positionHistory.Add(_leader.position);
@@ -52,29 +53,26 @@ namespace Components.Boxes.States.Impl
             var boxTransform = context.BoxView.transform;
             
             var distanceToTarget = Vector3.Distance(boxTransform.position, targetPosition);
-            if (distanceToTarget < _followDistance)
+            if (distanceToTarget > _followDistance)
             {
-                targetPosition = Vector3.SmoothDamp(boxTransform.position, targetPosition, ref _velocity, 0.3f, _speed / 2);
+                var dynamicSpeed = Mathf.Lerp(_speed / 2, _speed * 2, distanceToTarget / _followDistance);
+
+                targetPosition = Vector3.SmoothDamp(boxTransform.position, targetPosition, ref _velocity, 0.2f, dynamicSpeed);
             }
             else
             {
-                targetPosition = Vector3.SmoothDamp(boxTransform.position, targetPosition, ref _velocity, 0.3f, _speed);
-            }
-
-            if (distanceToTarget < _followDistance)
-            {
                 targetPosition = boxTransform.position;
             }
-            
+
             boxTransform.position = targetPosition;
             
-            var direction = (targetPosition - boxTransform.position).normalized;
+            var direction = (_leader.position - boxTransform.position).normalized;
             direction.y = 0; 
             
             if (direction != Vector3.zero)
             {
                 var targetRotation = Quaternion.LookRotation(direction);
-                boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, _speed * Time.deltaTime);
+                boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, _speed);
             }
         }
 
