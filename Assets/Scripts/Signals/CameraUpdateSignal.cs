@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using Views.Impl;
 
 namespace Signals
 {
     public class CameraUpdateSignal
     {
-        public Transform followTarget;
+        public BoxView followBox;
     }
 }

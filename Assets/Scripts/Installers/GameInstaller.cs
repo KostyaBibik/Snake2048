@@ -16,11 +16,13 @@ namespace Installers
         [SerializeField] private GameInputManager playerInput;
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
         [SerializeField] private Camera gameCamera;
+        [SerializeField] private SoundHandler soundHandler;
         
         public override void InstallBindings()
         {
             BindSignals();
             BindCamera();
+            BindSounds();
             BindInputSystems();
             BindSceneComponents();
             BindFactories();
@@ -37,6 +39,7 @@ namespace Installers
             Container.DeclareSignal<EatBoxSignal>();
             Container.DeclareSignal<MergeBoxSignal>();
             Container.DeclareSignal<CameraUpdateSignal>();
+            Container.DeclareSignal<PlaySoundSignal>();
         }
 
         private void BindCamera()
@@ -45,6 +48,12 @@ namespace Installers
             Container.Bind<CinemachineVirtualCamera>().FromInstance(virtualCamera).AsSingle();
         }
 
+        private void BindSounds()
+        {
+            Container.Bind<SoundHandler>().FromInstance(soundHandler).AsSingle();
+            Container.BindInterfacesAndSelfTo<PlaySoundsSystem>().AsSingle().NonLazy();
+        }
+        
         private void BindInputSystems()
         {
             Container.Bind<GameInputManager>().FromInstance(playerInput).AsSingle();

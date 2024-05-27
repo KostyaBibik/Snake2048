@@ -27,14 +27,18 @@ namespace Components.Boxes.States.Impl
         public void UpdateState(BoxContext context)
         {
             var playerView = context.BoxView;
-            
+
             var movement = new Vector3(_moveContext.Value.x, 0, _moveContext.Value.y);
             if (movement == Vector3.zero)
+            {
                 return;
+            }
 
             var relatedSpeed = _speed * Time.deltaTime;
+            var rb = playerView.Rigidbody;
+            rb.MovePosition(rb.position + movement * relatedSpeed);
+
             var boxTransform = playerView.transform;
-            boxTransform.Translate(movement * relatedSpeed, Space.World); 
             var targetRotation = Quaternion.LookRotation(movement);
             boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
         }

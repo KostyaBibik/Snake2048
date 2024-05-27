@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 using Database;
 using Services.Impl;
 using Enums;
@@ -64,13 +65,17 @@ public class BotSpawnSystem : IInitializable, IDisposable
 
     private void SpawnInitialBots()
     {
+        var playerBoxView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
+        var playerHighGrade = _boxService.GetHighGradeInTeam(playerBoxView);
+
         for (var i = 0; i < _initialBotCount; i++)
         {
-            SpawnBot();
+            var botGrade = CalculateBotGrade(playerHighGrade);
+            SpawnBot(botGrade);
         }
     }
     
-    private void SpawnBot()
+    private void SpawnBot(EBoxGrade eBoxGrade)
     {
         var attempts = 0;
         while (true)
@@ -78,7 +83,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
             var spawnPosition = GetRandomPositionInBounds(_locationBounds);
             if (!IsPositionOccupied(spawnPosition))
             {
-                var bot = _boxPool.GetBox(EBoxGrade.Grade_2); 
+                var bot = _boxPool.GetBox(eBoxGrade); 
                 
                 bot.isBot = true;
                 bot.gameObject.name = "Bot"; 
@@ -91,7 +96,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
                 _botService.AddEntityOnService(bot);
                 _boxService.AddEntityOnService(bot);
                 _boxService.RegisterNewTeam(bot);
-                
+
                 break;
             }
 
@@ -120,14 +125,56 @@ public class BotSpawnSystem : IInitializable, IDisposable
     private IEnumerator SpawnBotsWithDelay()
     {
         var delay = new WaitForSeconds(_spawnInterval);
-
+        var saveGrade = EBoxGrade.None;
+        
         while (true)
         {
             yield return delay;
 
-            yield return new WaitUntil(() => _botService.GetBotCount() < _maxBotCount);
+            yield return new WaitUntil(() => _boxService.GetBotTeamsCount() < _maxBotCount);
+
+            var playerBoxView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
+            if (playerBoxView == null)
+            {
+                SpawnBot(saveGrade);
+                continue;
+            }
             
-            SpawnBot();
+            var playerHighGrade = _boxService.GetHighGradeInTeam(playerBoxView);
+            var botGrade = CalculateBotGrade(playerHighGrade);
+            saveGrade = botGrade;
+            
+            SpawnBot(botGrade);
+        }
+    }
+    
+    private EBoxGrade CalculateBotGrade(EBoxGrade playerHighGrade)
+    {
+        var probabilityGradeAdd3 = 0.15f;
+        var probabilityGradeAdd2 = 0.2f;
+        var probabilityGradeAdd1 = 0.15f;
+        var probabilitySameOrLowerGrade = 1 - probabilityGradeAdd3 - probabilityGradeAdd2;
+
+        var randomValue = Random.value;
+
+        if (randomValue < probabilityGradeAdd3)
+        {
+            return (EBoxGrade)((int)playerHighGrade + 3);
+        }
+        else if (randomValue < probabilityGradeAdd3 + probabilityGradeAdd2)
+        {
+            return (EBoxGrade)((int)playerHighGrade + 2);
+        }
+        else if (randomValue < probabilityGradeAdd3 + probabilityGradeAdd2 + probabilityGradeAdd1)
+        {
+            return (EBoxGrade)((int)playerHighGrade + 1);
+        }
+        else
+        {
+            var random = new System.Random();
+            var randomOffset = random.Next(1, (int)playerHighGrade - (int)EBoxGrade.Grade_2);
+            var randomGrade = (EBoxGrade)((int)EBoxGrade.Grade_2 + randomOffset); 
+            return randomGrade;
         }
     }
     

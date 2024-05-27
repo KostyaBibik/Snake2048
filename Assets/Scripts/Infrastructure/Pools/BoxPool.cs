@@ -91,7 +91,6 @@ public class BoxPool : IInitializable, IDisposable
             pool.Release(box);
         }
     }
-
     
     public BoxView GetBox(EBoxGrade grade)
     {
@@ -125,12 +124,14 @@ public class BoxPool : IInitializable, IDisposable
         box.isMerging = false;
         box.isIdle = false;
         box.isDestroyed = false;
+        box.DisableNick();
     }
 
     private void OnReleaseBox(BoxView box)
     {
-        box.gameObject.SetActive(false);
         box.isDestroyed = true;
+        box.DisableNick();
+        box.gameObject.SetActive(false);
     }
 
     public void Dispose()

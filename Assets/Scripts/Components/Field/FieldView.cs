@@ -1,30 +1,29 @@
-﻿using Components.Boxes;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Components.Field
 {
     [RequireComponent(typeof(Collider))]
     public class FieldView : MonoBehaviour
     {
-        private BoxSpawnWaypoint[] _waypoints = new BoxSpawnWaypoint[]{};
-
         private Collider _collider;
 
-        public Collider Collider => _collider;
+        public Collider Collider => _collider == null
+            ? InitCollider()
+            : _collider;
 
         private void Awake()
         {
-            _collider = GetComponent<Collider>();
+            InitCollider();
         }
-        
-        public BoxSpawnWaypoint[] GetWaypoints()
+
+        private Collider InitCollider()
         {
-            if (_waypoints.Length <= 0)
+            if (_collider == null)
             {
-                _waypoints = GetComponentsInChildren<BoxSpawnWaypoint>();
+                _collider = GetComponent<Collider>();
             }
 
-            return _waypoints;
+            return _collider;
         }
     }
 }

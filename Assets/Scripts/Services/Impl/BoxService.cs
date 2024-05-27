@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Enums;
 using Infrastructure.Factories.Impl;
-using UnityEngine;
 using Views.Impl;
 using Zenject;
 
@@ -100,6 +100,10 @@ namespace Services.Impl
                 AddEntityOnService(box);
                 _boxToTeamMap[box] = team;
             }
+            else
+            {
+                throw new ArgumentException($"can't add box in team");
+            }
         }
 
         public void UpdateTeamStates(BoxView viewFromTeam)
@@ -171,6 +175,20 @@ namespace Services.Impl
             var highGrade = team.Max(grade => grade.Grade);
 
             return highGrade;
+        }
+
+        public int GetBotTeamsCount()
+        {
+            return _teams.Count(team => team.Any(box => box.isBot));
+        }
+        
+        public BoxView GetHighestBoxInTeam(BoxView boxView)
+        {
+            if (_boxToTeamMap.TryGetValue(boxView, out var team))
+            {
+                return team.OrderByDescending(box => box.Grade).FirstOrDefault();
+            }
+            return null;
         }
     }
 }

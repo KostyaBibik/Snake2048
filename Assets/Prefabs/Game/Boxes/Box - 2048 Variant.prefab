@@ -12,6 +12,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box - 2048 Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1078445966545970906, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078445966545970906, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1078445966545970906, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.6
+      objectReference: {fileID: 0}
     - target: {fileID: 2506669758411646977, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: m_RootOrder
@@ -66,6 +81,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2926502010564472813, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 82f7b296185ea394890ef576abf3c2f7, type: 2}
+    - target: {fileID: 4812963530254665070, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: grade
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8005675014759179712, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}

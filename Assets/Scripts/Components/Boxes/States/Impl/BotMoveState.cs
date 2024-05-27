@@ -76,7 +76,7 @@ namespace Components.Boxes.States.Impl
             }
             else
             {
-                Wander();
+                Wander(botView);
             }
 
             CheckBoundsAndAdjustDirection();
@@ -87,11 +87,14 @@ namespace Components.Boxes.States.Impl
             var direction = (_targetAimBox.transform.position - botView.transform.position).normalized;
             _currentDirection = Vector3.Slerp(_currentDirection, direction, Time.deltaTime * _speed).normalized;
             _currentDirection.y = 0;
-            botView.transform.Translate(_currentDirection * (_speed * Time.deltaTime), Space.World);
+            var relatedSpeed = _speed * Time.deltaTime;
+            var rb = botView.Rigidbody;
+            rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
+
             _timeSinceLastDirectionChange = 0f;
         }
 
-        private void Wander()
+        private void Wander(BoxView boxView)
         {
             _timeSinceLastDirectionChange += Time.deltaTime;
 
@@ -103,8 +106,9 @@ namespace Components.Boxes.States.Impl
 
             _currentDirection = Vector3.Slerp(_currentDirection, _targetDirection, Time.deltaTime * _speed).normalized;
             _currentDirection.y = 0;
-
-            _botTransform.Translate(_currentDirection * (_speed * Time.deltaTime), Space.World);
+            var relatedSpeed = _speed * Time.deltaTime;
+            var rb = boxView.Rigidbody;
+            rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
         }
 
         private void CheckBoundsAndAdjustDirection()

@@ -1,7 +1,9 @@
-﻿using Database;
-using Infrastructure.Factories.Impl;
+﻿using System.Linq;
+using Database;
+using Enums;
 using Services.Impl;
 using Signals;
+using Views.Impl;
 using Zenject;
 
 namespace Systems.Action
@@ -10,7 +12,6 @@ namespace Systems.Action
     {
         private readonly SignalBus _signalBus;
         private readonly BoxService _boxService;
-        private readonly BoxEntityFactory _boxEntityFactory;
         private readonly BotService _botService;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly BoxPool _boxPool;
@@ -18,7 +19,6 @@ namespace Systems.Action
         public EatBoxSystem(
             SignalBus signalBus,
             BoxService boxService,
-            BoxEntityFactory boxEntityFactory,
             BotService botService,
             GameSettingsConfig settingsConfig,
             BoxPool boxPool
@@ -26,7 +26,6 @@ namespace Systems.Action
         {
             _signalBus = signalBus;
             _boxService = boxService;
-            _boxEntityFactory = boxEntityFactory;
             _botService = botService;
             _gameSettingsConfig = settingsConfig;
             _boxPool = boxPool;
@@ -41,7 +40,7 @@ namespace Systems.Action
         {
             var owner = eatBoxSignal.newOwner;
             var eatenBox = eatBoxSignal.eatenBox;
-            
+
             if (_boxService.AreInSameTeam(eatenBox, owner))
                 return;
 
@@ -53,25 +52,72 @@ namespace Systems.Action
             
             if(eatenBox.isIdle && eatenBox.Grade > owner.Grade)
                 return;
-
-            var ownerTransform = owner.transform;
-            var ownerPos = ownerTransform.position;
-
-            var newBox = _boxPool.GetBox(eatenBox.Grade);
-            //var newBox = _boxEntityFactory.Create(eatenBox.Grade);
-            var directionSpawn = (ownerPos - eatenBox.transform.position).normalized;
-            directionSpawn.y = 0;
             
-            newBox.transform.position = ownerPos + directionSpawn * _gameSettingsConfig.BoxFollowDistance;
+            var eatenTeam = _boxService.GetTeam(eatenBox);
+            var eatenBoxes = eatenTeam
+                .Where(box => box.Grade <= eatenBox.Grade || box.isIdle).ToArray();
             
-            if (owner.isBot)
+            AddBoxesForTeam(eatenBoxes, owner);
+        }
+
+        private void AddBoxesForTeam(BoxView[] eatenBoxes, BoxView newOwner)
+        {
+            var newBoxes = new BoxView[eatenBoxes.Length];
+            
+            for (var i = 0; i < eatenBoxes.Length; i++)
             {
-                _botService.AddEntityOnService(newBox);
+                var eatenBox = eatenBoxes[i];
+                
+                var newBox = _boxPool.GetBox(eatenBox.Grade);
+                newBox.isPlayer = newOwner.isPlayer;
+                newBox.isBot = newOwner.isBot;
+                newBox.isIdle = newOwner.isIdle;
+                
+                var ownerTransform = newOwner.transform;
+                var ownerPos = ownerTransform.position;
+                
+                var directionSpawn = (ownerPos - eatenBox.transform.position).normalized;
+                directionSpawn.y = 0;
+                
+                newBox.transform.position = ownerPos + directionSpawn * _gameSettingsConfig.BoxFollowDistance;
+                
+                if (newOwner.isBot)
+                {
+                    _botService.AddEntityOnService(newBox);
+                }
+
+                newBoxes[i] = newBox;
             }
+
+            var delay = 0f;
+            var delayInterval = .2f;
+            var ownerTeam = _boxService.GetTeam(newOwner);
             
-            _boxService.AddBoxToTeam(owner, newBox);
-            _boxService.RemoveEntity(eatBoxSignal.eatenBox);
-            _boxService.UpdateTeamStates(owner);
+            foreach (var boxInTeam in ownerTeam.ToArray())
+            {
+                boxInTeam.AnimateUpscale(delay);
+                delay += delayInterval;
+            }
+
+            for (var i = 0; i < newBoxes.Length; i++)
+            {
+                var newBox = newBoxes[i];
+                var eatenBox = eatenBoxes[i];
+                
+                _boxService.AddBoxToTeam(newOwner, newBox);
+                _boxService.RemoveEntity(eatenBox);
+                _botService.RemoveEntity(eatenBox);
+            }
+
+            _boxService.UpdateTeamStates(newOwner);
+            
+            if (newOwner.isPlayer)
+            {
+                _signalBus.Fire(new PlaySoundSignal
+                {
+                    Type = ESoundType.Eat
+                });
+            }
         }
     }
 }

@@ -34,12 +34,6 @@ public class GameInputManager : MonoBehaviour
         
         AddNewAction(new JumpContext());
         AddNewAction(new MovementContext());
-        /*AddNewAction(new UseContext());
-        AddNewAction(new OrbitContext());
-        AddNewAction(new ActionContext());
-        AddNewAction(new CrouchContext());
-        
-        AddNewAction(new FreeCursorContext());*/
     }
 
     private void Awake()

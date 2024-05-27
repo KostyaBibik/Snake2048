@@ -1,6 +1,5 @@
 ﻿using Database;
 using Enums;
-using Infrastructure.Factories.Impl;
 using Services.Impl;
 using Signals;
 using UnityEngine;
@@ -88,14 +87,6 @@ namespace Components.Boxes.States.Impl
             newBox.isPlayer = box1.isPlayer || box2.isPlayer;
             newBox.isBot = !newBox.isPlayer;
             
-            if (newBox.isPlayer)
-            {
-                _signalBus.Fire(new CameraUpdateSignal
-                {
-                    followTarget = newBox.transform
-                });
-            }
-
             if (newBox.isBot)
             {
                 _botService.AddEntityOnService(newBox);
@@ -110,6 +101,16 @@ namespace Components.Boxes.States.Impl
             _boxService.RemoveEntity(box2);
             
             _boxService.UpdateTeamStates(newBox);
+            
+            if (newBox.isPlayer)
+            {
+                var leaderTeam = _boxService.GetHighestBoxInTeam(newBox);
+                
+                _signalBus.Fire(new CameraUpdateSignal
+                {
+                    followBox = leaderTeam
+                });
+            }
         }
 
         public void ExitState(BoxContext context)

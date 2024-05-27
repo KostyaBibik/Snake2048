@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: GameSettingsConfig
   m_EditorClassIdentifier: 
   boxMoveSpeed: 8
-  boxMoveSpeedOnMerge: 20
+  boxMoveSpeedOnMerge: 12
   boxFollowDistance: 1
   distanceForMerge: 0.1
   minSpawnInterval: 1
-  maxSpawnInterval: 2
+  maxSpawnInterval: 2.5
   spawnRadius: 2
-  initialIdleBoxCount: 45
-  minSpawnCount: 2
+  initialIdleBoxCount: 55
+  minSpawnCount: 3
   maxSpawnCount: 5
-  maxCountBots: 15
+  maxCountBots: 20
   initialBotCount: 10
-  minSpawnDistance: 4
-  botSpawnInterval: 2
+  minSpawnDistance: 1.5
+  botSpawnInterval: 1

@@ -3,10 +3,8 @@ using System.Collections;
 using Database;
 using Enums;
 using Helpers;
-using Infrastructure.Factories.Impl;
 using Services.Impl;
 using UniRx;
-using UniRx.Toolkit;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -17,28 +15,28 @@ namespace Systems.Initializable
     {
         private IDisposable _observer;
         
-        private readonly BoxEntityFactory _boxEntityFactory;
         private readonly BoxService _boxService;
         private readonly GameSceneHandler _sceneHandler;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly BoxPool _boxPool;
 
         private float _spawnRadius;
-        private float _spawnInterval;
+        private float _minSpawnInterval;
+        private float _maxSpawnInterval;
+        private float _minSpawnCount;
+        private float _maxSpawnCount;
         private int _initialCount;
         private Bounds _boundsArea;
         private readonly Collider[] _overlapResults = new Collider[10];
         private const string BoxLayerMask = "Box";
         
         private SpawnBoxesSystem(
-            BoxEntityFactory boxEntityFactory,
             BoxService boxService,
             GameSceneHandler sceneHandler,
             GameSettingsConfig gameSettingsConfig,
             BoxPool boxPool
         )
         {
-            _boxEntityFactory = boxEntityFactory;
             _boxService = boxService;
             _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
@@ -48,7 +46,10 @@ namespace Systems.Initializable
         public void Initialize()
         {
             _spawnRadius = _gameSettingsConfig.SpawnRadius;
-            _spawnInterval = _gameSettingsConfig.MinSpawnInterval;
+            _minSpawnInterval = _gameSettingsConfig.MinSpawnInterval;
+            _maxSpawnInterval = _gameSettingsConfig.MaxSpawnInterval;
+            _minSpawnCount = _gameSettingsConfig.MinSpawnCount;
+            _maxSpawnCount = _gameSettingsConfig.MaxSpawnCount;
             _initialCount = _gameSettingsConfig.InitialIdleBoxCount;
             _boundsArea = _sceneHandler.FieldView.Collider.bounds;
             
@@ -64,11 +65,12 @@ namespace Systems.Initializable
         {
             for (var i = 0; i < count; i++)
             {
-                SpawnBox();
+                var randomGrade = (EBoxGrade)Random.Range((int)EBoxGrade.Grade_2, (int)EBoxGrade.Grade_4 + 1);
+                SpawnBox(randomGrade);
             }
         }
 
-        private void SpawnBox()
+        private void SpawnBox(EBoxGrade eBoxGrade)
         {
             Vector3 spawnPosition;
             var attempts = 0;
@@ -86,8 +88,7 @@ namespace Systems.Initializable
                 return;
             }
                 
-            //var idleBox = _boxEntityFactory.Create(EBoxGrade.Grade_2);
-            var idleBox = _boxPool.GetBox(EBoxGrade.Grade_2);
+            var idleBox = _boxPool.GetBox(eBoxGrade);
             idleBox.gameObject.SetActive(true);
             idleBox.transform.position = spawnPosition;
             idleBox.isIdle = true;
@@ -102,15 +103,17 @@ namespace Systems.Initializable
         {
             do
             {
-                var delay = Random.Range(_gameSettingsConfig.MinSpawnInterval, _gameSettingsConfig.MaxSpawnInterval);
+                var delay = Random.Range(_minSpawnInterval, _maxSpawnInterval);
                 
                 yield return new WaitForSeconds(delay);
 
-                var spawnCount = Random.Range(_gameSettingsConfig.MinSpawnCount, _gameSettingsConfig.MaxSpawnCount);
+                var spawnCount = Random.Range(_minSpawnCount, _maxSpawnCount);
 
                 for (var i = 0; i < spawnCount; i++)
                 {
-                    SpawnBox();
+                    var randomGrade = (EBoxGrade)Random.Range((int)EBoxGrade.Grade_2, (int)EBoxGrade.Grade_4);
+
+                    SpawnBox(randomGrade);
                 }
 
             } while (true);

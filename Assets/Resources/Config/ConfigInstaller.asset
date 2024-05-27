@@ -15,3 +15,4 @@ MonoBehaviour:
   boxPrefabsConfig: {fileID: 11400000, guid: 8b19a4d7a92b6914089c631461517421, type: 2}
   gameSettingsConfig: {fileID: 11400000, guid: 0a3a206f990cc494ab77a4344957ea0f, type: 2}
   boxPoolConfig: {fileID: 11400000, guid: 4d5fb4696c4bd854794e1f4ce240f6c8, type: 2}
+  soundsConfig: {fileID: 11400000, guid: 3265a88420d6278498691c0820ce4acf, type: 2}

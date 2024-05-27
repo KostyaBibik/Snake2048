@@ -14,7 +14,7 @@ namespace Components.Boxes.States.Impl
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly Transform _leader;
 
-        private const int _historyLength = 10;
+        private const int _historyLength = 3;
 
         public BoxFollowState(
             GameSettingsConfig gameSettingsConfig,
@@ -42,7 +42,7 @@ namespace Components.Boxes.States.Impl
         {
             if (_leader == null)
                 return;
-            
+
             if (_positionHistory.Count >= _historyLength)
             {
                 _positionHistory.RemoveAt(0);
