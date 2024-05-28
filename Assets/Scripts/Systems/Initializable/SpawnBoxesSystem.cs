@@ -3,6 +3,7 @@ using System.Collections;
 using Database;
 using Enums;
 using Helpers;
+using Services;
 using Services.Impl;
 using UniRx;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace Systems.Initializable
         private readonly GameSceneHandler _sceneHandler;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly BoxPool _boxPool;
+        private readonly GameMatchService _gameMatchService;
 
         private float _spawnRadius;
         private float _minSpawnInterval;
@@ -34,13 +36,15 @@ namespace Systems.Initializable
             BoxService boxService,
             GameSceneHandler sceneHandler,
             GameSettingsConfig gameSettingsConfig,
-            BoxPool boxPool
+            BoxPool boxPool,
+            GameMatchService gameMatchService
         )
         {
             _boxService = boxService;
             _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
             _boxPool = boxPool;
+            _gameMatchService = gameMatchService;
         }
         
         public void Initialize()
@@ -106,6 +110,8 @@ namespace Systems.Initializable
                 var delay = Random.Range(_minSpawnInterval, _maxSpawnInterval);
                 
                 yield return new WaitForSeconds(delay);
+
+                yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
 
                 var spawnCount = Random.Range(_minSpawnCount, _maxSpawnCount);
 

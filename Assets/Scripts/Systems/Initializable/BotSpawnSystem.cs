@@ -7,6 +7,7 @@ using Services.Impl;
 using Enums;
 using Helpers;
 using Infrastructure.Factories.Impl;
+using Services;
 using UniRx;
 using IInitializable = Zenject.IInitializable;
 using Random = UnityEngine.Random;
@@ -26,6 +27,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
     private readonly BotService _botService;
     private readonly GameSettingsConfig _gameSettingsConfig;
     private readonly GameSceneHandler _sceneHandler;
+    private readonly GameMatchService _gameMatchService;
 
     private readonly Collider[] _overlapResults = new Collider[10];
     private const string BoxLayerMask = "Box";
@@ -36,7 +38,8 @@ public class BotSpawnSystem : IInitializable, IDisposable
         BoxService boxService,
         BotService botService,
         GameSettingsConfig gameSettingsConfig,
-        GameSceneHandler sceneHandler
+        GameSceneHandler sceneHandler,
+        GameMatchService gameMatchService
     )
     {
         _boxPool = boxPool;
@@ -45,6 +48,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
         _botService = botService;
         _gameSettingsConfig = gameSettingsConfig;
         _sceneHandler = sceneHandler;
+        _gameMatchService = gameMatchService;
     }
 
     public void Initialize()
@@ -132,6 +136,8 @@ public class BotSpawnSystem : IInitializable, IDisposable
             yield return delay;
 
             yield return new WaitUntil(() => _boxService.GetBotTeamsCount() < _maxBotCount);
+            
+            yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
 
             var playerBoxView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
             if (playerBoxView == null)

@@ -1,6 +1,7 @@
 ﻿using Components.Boxes;
 using DG.Tweening;
 using Enums;
+using Services;
 using Signals;
 using TMPro;
 using UnityEngine;
@@ -11,9 +12,12 @@ namespace Views.Impl
     [RequireComponent(typeof(Rigidbody))]
     public class BoxView : MonoBehaviour, IEntityView
     {
+        public BoxContext stateContext;
+        
         [SerializeField] private EBoxGrade grade;
         [SerializeField] private TextMeshProUGUI _nickText;
         [SerializeField] private Transform meshTransform;
+
         [Header("Collider")] 
         [SerializeField] private Collider triggerCollider;
         [SerializeField] private Collider physicCollider;
@@ -22,8 +26,8 @@ namespace Views.Impl
         private Vector3 _originalScale;
         private Tween _scaleTween;
         private SignalBus _signalBus;
-        public BoxContext stateContext;
-
+        private GameMatchService _gameMatchService;
+        
         public EBoxGrade Grade => grade;
         public Rigidbody Rigidbody => _rigidbody;
         public bool isMerging { get; set; }
@@ -38,10 +42,12 @@ namespace Views.Impl
 
         [Inject]
         private void Construct(
-            SignalBus signalBus
+            SignalBus signalBus,
+            GameMatchService gameMatchService
         )
         {
             _signalBus = signalBus;
+            _gameMatchService = gameMatchService;
         }
 
         private void Awake()
@@ -55,6 +61,7 @@ namespace Views.Impl
             mesh.position = forcedPos;
             UpdateTransform(triggerCollider.transform, forcedPos, _originalScale);
             UpdateTransform(physicCollider.transform, forcedPos, _originalScale);
+            
         }
 
         private void UpdateTransform(Transform targetTransform, Vector3 position, Vector3 scale)
@@ -65,6 +72,9 @@ namespace Views.Impl
 
         private void FixedUpdate()
         {
+            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+                return;
+            
             if(isDestroyed)
                 return;
             
@@ -124,7 +134,7 @@ namespace Views.Impl
             _scaleTween?.Kill();
             meshTransform.localScale = _originalScale;
         }
-
+        
         private void OnDisable()
         {
             DeactivateUpScaleAnim();

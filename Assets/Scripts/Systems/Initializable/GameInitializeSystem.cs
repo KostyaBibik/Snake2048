@@ -1,4 +1,5 @@
-﻿using Signals;
+﻿using Enums;
+using Signals;
 using Zenject;
 
 namespace Systems.Initializable
@@ -14,6 +15,7 @@ namespace Systems.Initializable
 
         public void Initialize()
         {
+            _signalBus.Fire(new ChangeGameModeSignal{ status = EGameModeStatus.Play });
             _signalBus.Fire(new PlayerSpawnSignal());
         }
     }
