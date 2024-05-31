@@ -101,16 +101,6 @@ namespace Components.Boxes.States.Impl
             _boxService.RemoveEntity(box2);
             
             _boxService.UpdateTeamStates(newBox);
-            
-            if (newBox.isPlayer)
-            {
-                var leaderTeam = _boxService.GetHighestBoxInTeam(newBox);
-                
-                _signalBus.Fire(new CameraUpdateSignal
-                {
-                    followBox = leaderTeam
-                });
-            }
         }
 
         public void ExitState(BoxContext context)

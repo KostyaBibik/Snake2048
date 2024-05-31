@@ -5,6 +5,7 @@
         None = 0,
         Play = 1,
         Pause = 2,
-        Exit = 3,
+        Lose = 3,
+        Exit = 4,
     }
 }

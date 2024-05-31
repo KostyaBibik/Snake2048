@@ -47,7 +47,7 @@ namespace Systems.Action
         private void SpawnPlayer(PlayerSpawnSignal signal)
         {
             var boxView = _boxPool.GetBox(EBoxGrade.Grade_4);
-            _boxService.RegisterNewTeam(boxView);
+            _boxService.RegisterNewTeam(boxView, "Player");
 
             var state = _boxStateFactory.CreateMoveState();
             var pos = GetPosToSpawn();

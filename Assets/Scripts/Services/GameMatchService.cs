@@ -25,7 +25,6 @@ namespace Services
 
         private void OnChangeGameMode(ChangeGameModeSignal signal)
         {
-            Debug.Log($"OnChangeGameMode: {signal.status}");
             _eGameModeStatus = signal.status;
         }
         

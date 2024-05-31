@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Input.Context;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -34,6 +35,8 @@ public class GameInputManager : MonoBehaviour
         
         AddNewAction(new JumpContext());
         AddNewAction(new MovementContext());
+        AddNewAction(new MouseMovementContext());
+        AddNewAction(new MouseLookContext());
     }
 
     private void Awake()

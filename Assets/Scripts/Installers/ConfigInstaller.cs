@@ -12,6 +12,7 @@ namespace Installers
         [SerializeField] private GameSettingsConfig gameSettingsConfig;
         [SerializeField] private BoxPoolConfig boxPoolConfig;
         [SerializeField] private SoundsConfig soundsConfig;
+        [SerializeField] private NicknamesConfig nicknamesConfig;
         
         public override void InstallBindings()
         {
@@ -19,6 +20,7 @@ namespace Installers
             Container.BindInstance(gameSettingsConfig);
             Container.BindInstance(boxPoolConfig);
             Container.BindInstance(soundsConfig);
+            Container.BindInstance(nicknamesConfig);
         }
     }
 }

@@ -217,18 +217,10 @@ namespace Components.Boxes.States.Impl
                 return true;
 
             var team = _boxService.GetTeam(targetBox);
-            if (!team.Any())
+            if (team == null || team.Leader == null)
                 return false;
 
-            var highestGradeInTeam = team[0].Grade;
-            for (var i = 1; i < team.Count; i++)
-            {
-                if (team[i].Grade > highestGradeInTeam)
-                {
-                    highestGradeInTeam = team[i].Grade;
-                }
-            }
-            return highestGradeInTeam < selfBox.Grade;
+            return team.Leader.Grade <= selfBox.Grade;
         }
 
         public void ExitState(BoxContext context)

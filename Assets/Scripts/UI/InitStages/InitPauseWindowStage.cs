@@ -7,11 +7,11 @@ using Zenject;
 
 namespace UI.InitStages
 {
-    public class InitPauseMenuStage: IInitializable
+    public class InitPauseWindowStage: IInitializable
     {
         private readonly SignalBus _signalBus;
         
-        public InitPauseMenuStage(SignalBus signalBus)
+        public InitPauseWindowStage(SignalBus signalBus)
         {
             _signalBus = signalBus;
         }

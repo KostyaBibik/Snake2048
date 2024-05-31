@@ -1,4 +1,5 @@
-﻿using Systems.Action;
+﻿using System;
+using Systems.Action;
 using Systems.Initializable;
 using Systems.Runtime;
 using Cinemachine;
@@ -13,7 +14,7 @@ using Zenject;
 
 namespace Installers
 {
-    public class GameInstaller : MonoInstaller
+    public class GameInstaller : MonoInstaller, IDisposable
     {
         [SerializeField] private GameSceneHandler sceneHandler;
         [SerializeField] private GameInputManager playerInput;
@@ -56,18 +57,18 @@ namespace Installers
         private void BindCamera()
         {
             Container.Bind<Camera>().FromInstance(gameCamera).AsSingle();
-            Container.Bind<CinemachineVirtualCamera>().FromInstance(virtualCamera).AsSingle();
+            Container.Bind<CinemachineVirtualCamera>().FromInstance(virtualCamera).AsCached();
         }
 
         private void BindSounds()
         {
-            Container.Bind<SoundHandler>().FromInstance(soundHandler).AsSingle();
-            Container.BindInterfacesAndSelfTo<PlaySoundsSystem>().AsSingle().NonLazy();
+            Container.Bind<SoundHandler>().FromInstance(soundHandler).AsCached();
+            Container.BindInterfacesAndSelfTo<PlaySoundsSystem>().AsCached().NonLazy();
         }
 
         private void BindInputSystems()
         {
-            Container.Bind<GameInputManager>().FromInstance(playerInput).AsSingle();
+            Container.Bind<GameInputManager>().FromInstance(playerInput).AsCached();
         }
 
         private void BindSceneComponents()
@@ -77,36 +78,42 @@ namespace Installers
 
         private void BindFactories()
         {
-            Container.Bind<BoxEntityFactory>().AsSingle().NonLazy();
-            Container.Bind<BoxStateFactory>().AsSingle();
+            Container.Bind<BoxEntityFactory>().AsCached().NonLazy();
+            Container.Bind<BoxStateFactory>().AsCached();
         }
 
         private void InstallSystems()
         {
-            Container.BindInterfacesAndSelfTo<CameraUpdateSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<SpawnBoxesSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<PlayerSpawnSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<EatBoxSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<BotSpawnSystem>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<UpdateTimeSystem>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<CameraUpdateSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<SpawnBoxesSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<PlayerSpawnSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<EatBoxSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<BotSpawnSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<UpdateTimeSystem>().AsCached().NonLazy();
         }
 
         private void BindServices()
         {
-            Container.BindInterfacesAndSelfTo<BoxService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BotService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BoxService>().AsCached();
+            Container.BindInterfacesAndSelfTo<BotService>().AsCached();
         }
 
         private void BindUiInitStages()
         {
-            Container.BindInterfacesAndSelfTo<InitTopWindowStage>().AsSingle().NonLazy();
-            Container.BindInterfacesAndSelfTo<InitPauseMenuStage>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<InitTopWindowStage>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<InitPauseWindowStage>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<InitLoseWindowStage>().AsCached().NonLazy();
         }
 
         private void BindPools()
         {
-            Container.BindInterfacesAndSelfTo<BoxPool>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<BoxPool>().AsCached().NonLazy();
+        }
+
+        public void Dispose()
+        {
+            Container.UnbindAll();
         }
     }
 }

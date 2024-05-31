@@ -16,6 +16,7 @@ namespace Infrastructure.Factories.Impl
         private readonly BotService _botService;
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly GameSceneHandler _sceneHandler;
+        private readonly Camera _camera;
         private readonly SignalBus _signalBus;
 
         private BoxService _boxService;
@@ -26,6 +27,7 @@ namespace Infrastructure.Factories.Impl
             GameInputManager inputManager,
             GameSettingsConfig gameSettingsConfig,
             GameSceneHandler sceneHandler,
+            Camera camera,
             SignalBus signalBus
         )
         {
@@ -33,6 +35,7 @@ namespace Infrastructure.Factories.Impl
             _inputManager = inputManager;
             _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
+            _camera = camera;
             _signalBus = signalBus;
         }
 
@@ -58,7 +61,7 @@ namespace Infrastructure.Factories.Impl
 
         public IBoxState CreateMoveState()
         {
-            return new BoxMoveState(_inputManager, _gameSettingsConfig);
+            return new BoxMoveState(_inputManager, _gameSettingsConfig, _camera);
         }
 
         public IBoxState CreateMergeState(BoxView boxToMerge, EBoxGrade targetGrade)

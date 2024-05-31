@@ -100,7 +100,7 @@ namespace Systems.Initializable
             idleBox.isPlayer = false;
             idleBox.isBot = false;
 
-            _boxService.RegisterNewTeam(idleBox);
+            _boxService.RegisterNewTeam(idleBox, string.Empty);
         }
         
         private IEnumerator SpawnBoxesWithDelay()

@@ -54,7 +54,7 @@ namespace Systems.Action
                 return;
             
             var eatenTeam = _boxService.GetTeam(eatenBox);
-            var eatenBoxes = eatenTeam
+            var eatenBoxes = eatenTeam.Members
                 .Where(box => box.Grade <= eatenBox.Grade || box.isIdle).ToArray();
             
             AddBoxesForTeam(eatenBoxes, owner);
@@ -93,7 +93,7 @@ namespace Systems.Action
             var delayInterval = .2f;
             var ownerTeam = _boxService.GetTeam(newOwner);
             
-            foreach (var boxInTeam in ownerTeam.ToArray())
+            foreach (var boxInTeam in ownerTeam.Members.ToArray())
             {
                 boxInTeam.AnimateUpscale(delay);
                 delay += delayInterval;

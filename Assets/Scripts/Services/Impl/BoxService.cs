@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Enums;
 using Infrastructure.Factories.Impl;
+using Signals;
+using UnityEngine;
 using Views.Impl;
 using Zenject;
 
@@ -11,23 +13,26 @@ namespace Services.Impl
     public class BoxService : IEntityService<BoxView>
     {
         private readonly List<BoxView> Boxes = new List<BoxView>();
-        private readonly List<Queue<BoxView>> _teams = new List<Queue<BoxView>>();
-        private readonly Dictionary<BoxView, Queue<BoxView>> _boxToTeamMap = new Dictionary<BoxView, Queue<BoxView>>();
+        private readonly Dictionary<BoxView, Team> _boxToTeamMap = new Dictionary<BoxView, Team>();
+        private readonly List<Team> _teams = new List<Team>();
 
         private BoxStateFactory _stateFactory;
         private BoxPool _boxPool;
+        private SignalBus _signalBus;
 
         [Inject]
         public void Construct(
             BoxStateFactory stateFactory,
-            BoxPool boxPool
+            BoxPool boxPool,
+            SignalBus signalBus
         )
         {
             _stateFactory = stateFactory;
             _boxPool = boxPool;
+            _signalBus = signalBus;
         }
 
-        public void RegisterNewTeam(BoxView leader)
+        public void RegisterNewTeam(BoxView leader, string nickName)
         {
             if (_boxToTeamMap.ContainsKey(leader))
             {
@@ -39,8 +44,8 @@ namespace Services.Impl
                 AddEntityOnService(leader);
             }
 
-            var newTeam = new Queue<BoxView>();
-            newTeam.Enqueue(leader);
+            var newTeam = new Team(nickName);
+            newTeam.AddMember(leader);
             _teams.Add(newTeam);
             _boxToTeamMap[leader] = newTeam;
         }
@@ -58,23 +63,30 @@ namespace Services.Impl
             if (!Boxes.Contains(entityView))
                 return;
 
+            if (entityView.isPlayer && GetHighestBoxInTeam(entityView) == entityView)
+            {
+                _signalBus.Fire(new CameraUpdateSignal
+                {
+                    followBox = null
+                });
+            }
+            
             if (_boxToTeamMap.TryGetValue(entityView, out var team))
             {
-                var updatedTeam = new Queue<BoxView>(team.Where(box => box != entityView));
-                _teams[_teams.IndexOf(team)] = updatedTeam;
-        
+                team.RemoveMember(entityView);
                 _boxToTeamMap.Remove(entityView);
 
-                if (updatedTeam.Count == 0)
+                if (team.Members.Count == 0)
                 {
-                    _teams.Remove(updatedTeam);
-                }
-                else
-                {
-                    foreach (var box in updatedTeam)
+                    if (entityView.isPlayer)
                     {
-                        _boxToTeamMap[box] = updatedTeam;
+                        _signalBus.Fire(new ChangeGameModeSignal()
+                        {
+                            status = EGameModeStatus.Lose
+                        });
                     }
+                    
+                    _teams.Remove(team);
                 }
             }
 
@@ -84,72 +96,83 @@ namespace Services.Impl
 
         public bool AreInSameTeam(BoxView box1, BoxView box2)
         {
-            if (_boxToTeamMap.TryGetValue(box1, out var team1) && _boxToTeamMap.TryGetValue(box2, out var team2))
-            {
-                return team1 == team2;
-            }
-
-            return false;
+            return _boxToTeamMap.TryGetValue(box1, out var team1) && _boxToTeamMap.TryGetValue(box2, out var team2) &&
+                   team1 == team2;
         }
 
         public void AddBoxToTeam(BoxView teamViewer, BoxView box)
         {
-            if (_boxToTeamMap.TryGetValue(teamViewer, out var team) && !team.Contains(box))
+            if (_boxToTeamMap.TryGetValue(teamViewer, out var team) && !_boxToTeamMap.ContainsKey(box))
             {
-                team.Enqueue(box);
+                team.AddMember(box);
                 AddEntityOnService(box);
                 _boxToTeamMap[box] = team;
             }
             else
             {
-                throw new ArgumentException($"can't add box in team");
+                throw new ArgumentException($"Can't add box to team");
             }
         }
 
         public void UpdateTeamStates(BoxView viewFromTeam)
         {
-            var team = GetTeam(viewFromTeam).OrderByDescending(box => box.Grade).ToArray();
+            var team = GetTeam(viewFromTeam);
+            if (team == null)
+                return;
 
-            team[0].SetNickname(team[0].isPlayer
-                ? "player"
-                : "Bot"
-            );
+            var members = team.Members.OrderByDescending(box => box.Grade).ToList();
 
-            for (var i = 0; i < team.Length; i++)
+            var teamLeader = members.FirstOrDefault();
+            team.Leader = teamLeader;
+
+            if (teamLeader != null)
             {
-                var currentBox = team[i];
-                if (i == 0)
+                if (teamLeader.isPlayer)
                 {
-                    var state = currentBox.isPlayer
-                        ? _stateFactory.CreateMoveState()
-                        : _stateFactory.CreateBotMoveState();
-                    currentBox.stateContext.SetState(state);
-                }
-                else
-                {
-                    if (currentBox.isMerging)
-                        continue;
-
-                    var state = _stateFactory.CreateFollowState(team[i - 1].transform);
-                    currentBox.stateContext.SetState(state);
-                }
-            }
-
-            for (var i = 0; i < team.Length - 1; i++)
-            {
-                for (var j = i + 1; j < team.Length; j++)
-                {
-                    if (team[i].Grade == team[j].Grade
-                        && team[i] != team[j]
-                        && !team[i].isMerging
-                        && !team[j].isMerging
-                    )
+                    _signalBus.Fire(new CameraUpdateSignal
                     {
-                        team[i].isMerging = true;
-                        team[j].isMerging = true;
+                        followBox = teamLeader
+                    });
+                }
+                
+                teamLeader.SetNickname(team.Nickname);
 
-                        var state = _stateFactory.CreateMergeState(team[i], team[j].Grade);
-                        team[j].stateContext.SetState(state);
+                for (var i = 0; i < members.Count; i++)
+                {
+                    var currentBox = members[i];
+                    if (i == 0)
+                    {
+                        var state = currentBox.isPlayer
+                            ? _stateFactory.CreateMoveState()
+                            : _stateFactory.CreateBotMoveState();
+                        currentBox.stateContext.SetState(state);
+                    }
+                    else
+                    {
+                        if (currentBox.isMerging)
+                            continue;
+
+                        var state = _stateFactory.CreateFollowState(members[i - 1].transform);
+                        currentBox.stateContext.SetState(state);
+                    }
+                }
+
+                for (var i = 0; i < members.Count - 1; i++)
+                {
+                    for (var j = i + 1; j < members.Count; j++)
+                    {
+                        if (members[i].Grade == members[j].Grade
+                            && members[i] != members[j]
+                            && !members[i].isMerging
+                            && !members[j].isMerging
+                        )
+                        {
+                            members[i].isMerging = true;
+                            members[j].isMerging = true;
+
+                            var state = _stateFactory.CreateMergeState(members[i], members[j].Grade);
+                            members[j].stateContext.SetState(state);
+                        }
                     }
                 }
             }
@@ -160,35 +183,27 @@ namespace Services.Impl
             return Boxes;
         }
 
-        public List<BoxView> GetTeam(BoxView boxView)
+        public Team GetTeam(BoxView boxView)
         {
-            if (_boxToTeamMap.TryGetValue(boxView, out var team))
-            {
-                return team.ToList();
-            }
-            return new List<BoxView>();
+            _boxToTeamMap.TryGetValue(boxView, out var team);
+            return team;
         }
 
         public EBoxGrade GetHighGradeInTeam(BoxView boxMember)
         {
             var team = GetTeam(boxMember);
-            var highGrade = team.Max(grade => grade.Grade);
-
-            return highGrade;
+            return team?.Members.Max(grade => grade.Grade) ?? default;
         }
 
         public int GetBotTeamsCount()
         {
-            return _teams.Count(team => team.Any(box => box.isBot));
+            return _teams.Count(team => team.Members.Any(box => box.isBot));
         }
-        
+
         public BoxView GetHighestBoxInTeam(BoxView boxView)
         {
-            if (_boxToTeamMap.TryGetValue(boxView, out var team))
-            {
-                return team.OrderByDescending(box => box.Grade).FirstOrDefault();
-            }
-            return null;
+            var team = GetTeam(boxView);
+            return team?.Leader;
         }
     }
 }

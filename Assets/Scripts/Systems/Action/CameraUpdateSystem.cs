@@ -1,14 +1,14 @@
 ﻿using System;
 using Cinemachine;
 using DG.Tweening;
-using Services;
 using Signals;
 using UnityEngine;
+using Views.Impl;
 using Zenject;
 
 namespace Systems.Action
 {
-    public class CameraUpdateSystem : IInitializable, IDisposable
+    public class CameraUpdateSystem : IInitializable, IDisposable, ITickable
     {
         private readonly CinemachineVirtualCamera _virtualCamera;
         private readonly SignalBus _signalBus;
@@ -16,6 +16,7 @@ namespace Systems.Action
         private float duration = 1.8f;
         private CinemachineTransposer _transposer;
         private Vector3 _baseOffset;
+        private BoxView _followBox;
         
         public CameraUpdateSystem(
             CinemachineVirtualCamera virtualCamera,
@@ -37,10 +38,26 @@ namespace Systems.Action
         private void OnUpdateCamera(CameraUpdateSignal signal)
         {
             var followBox = signal.followBox;
+            _followBox = followBox;
+            
+            if(followBox == null || followBox.isDestroyed)
+            {
+                _virtualCamera.Follow = null;
+                _virtualCamera.LookAt = null;
+                _virtualCamera.enabled = false;
+                return;
+            }
+
+            _virtualCamera.enabled = true;
+            _followBox = followBox;
+            
             var grade = (int)followBox.Grade;
             var targetOffset = CalculateFollowOffset(grade);
             
-            DOTween.To(() => _transposer.m_FollowOffset, x => _transposer.m_FollowOffset = x, targetOffset, duration);
+            DOTween.To(() => _transposer.m_FollowOffset, 
+                x => _transposer.m_FollowOffset = x,
+                targetOffset,
+                duration);
 
             var followTarget = followBox.transform;
             _virtualCamera.Follow = followTarget;
@@ -51,7 +68,7 @@ namespace Systems.Action
         {
             var baseY = _baseOffset.y;
             var baseZ = _baseOffset.z;
-            var yMultiplier = .25f;
+            var yMultiplier = .35f;
             var zMultiplier = -.1f;
 
             var newY = baseY + grade * yMultiplier;
@@ -63,6 +80,19 @@ namespace Systems.Action
         public void Dispose()
         {
             _signalBus.Unsubscribe<CameraUpdateSignal>(OnUpdateCamera);
+        }
+
+        public void Tick()
+        {
+            if(_virtualCamera.Follow == null 
+               || _followBox == null
+               || _followBox.isDestroyed
+               )
+            {
+                _virtualCamera.Follow = null;
+                _virtualCamera.LookAt = null;
+                _virtualCamera.enabled = false;
+            }
         }
     }
 }

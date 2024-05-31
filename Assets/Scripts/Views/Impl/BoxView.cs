@@ -27,9 +27,11 @@ namespace Views.Impl
         private Tween _scaleTween;
         private SignalBus _signalBus;
         private GameMatchService _gameMatchService;
+        private string _nick;
         
         public EBoxGrade Grade => grade;
         public Rigidbody Rigidbody => _rigidbody;
+        public string Nick => _nick;
         public bool isMerging { get; set; }
 
         public bool isDestroyed { get; set; }
@@ -69,15 +71,14 @@ namespace Views.Impl
             targetTransform.position = position;
             targetTransform.localScale = scale;
         }
-
         private void FixedUpdate()
         {
-            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
-                return;
-            
             if(isDestroyed)
                 return;
             
+            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+                return;
+
             stateContext?.Update();
         }
 
@@ -106,6 +107,7 @@ namespace Views.Impl
 
         public void SetNickname(string nick, bool activeText = true)
         {
+            _nick = nick;
             _nickText.gameObject.SetActive(activeText);
             _nickText.text = nick;
         }

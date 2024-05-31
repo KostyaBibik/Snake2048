@@ -26,6 +26,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
     private readonly BoxService _boxService;
     private readonly BotService _botService;
     private readonly GameSettingsConfig _gameSettingsConfig;
+    private readonly NicknamesConfig _nicknamesConfig;
     private readonly GameSceneHandler _sceneHandler;
     private readonly GameMatchService _gameMatchService;
 
@@ -38,6 +39,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
         BoxService boxService,
         BotService botService,
         GameSettingsConfig gameSettingsConfig,
+        NicknamesConfig nicknamesConfig,
         GameSceneHandler sceneHandler,
         GameMatchService gameMatchService
     )
@@ -47,6 +49,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
         _boxService = boxService;
         _botService = botService;
         _gameSettingsConfig = gameSettingsConfig;
+        _nicknamesConfig = nicknamesConfig;
         _sceneHandler = sceneHandler;
         _gameMatchService = gameMatchService;
     }
@@ -92,14 +95,15 @@ public class BotSpawnSystem : IInitializable, IDisposable
                 bot.isBot = true;
                 bot.gameObject.name = "Bot"; 
                 bot.transform.position = spawnPosition;
-                bot.SetNickname("Bot");
+                var nick = _nicknamesConfig.GetRandomNickname();
+                bot.SetNickname(nick);
                 
                 var state = _boxStateFactory.CreateBotMoveState();
                 bot.stateContext.SetState(state);
                 
                 _botService.AddEntityOnService(bot);
                 _boxService.AddEntityOnService(bot);
-                _boxService.RegisterNewTeam(bot);
+                _boxService.RegisterNewTeam(bot, nick);
 
                 break;
             }
@@ -159,7 +163,6 @@ public class BotSpawnSystem : IInitializable, IDisposable
         var probabilityGradeAdd3 = 0.15f;
         var probabilityGradeAdd2 = 0.2f;
         var probabilityGradeAdd1 = 0.15f;
-        var probabilitySameOrLowerGrade = 1 - probabilityGradeAdd3 - probabilityGradeAdd2;
 
         var randomValue = Random.value;
 

@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 6319494504813111339}
   - component: {fileID: 7047511658751104026}
   - component: {fileID: 7449119692369481811}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,6 +110,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 100b861c559e49368f0b432a0be68420, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1738318501346373100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5967473616561090660}
+  - component: {fileID: 4945611138517700693}
+  - component: {fileID: 8312159219843728986}
+  m_Layer: 7
+  m_Name: RaycastFloor
+  m_TagString: Ground
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5967473616561090660
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738318501346373100}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 778.36, y: 1, z: 809.78}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4414161706631068}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4945611138517700693
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738318501346373100}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8312159219843728986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738318501346373100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 100b861c559e49368f0b432a0be68420, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4189571693472150018
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,6 +201,7 @@ Transform:
   - {fileID: 8742568935547186117}
   - {fileID: 8151158201573449707}
   - {fileID: 4800411567523861234}
+  - {fileID: 5967473616561090660}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
