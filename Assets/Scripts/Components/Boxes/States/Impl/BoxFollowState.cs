@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Database;
+﻿using Database;
 using UnityEngine;
 
 namespace Components.Boxes.States.Impl
@@ -11,36 +10,28 @@ namespace Components.Boxes.States.Impl
         private float _boostSpeed;
         private float _accelerationSpeed;
         private float _followDistance;
-        private List<Vector3> _positionHistory;
-        private Vector3 _velocity;
         
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly Transform _leader;
-
-        private const int _historyLength = 3;
+        private readonly float _leaderMeshOffset;
 
         public BoxFollowState(
             GameSettingsConfig gameSettingsConfig,
-            Transform leader
+            Transform leader,
+            float leaderMeshOffset
         )
         {
             _leader = leader;
             _gameSettingsConfig = gameSettingsConfig;
+            _leaderMeshOffset = leaderMeshOffset;
         }
 
         public void EnterState(BoxContext context)
         {
-            _positionHistory = new List<Vector3>(_historyLength);
             _speed = _gameSettingsConfig.BoxMoveSpeed;
             _boostSpeed = _gameSettingsConfig.BoxBoostSpeed;
             _accelerationSpeed = _gameSettingsConfig.BoxAccelerationSpeed;
-            _followDistance = _gameSettingsConfig.BoxFollowDistance;
-            _velocity = Vector3.zero;
-
-            for (var i = 0; i < _historyLength; i++)
-            {
-                _positionHistory.Add(_leader.position);
-            }
+            _followDistance = _gameSettingsConfig.BoxFollowDistance + _leaderMeshOffset;
         }
 
         public void UpdateState(BoxContext context)
@@ -63,37 +54,26 @@ namespace Components.Boxes.States.Impl
                 _currentSpeed = _speed;
             }
             
-            if (_positionHistory.Count >= _historyLength)
-            {
-                _positionHistory.RemoveAt(0);
-            }
-            _positionHistory.Add(_leader.position);
-            
-            var targetPosition = _positionHistory[0];
+            var leaderPosition = _leader.position;
             var boxTransform = box.transform;
+            var boxPos = boxTransform.position;
+            var distanceToTarget = Vector3.Distance(boxPos, leaderPosition);
             
-            var distanceToTarget = Vector3.Distance(boxTransform.position, targetPosition);
-            if (distanceToTarget > _followDistance)
-            {
-                var dynamicSpeed = Mathf.Lerp(_currentSpeed / 2, _currentSpeed * 2, distanceToTarget / _followDistance);
+            var dynamicSpeed = Mathf.Lerp(0, _currentSpeed * 1.4f, distanceToTarget / _followDistance);
+            
+            var direction = (leaderPosition - boxPos).normalized;
+            var relatedSpeed = dynamicSpeed * Time.deltaTime;
+            var rb = box.Rigidbody;
+            
+            direction.y = 0;
 
-                targetPosition = Vector3.SmoothDamp(boxTransform.position, targetPosition, ref _velocity, 0.2f, dynamicSpeed);
-            }
-            else
-            {
-                targetPosition = boxTransform.position;
-            }
+            rb.MovePosition(rb.position + direction * relatedSpeed);
+
+            if (direction == Vector3.zero)
+                return;
             
-            boxTransform.position = targetPosition;
-            
-            var direction = (_leader.position - boxTransform.position).normalized;
-            direction.y = 0; 
-            
-            if (direction != Vector3.zero)
-            {
-                var targetRotation = Quaternion.LookRotation(direction);
-                boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, _currentSpeed);
-            }
+            var targetRotation = Quaternion.LookRotation(direction);
+            boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
         }
 
         public void ExitState(BoxContext context)

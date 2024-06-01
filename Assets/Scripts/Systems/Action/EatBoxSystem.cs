@@ -75,7 +75,10 @@ namespace Systems.Action
                 newBox.isBot = newOwner.isBot;
                 newBox.isIdle = newOwner.isIdle;
 
-                var sortedMembers = ownerTeam.Members.OrderBy(b => b.Grade).ToArray();
+                var sortedMembers = ownerTeam.Members
+                    .Where(b => b.Grade >= eatenBox.Grade)
+                    .OrderBy(b => b.Grade)
+                    .ToArray();
 
                 Vector3 directionSpawn;
 

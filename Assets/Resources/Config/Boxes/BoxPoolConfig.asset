@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config:
   - grade: 2
-    maxCount: 200
-    initialCount: 200
+    maxCount: 350
+    initialCount: 250
   - grade: 4
-    maxCount: 150
-    initialCount: 100
+    maxCount: 300
+    initialCount: 200
   - grade: 8
     maxCount: 150
     initialCount: 60

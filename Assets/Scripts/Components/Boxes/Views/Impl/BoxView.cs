@@ -3,7 +3,6 @@ using Enums;
 using Services;
 using Signals;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -29,7 +28,7 @@ namespace Components.Boxes.Views.Impl
         private Tween _scaleTween;
         private SignalBus _signalBus;
         private GameMatchService _gameMatchService;
-
+        
         public EBoxGrade Grade => grade;
         public Rigidbody Rigidbody => _rigidbody;
         
@@ -44,7 +43,8 @@ namespace Components.Boxes.Views.Impl
         public bool isIdle { get; set; }
 
         public bool isBot { get; set; }
-
+        public float meshOffset { get; set; }
+        
         [Inject]
         private void Construct(
             SignalBus signalBus,
@@ -61,7 +61,8 @@ namespace Components.Boxes.Views.Impl
             _originalScale = meshTransform.localScale;
             
             var mesh = meshTransform.transform;
-            var forcedPos = mesh.position + new Vector3(0f, (_originalScale.y - 1) / 2, 0f);
+            meshOffset = (_originalScale.y - 1);
+            var forcedPos = mesh.position + new Vector3(0f, meshOffset / 2, 0f);
             
             mesh.position = forcedPos;
             UpdateTransform(triggerCollider.transform, forcedPos, _originalScale);

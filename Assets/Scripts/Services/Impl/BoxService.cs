@@ -167,7 +167,8 @@ namespace Services.Impl
                         if (currentBox.isMerging)
                             continue;
 
-                        var state = _stateFactory.CreateFollowState(members[i - 1].transform);
+                        var targetMember = members[i - 1];
+                        var state = _stateFactory.CreateFollowState(targetMember.transform, targetMember.meshOffset);
                         currentBox.stateContext.SetState(state);
                     }
                 }

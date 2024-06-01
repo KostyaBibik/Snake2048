@@ -17,6 +17,7 @@ namespace Components.Boxes.States.Impl
         
         private LayerMask _groundLayer;
         private float _speed;
+        private float _thresholdValue;
 
         public BoxMoveState(
             GameInputManager inputManager,
@@ -35,6 +36,7 @@ namespace Components.Boxes.States.Impl
             _speed = _gameSettingsConfig.BoxMoveSpeed;
             _boostSpeed = _gameSettingsConfig.BoxBoostSpeed;
             _accelerationSpeed = _gameSettingsConfig.BoxAccelerationSpeed;
+            _thresholdValue = 1f;
         }
 
         public void UpdateState(BoxContext context)
@@ -64,9 +66,8 @@ namespace Components.Boxes.States.Impl
                 movementDirection.y = 0;
                 
                 var movementSummary = Mathf.Abs(movementDirection.x) + Mathf.Abs(movementDirection.z);
-                var thresholdValue = 1f;
 
-                if (movementSummary > thresholdValue)
+                if (movementSummary > _thresholdValue)
                 {
                     _currentDirection = movementDirection;
                 }
@@ -76,6 +77,9 @@ namespace Components.Boxes.States.Impl
                 rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
 
                 var boxTransform = playerView.transform;
+                if(_currentDirection == Vector3.zero)
+                    return;
+                
                 var targetRotation = Quaternion.LookRotation(_currentDirection);
                 boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
             }

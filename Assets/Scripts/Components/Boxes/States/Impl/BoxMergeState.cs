@@ -4,7 +4,6 @@ using Enums;
 using Helpers;
 using Services.Impl;
 using UnityEngine;
-using Zenject;
 
 namespace Components.Boxes.States.Impl
 {
@@ -14,7 +13,6 @@ namespace Components.Boxes.States.Impl
         private readonly BotService _botService;
         private readonly BoxPool _boxPool;
         private readonly GameSettingsConfig _gameSettingsConfig;
-        private readonly SignalBus _signalBus;
         private readonly BoxView _boxToMerge;
         private readonly EBoxGrade _targetGrade;
 
@@ -29,7 +27,6 @@ namespace Components.Boxes.States.Impl
             BotService botService,
             BoxPool boxPool,
             GameSettingsConfig gameSettingsConfig,
-            SignalBus signalBus,
             BoxView boxToMerge,
             EBoxGrade targetGrade
         )
@@ -39,7 +36,6 @@ namespace Components.Boxes.States.Impl
             _boxPool = boxPool;
             _gameSettingsConfig = gameSettingsConfig;
             _boxToMerge = boxToMerge;
-            _signalBus = signalBus;
             _targetGrade = targetGrade;
         }
 
@@ -85,14 +81,14 @@ namespace Components.Boxes.States.Impl
                 var direction = (targetBoxPos - boxPos).normalized;
                 var relatedSpeed = _currentSpeed * Time.deltaTime;
                 var rb = box.Rigidbody;
+
+                direction.y = 0;
                 
                 rb.MovePosition(rb.position + direction * relatedSpeed);
-                
-                var lookDirection = (targetBoxPos - boxPos).normalized;
-                lookDirection.y = 0;
-                if (lookDirection != Vector3.zero)
+
+                if (direction != Vector3.zero)
                 {
-                    var targetRotation = Quaternion.LookRotation(lookDirection);
+                    var targetRotation = Quaternion.LookRotation(direction);
                     boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
                 }
             }

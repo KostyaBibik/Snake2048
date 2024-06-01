@@ -49,9 +49,9 @@ namespace Infrastructure.Factories.Impl
             _boxPool = boxPool;
         }
         
-        public IBoxState CreateFollowState(Transform leader)
+        public IBoxState CreateFollowState(Transform leader, float leaderMeshOffset)
         {
-            return new BoxFollowState(_gameSettingsConfig, leader);
+            return new BoxFollowState(_gameSettingsConfig, leader, leaderMeshOffset);
         }
 
         public IBoxState CreateIdleState()
@@ -71,7 +71,6 @@ namespace Infrastructure.Factories.Impl
                 _botService,
                 _boxPool,
                 _gameSettingsConfig,
-                _signalBus,
                 boxToMerge,
                 targetGrade
             );
