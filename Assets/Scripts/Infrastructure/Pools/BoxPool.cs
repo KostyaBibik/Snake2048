@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Components.Boxes.Views.Impl;
 using Database;
 using Enums;
 using Infrastructure.Factories.Impl;
 using UnityEngine;
 using UnityEngine.Pool;
-using Views.Impl;
 using Zenject;
 
 public class BoxPool : IInitializable, IDisposable
 {
-    private BoxEntityFactory _boxEntityFactory;
+    private BoxFactory _boxFactory;
     private BoxPoolConfig _boxPoolConfig;
     private BoxStateFactory _boxStateFactory;
     
@@ -20,12 +20,12 @@ public class BoxPool : IInitializable, IDisposable
 
     [Inject]
     public void Construct(
-        BoxEntityFactory boxEntityFactory,
+        BoxFactory boxFactory,
         BoxPoolConfig boxPoolConfig,
         BoxStateFactory boxStateFactory
     )
     {
-        _boxEntityFactory = boxEntityFactory;
+        _boxFactory = boxFactory;
         _boxPoolConfig = boxPoolConfig;
         _boxStateFactory = boxStateFactory;
     }
@@ -73,7 +73,7 @@ public class BoxPool : IInitializable, IDisposable
 
     private BoxView CreateBox(EBoxGrade grade, Transform parentTransform)
     {
-        var box = _boxEntityFactory.Create(grade);
+        var box = _boxFactory.Create(grade);
         box.transform.parent = parentTransform;
         return box;
     }
@@ -124,7 +124,9 @@ public class BoxPool : IInitializable, IDisposable
         box.isMerging = false;
         box.isIdle = false;
         box.isDestroyed = false;
+        box.IsSpeedBoosted = false;
         box.DisableNick();
+        box.UpdateAccelerationSlider(0f, false);
     }
 
     private void OnReleaseBox(BoxView box)

@@ -1,4 +1,4 @@
-﻿using Views.Impl;
+﻿using Components.Boxes.Views.Impl;
 
 namespace Signals
 {

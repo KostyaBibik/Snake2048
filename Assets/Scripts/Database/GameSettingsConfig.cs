@@ -9,7 +9,13 @@ namespace Database
         [Header("Box Settings")]
         [SerializeField] private float boxMoveSpeed = 2f;
         public float BoxMoveSpeed => boxMoveSpeed;
-
+        
+        [SerializeField] private float boxBoostSpeed = 6f;
+        public float BoxBoostSpeed => boxBoostSpeed;
+        
+        [SerializeField] private float boxAccelerationSpeed = 3f;
+        public float BoxAccelerationSpeed => boxAccelerationSpeed;
+        
         [SerializeField] private float boxMoveSpeedOnMerge = 10f;
         public float BoxMoveSpeedOnMerge => boxMoveSpeedOnMerge;
 
@@ -38,6 +44,9 @@ namespace Database
         
         [SerializeField] private int maxSpawnCount = 5;
         public int MaxSpawnCount => maxSpawnCount;
+        
+        [SerializeField] private int boostSpawnInterval = 5;
+        public int BoostSpawnInterval => boostSpawnInterval;
         
         [Space]
         [Header("Bot Settings")]

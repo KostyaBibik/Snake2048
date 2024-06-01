@@ -1,7 +1,7 @@
 ﻿using Components.Boxes.States;
+using Components.Boxes.Views.Impl;
 using Enums;
 using UnityEngine;
-using Views.Impl;
 
 namespace Infrastructure.Factories
 {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Components.Boxes.Views.Impl;
 using Enums;
 using Infrastructure.Factories.Impl;
 using Signals;
-using UnityEngine;
-using Views.Impl;
+using UI.Leaderboard;
 using Zenject;
 
 namespace Services.Impl
@@ -36,6 +36,8 @@ namespace Services.Impl
         {
             if (_boxToTeamMap.ContainsKey(leader))
             {
+                throw new Exception("_boxToTeamMap.ContainsKey");
+                
                 return;
             }
 
@@ -48,6 +50,9 @@ namespace Services.Impl
             newTeam.AddMember(leader);
             _teams.Add(newTeam);
             _boxToTeamMap[leader] = newTeam;
+            
+            _signalBus.Fire(new RegisterTeamSignal { id = newTeam.GetId() });
+            //InvokeUpdateLeaderboard();
         }
 
         public void AddEntityOnService(BoxView entityView)
@@ -96,8 +101,9 @@ namespace Services.Impl
 
         public bool AreInSameTeam(BoxView box1, BoxView box2)
         {
-            return _boxToTeamMap.TryGetValue(box1, out var team1) && _boxToTeamMap.TryGetValue(box2, out var team2) &&
-                   team1 == team2;
+            return _boxToTeamMap.TryGetValue(box1, out var team1)
+                   && _boxToTeamMap.TryGetValue(box2, out var team2)
+                   && team1 == team2;
         }
 
         public void AddBoxToTeam(BoxView teamViewer, BoxView box)
@@ -107,6 +113,14 @@ namespace Services.Impl
                 team.AddMember(box);
                 AddEntityOnService(box);
                 _boxToTeamMap[box] = team;
+                
+                _signalBus.Fire(new AddBoxToTeamSignal
+                {
+                    idTeam = team.GetId(),
+                    newBox = box
+                });
+                
+                InvokeUpdateLeaderboard();
             }
             else
             {
@@ -116,7 +130,7 @@ namespace Services.Impl
 
         public void UpdateTeamStates(BoxView viewFromTeam)
         {
-            var team = GetTeam(viewFromTeam);
+            var team = GetTeamByMember(viewFromTeam);
             if (team == null)
                 return;
 
@@ -140,6 +154,7 @@ namespace Services.Impl
                 for (var i = 0; i < members.Count; i++)
                 {
                     var currentBox = members[i];
+                    
                     if (i == 0)
                     {
                         var state = currentBox.isPlayer
@@ -176,6 +191,29 @@ namespace Services.Impl
                     }
                 }
             }
+
+            InvokeUpdateLeaderboard();
+        }
+
+        private void InvokeUpdateLeaderboard()
+        {
+            var handledTeams = _teams.Where(x => !x.Leader.isIdle).ToArray();
+            
+            var leaderboardElementsModel = new LeaderboardModel(handledTeams.Length);
+            for (var i = 0; i < handledTeams.Length; i++)
+            {
+                var handleTeam = handledTeams[i];
+                leaderboardElementsModel.Items[i] = new LeaderboardElementModel()
+                {
+                    nickname = handleTeam.Nickname,
+                    score = handleTeam.GetScore()
+                };
+            }
+            
+            _signalBus.Fire(new LeaderboardUpdateSignal
+            {
+                elementModels = leaderboardElementsModel.Items
+            });
         }
 
         public List<BoxView> GetAllBoxes()
@@ -183,15 +221,31 @@ namespace Services.Impl
             return Boxes;
         }
 
-        public Team GetTeam(BoxView boxView)
+        public List<Team> GetAllTeams()
+        {
+            return _teams;
+        } 
+        
+        public Team GetTeamByMember(BoxView boxView)
         {
             _boxToTeamMap.TryGetValue(boxView, out var team);
             return team;
         }
 
+        public Team GetTeamById(int id)
+        {
+            return _teams.FirstOrDefault(team => team.GetId() == id);
+        }
+
         public EBoxGrade GetHighGradeInTeam(BoxView boxMember)
         {
-            var team = GetTeam(boxMember);
+            var team = GetTeamByMember(boxMember);
+            return team?.Members.Max(grade => grade.Grade) ?? default;
+        }
+        
+        public EBoxGrade GetHighGradeInTeam(int idTeam)
+        {
+            var team = GetTeamById(idTeam);
             return team?.Members.Max(grade => grade.Grade) ?? default;
         }
 
@@ -200,9 +254,15 @@ namespace Services.Impl
             return _teams.Count(team => team.Members.Any(box => box.isBot));
         }
 
+        public BoxView GetHighestBoxInTeam(int idTeam)
+        {
+            var team = GetTeamById(idTeam);
+            return team?.Leader;
+        }
+        
         public BoxView GetHighestBoxInTeam(BoxView boxView)
         {
-            var team = GetTeam(boxView);
+            var team = GetTeamByMember(boxView);
             return team?.Leader;
         }
     }

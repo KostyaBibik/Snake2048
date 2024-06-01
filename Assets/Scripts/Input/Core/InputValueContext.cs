@@ -30,7 +30,7 @@ public abstract class InputValueContext<T> : InputValueContextBase where T : str
         {
             foreach (var callbackItem in _callbacks)
             {
-                if (GameInputFocus.IsActive(callbackItem.Key))
+                //if (GameInputFocus.IsActive(callbackItem.Key))
                 {
                     callbackItem.Value.ForEach(x => x?.Invoke());
                 }

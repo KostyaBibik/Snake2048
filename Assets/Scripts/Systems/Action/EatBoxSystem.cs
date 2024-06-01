@@ -1,9 +1,10 @@
 ﻿using System.Linq;
+using Components.Boxes.Views.Impl;
 using Database;
 using Enums;
 using Services.Impl;
 using Signals;
-using Views.Impl;
+using UnityEngine;
 using Zenject;
 
 namespace Systems.Action
@@ -53,7 +54,7 @@ namespace Systems.Action
             if(eatenBox.isIdle && eatenBox.Grade > owner.Grade)
                 return;
             
-            var eatenTeam = _boxService.GetTeam(eatenBox);
+            var eatenTeam = _boxService.GetTeamByMember(eatenBox);
             var eatenBoxes = eatenTeam.Members
                 .Where(box => box.Grade <= eatenBox.Grade || box.isIdle).ToArray();
             
@@ -63,6 +64,7 @@ namespace Systems.Action
         private void AddBoxesForTeam(BoxView[] eatenBoxes, BoxView newOwner)
         {
             var newBoxes = new BoxView[eatenBoxes.Length];
+            var ownerTeam = _boxService.GetTeamByMember(newOwner);
             
             for (var i = 0; i < eatenBoxes.Length; i++)
             {
@@ -72,14 +74,26 @@ namespace Systems.Action
                 newBox.isPlayer = newOwner.isPlayer;
                 newBox.isBot = newOwner.isBot;
                 newBox.isIdle = newOwner.isIdle;
-                
-                var ownerTransform = newOwner.transform;
-                var ownerPos = ownerTransform.position;
-                
-                var directionSpawn = (ownerPos - eatenBox.transform.position).normalized;
+
+                var sortedMembers = ownerTeam.Members.OrderBy(b => b.Grade).ToArray();
+
+                Vector3 directionSpawn;
+
+                if (sortedMembers.Length > 1)
+                {
+                    directionSpawn = (sortedMembers[0].transform.position - sortedMembers[1].transform.position)
+                        .normalized;
+                }
+                else
+                {
+                    var ownerTransform = newOwner.transform;
+                    var ownerPos = ownerTransform.position;
+                    
+                    directionSpawn = (ownerPos - eatenBox.transform.position).normalized;
+                }
+
                 directionSpawn.y = 0;
-                
-                newBox.transform.position = ownerPos + directionSpawn * _gameSettingsConfig.BoxFollowDistance;
+                newBox.transform.position = sortedMembers[0].transform.position + directionSpawn * _gameSettingsConfig.BoxFollowDistance;
                 
                 if (newOwner.isBot)
                 {
@@ -91,8 +105,7 @@ namespace Systems.Action
 
             var delay = 0f;
             var delayInterval = .2f;
-            var ownerTeam = _boxService.GetTeam(newOwner);
-            
+
             foreach (var boxInTeam in ownerTeam.Members.ToArray())
             {
                 boxInTeam.AnimateUpscale(delay);

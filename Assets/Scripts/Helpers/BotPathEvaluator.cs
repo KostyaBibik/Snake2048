@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Components.Boxes.Views.Impl;
 using Services.Impl;
 using UnityEngine;
-using Views.Impl;
 
 namespace Helpers
 {

@@ -1,24 +1,24 @@
 ﻿using System.Linq;
 using Components.Boxes;
+using Components.Boxes.Views.Impl;
 using Database;
 using Enums;
 using Helpers;
 using Installers;
 using Services.Impl;
 using UnityEngine;
-using Views.Impl;
 using Zenject;
 
 namespace Infrastructure.Factories.Impl
 {
-    public class BoxEntityFactory : IEntityFactory<EBoxGrade, BoxView>
+    public class BoxFactory : IEntityFactory<EBoxGrade, BoxView>
     {
         private readonly BoxPrefabsConfig _boxPrefabsConfig;
         
         private BoxService _boxService;
         private BoxStateFactory _boxStateFactory;
         
-        public BoxEntityFactory(BoxPrefabsConfig boxPrefabsConfig)
+        public BoxFactory(BoxPrefabsConfig boxPrefabsConfig)
         {
             _boxPrefabsConfig = boxPrefabsConfig;
         }

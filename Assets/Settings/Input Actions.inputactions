@@ -24,15 +24,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "MouseMovement",
-                    "type": "Button",
-                    "id": "1d1260e8-792d-4510-82fa-7009ab62e932",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "MouseLook",
                     "type": "Value",
                     "id": "be33d517-807d-4d3a-945c-6fb75fbb28d5",
@@ -40,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "MousePress",
+                    "type": "Button",
+                    "id": "1d1260e8-792d-4510-82fa-7009ab62e932",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -111,23 +111,23 @@
                 },
                 {
                     "name": "",
-                    "id": "ce843302-acc3-4115-8157-395bb249165a",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Press",
-                    "processors": "",
-                    "groups": "",
-                    "action": "MouseMovement",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "e4c6f268-5ce0-49f1-8de0-47bdfb98fe86",
                     "path": "<Pointer>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "MouseLook",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ce843302-acc3-4115-8157-395bb249165a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MousePress",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

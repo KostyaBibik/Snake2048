@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Components.Boxes.Views.Impl;
 using Services;
-using Views.Impl;
 
 public class BotService : IEntityService<BoxView>
 {

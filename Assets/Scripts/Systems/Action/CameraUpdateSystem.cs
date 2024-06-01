@@ -1,9 +1,10 @@
 ﻿using System;
 using Cinemachine;
+using Components.Boxes.Views.Impl;
 using DG.Tweening;
+using Enums;
 using Signals;
 using UnityEngine;
-using Views.Impl;
 using Zenject;
 
 namespace Systems.Action
@@ -51,8 +52,7 @@ namespace Systems.Action
             _virtualCamera.enabled = true;
             _followBox = followBox;
             
-            var grade = (int)followBox.Grade;
-            var targetOffset = CalculateFollowOffset(grade);
+            var targetOffset = CalculateFollowOffset(followBox.Grade);
             
             DOTween.To(() => _transposer.m_FollowOffset, 
                 x => _transposer.m_FollowOffset = x,
@@ -64,15 +64,19 @@ namespace Systems.Action
             _virtualCamera.LookAt = followTarget;
         }
 
-        private Vector3 CalculateFollowOffset(int grade)
+        private Vector3 CalculateFollowOffset(EBoxGrade grade)
         {
             var baseY = _baseOffset.y;
             var baseZ = _baseOffset.z;
-            var yMultiplier = .35f;
-            var zMultiplier = -.1f;
+            
+            var yMultiplier = .5f;
+            var zMultiplier = -.5f;
 
-            var newY = baseY + grade * yMultiplier;
-            var newZ = baseZ + grade * zMultiplier;
+            var grades = Enum.GetValues(typeof(EBoxGrade));
+            var gradeIndex = Array.IndexOf(grades, grade);
+            
+            var newY = baseY + gradeIndex * yMultiplier;
+            var newZ = baseZ + gradeIndex * zMultiplier;
 
             return new Vector3(0, newY, newZ);
         }

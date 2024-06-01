@@ -1,21 +1,23 @@
-﻿using Components.Boxes;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Enums;
 using Services;
 using Signals;
 using TMPro;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
-namespace Views.Impl
+namespace Components.Boxes.Views.Impl
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class BoxView : MonoBehaviour, IEntityView
+    public class BoxView : MonoBehaviour, IBoxView
     {
         public BoxContext stateContext;
         
         [SerializeField] private EBoxGrade grade;
-        [SerializeField] private TextMeshProUGUI _nickText;
+        [SerializeField] private TextMeshProUGUI nickText;
+        [SerializeField] private Slider accelerationSlider;
         [SerializeField] private Transform meshTransform;
 
         [Header("Collider")] 
@@ -27,11 +29,12 @@ namespace Views.Impl
         private Tween _scaleTween;
         private SignalBus _signalBus;
         private GameMatchService _gameMatchService;
-        private string _nick;
-        
+
         public EBoxGrade Grade => grade;
         public Rigidbody Rigidbody => _rigidbody;
-        public string Nick => _nick;
+        
+        public bool IsAccelerationActive  { get; set; }
+        public bool IsSpeedBoosted  { get; set; }
         public bool isMerging { get; set; }
 
         public bool isDestroyed { get; set; }
@@ -107,11 +110,17 @@ namespace Views.Impl
 
         public void SetNickname(string nick, bool activeText = true)
         {
-            _nick = nick;
-            _nickText.gameObject.SetActive(activeText);
-            _nickText.text = nick;
+            nickText.gameObject.SetActive(activeText);
+            nickText.text = nick;
         }
 
+        public void UpdateAccelerationSlider(float value, bool isEnabled = true)
+        {
+            accelerationSlider.value = value;
+            if(accelerationSlider.gameObject.activeSelf != isEnabled)
+                accelerationSlider.gameObject.SetActive(isEnabled);
+        }
+        
         public void AnimateUpscale(float delay)
         {
             if (isIdle)

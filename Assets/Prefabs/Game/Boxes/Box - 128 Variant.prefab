@@ -90,7 +90,7 @@ PrefabInstance:
     - target: {fileID: 4812963530254665070, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: grade
-      value: 7
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 8005675014759179712, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}

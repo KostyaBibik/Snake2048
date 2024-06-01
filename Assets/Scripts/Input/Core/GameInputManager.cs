@@ -4,6 +4,7 @@ using System.Linq;
 using Input.Context;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Object = UnityEngine.Object;
 
 public class InputActionInfo
 {
@@ -11,7 +12,7 @@ public class InputActionInfo
     public string[] KeyCodes; 
 }
 
-public class GameInputManager : MonoBehaviour
+public class GameInputManager : MonoBehaviour, IDisposable
 {
     [SerializeField] private InputActionAsset inputActions = null;
 
@@ -35,7 +36,7 @@ public class GameInputManager : MonoBehaviour
         
         AddNewAction(new JumpContext());
         AddNewAction(new MovementContext());
-        AddNewAction(new MouseMovementContext());
+        AddNewAction(new MousePressContext());
         AddNewAction(new MouseLookContext());
     }
 
@@ -100,5 +101,11 @@ public class GameInputManager : MonoBehaviour
         {
             action.Enable();
         }
+    }
+
+    public void Dispose()
+    {
+        _actions.Clear();
+        Object.Destroy(gameObject);
     }
 }

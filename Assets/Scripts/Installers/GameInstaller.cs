@@ -5,6 +5,7 @@ using Systems.Runtime;
 using Cinemachine;
 using Helpers;
 using Infrastructure.Factories.Impl;
+using Infrastructure.Pools;
 using Services;
 using Services.Impl;
 using Signals;
@@ -47,6 +48,10 @@ namespace Installers
             Container.DeclareSignal<CameraUpdateSignal>();
             Container.DeclareSignal<PlaySoundSignal>();
             Container.DeclareSignal<ChangeGameModeSignal>();
+            Container.DeclareSignal<BoxBoostSignal>();
+            Container.DeclareSignal<AddBoxToTeamSignal>();
+            Container.DeclareSignal<RegisterTeamSignal>();
+            Container.DeclareSignal<LeaderboardUpdateSignal>();
         }
 
         private void BindGameMatcher()
@@ -68,7 +73,7 @@ namespace Installers
 
         private void BindInputSystems()
         {
-            Container.Bind<GameInputManager>().FromInstance(playerInput).AsCached();
+            Container.Bind<GameInputManager>().FromInstance(playerInput).AsSingle();
         }
 
         private void BindSceneComponents()
@@ -78,7 +83,8 @@ namespace Installers
 
         private void BindFactories()
         {
-            Container.Bind<BoxEntityFactory>().AsCached().NonLazy();
+            Container.Bind<BoxFactory>().AsCached().NonLazy();
+            Container.Bind<BoostFactory>().AsCached().NonLazy();
             Container.Bind<BoxStateFactory>().AsCached();
         }
 
@@ -86,11 +92,15 @@ namespace Installers
         {
             Container.BindInterfacesAndSelfTo<CameraUpdateSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<SpawnBoxesSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<SpawnBoostsSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<PlayerSpawnSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<EatBoxSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<BotSpawnSystem>().AsCached().NonLazy();
-            Container.BindInterfacesAndSelfTo<UpdateTimeSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<UpdateTimeSystem>().AsCached().NonLazy(); 
+            Container.BindInterfacesAndSelfTo<BoxBoostSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<AccelerationBoxSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<LeaderboardHandleSystem>().AsCached().NonLazy();
         }
 
         private void BindServices()
@@ -109,6 +119,7 @@ namespace Installers
         private void BindPools()
         {
             Container.BindInterfacesAndSelfTo<BoxPool>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<BoostPool>().AsCached().NonLazy();
         }
 
         public void Dispose()

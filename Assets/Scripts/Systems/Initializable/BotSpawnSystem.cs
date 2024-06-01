@@ -84,6 +84,9 @@ public class BotSpawnSystem : IInitializable, IDisposable
     
     private void SpawnBot(EBoxGrade eBoxGrade)
     {
+        if(eBoxGrade == EBoxGrade.None)
+            return;
+        
         var attempts = 0;
         while (true)
         {
@@ -168,22 +171,19 @@ public class BotSpawnSystem : IInitializable, IDisposable
 
         if (randomValue < probabilityGradeAdd3)
         {
-            return (EBoxGrade)((int)playerHighGrade + 3);
+            return playerHighGrade.NextSteps(3);
         }
         else if (randomValue < probabilityGradeAdd3 + probabilityGradeAdd2)
         {
-            return (EBoxGrade)((int)playerHighGrade + 2);
+            return playerHighGrade.NextSteps(2);
         }
         else if (randomValue < probabilityGradeAdd3 + probabilityGradeAdd2 + probabilityGradeAdd1)
         {
-            return (EBoxGrade)((int)playerHighGrade + 1);
+            return playerHighGrade.Next();
         }
         else
         {
-            var random = new System.Random();
-            var randomOffset = random.Next(1, (int)playerHighGrade - (int)EBoxGrade.Grade_2);
-            var randomGrade = (EBoxGrade)((int)EBoxGrade.Grade_2 + randomOffset); 
-            return randomGrade;
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade);
         }
     }
     

@@ -6,8 +6,9 @@ using Helpers;
 using Services;
 using Services.Impl;
 using UniRx;
+using Unity.VisualScripting;
 using UnityEngine;
-using Zenject;
+using IInitializable = Zenject.IInitializable;
 using Random = UnityEngine.Random;
 
 namespace Systems.Initializable
@@ -69,7 +70,7 @@ namespace Systems.Initializable
         {
             for (var i = 0; i < count; i++)
             {
-                var randomGrade = (EBoxGrade)Random.Range((int)EBoxGrade.Grade_2, (int)EBoxGrade.Grade_4 + 1);
+                var randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
                 SpawnBox(randomGrade);
             }
         }
@@ -117,7 +118,7 @@ namespace Systems.Initializable
 
                 for (var i = 0; i < spawnCount; i++)
                 {
-                    var randomGrade = (EBoxGrade)Random.Range((int)EBoxGrade.Grade_2, (int)EBoxGrade.Grade_4);
+                    var randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
 
                     SpawnBox(randomGrade);
                 }

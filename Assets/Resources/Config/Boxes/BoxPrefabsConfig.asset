@@ -13,27 +13,27 @@ MonoBehaviour:
   m_Name: BoxPrefabsConfig
   m_EditorClassIdentifier: 
   prefabs:
-  - grade: 1
-    view: {fileID: 3450382164369011459, guid: ce077464a48785d409cc0b36a462ace3, type: 3}
   - grade: 2
-    view: {fileID: 3297003719611701104, guid: a6fc6e696d130b647837ed78bf190271, type: 3}
-  - grade: 3
-    view: {fileID: 4282893937212772106, guid: 22f2843059750ae40879f879a0a508dd, type: 3}
+    view: {fileID: 3450382164369011459, guid: ce077464a48785d409cc0b36a462ace3, type: 3}
   - grade: 4
-    view: {fileID: 1562149617331743409, guid: e4879d96ec036be4eb5bc47511104a80, type: 3}
-  - grade: 5
-    view: {fileID: 2963368025582603518, guid: cf10bf1648fb5644dae00623e600ec32, type: 3}
-  - grade: 6
-    view: {fileID: 5187635528417982975, guid: cfdc63e73dbe00a4e8937e8563c2e0f4, type: 3}
-  - grade: 7
-    view: {fileID: 6450599635016339341, guid: 283c18ad168b24d42813d9386c630f5c, type: 3}
+    view: {fileID: 3297003719611701104, guid: a6fc6e696d130b647837ed78bf190271, type: 3}
   - grade: 8
+    view: {fileID: 4282893937212772106, guid: 22f2843059750ae40879f879a0a508dd, type: 3}
+  - grade: 16
+    view: {fileID: 1562149617331743409, guid: e4879d96ec036be4eb5bc47511104a80, type: 3}
+  - grade: 32
+    view: {fileID: 2963368025582603518, guid: cf10bf1648fb5644dae00623e600ec32, type: 3}
+  - grade: 64
+    view: {fileID: 5187635528417982975, guid: cfdc63e73dbe00a4e8937e8563c2e0f4, type: 3}
+  - grade: 128
+    view: {fileID: 6450599635016339341, guid: 283c18ad168b24d42813d9386c630f5c, type: 3}
+  - grade: 256
     view: {fileID: 1939471860963053974, guid: 3ed5ae02af9a56c4faf2ba69a3cbf6c3, type: 3}
-  - grade: 9
-    view: {fileID: 1939471860963053974, guid: 3ed5ae02af9a56c4faf2ba69a3cbf6c3, type: 3}
-  - grade: 10
+  - grade: 512
+    view: {fileID: 2080149420416487582, guid: 5cd4fbb2e0a87064cab0293c92c39835, type: 3}
+  - grade: 1024
     view: {fileID: 6068732317880917764, guid: 3b2fa1e20a1fdbd4ba8e61e4b11789c5, type: 3}
-  - grade: 11
+  - grade: 2048
     view: {fileID: 3136363724561358135, guid: 332fac794d54f61489cbfc8085783fdc, type: 3}
-  - grade: 12
+  - grade: 4096
     view: {fileID: 3541600649437643029, guid: 837494db358ae5848acfb3fc9d3c597f, type: 3}

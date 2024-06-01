@@ -6,69 +6,83 @@ namespace Components.Boxes.States.Impl
 {
     public class BoxMoveState : IBoxState
     {
-        private readonly AxisInputContext _moveContext; 
-        private readonly AxisInputContext _mouseLookContext;
-        private readonly ButtonInputContext _mouseMovementContext;
-        private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly Camera _camera;
+        private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly AxisInputContext _mouseLookContext;
+        
+        private float _currentSpeed;
+        private float _boostSpeed;
+        private float _accelerationSpeed;
+        private Vector3 _currentDirection;
         
         private LayerMask _groundLayer;
         private float _speed;
-        
+
         public BoxMoveState(
             GameInputManager inputManager,
             GameSettingsConfig gameSettingsConfig,
             Camera camera
         )
         {
-            _moveContext = inputManager.GetContext<MovementContext>();
-            _mouseMovementContext = inputManager.GetContext<MouseMovementContext>();
             _mouseLookContext = inputManager.GetContext<MouseLookContext>();
             _gameSettingsConfig = gameSettingsConfig;
             _camera = camera;
         }
-    
+
         public void EnterState(BoxContext context)
         {
             _groundLayer = LayerMask.GetMask("Ground");
             _speed = _gameSettingsConfig.BoxMoveSpeed;
+            _boostSpeed = _gameSettingsConfig.BoxBoostSpeed;
+            _accelerationSpeed = _gameSettingsConfig.BoxAccelerationSpeed;
         }
 
         public void UpdateState(BoxContext context)
         {
             var playerView = context.BoxView;
 
-            /*var movement = new Vector3(_moveContext.Value.x, 0, _moveContext.Value.y);
-            if (movement == Vector3.zero)
+            if (playerView.IsSpeedBoosted)
             {
-                return;
-            }*/
+                _currentSpeed = _speed + _boostSpeed;
+            } 
+            else if (playerView.IsAccelerationActive)
+            {
+                _currentSpeed = _speed + _accelerationSpeed;
+            }
+            else
+            {
+                _currentSpeed = _speed;
+            }
 
-            if (_mouseMovementContext.IsHold)
+            var mousePos = _mouseLookContext.Value;
+            var ray = _camera.ScreenPointToRay(mousePos);
+
+            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, _groundLayer))
             {
-                var mousePos = _mouseLookContext.Value;
-                var ray = _camera.ScreenPointToRay(mousePos);
+                var hitPoint = hit.point;
+                var movementDirection = (hitPoint - playerView.transform.position).normalized;
+                movementDirection.y = 0;
                 
-                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _groundLayer))
-                {
-                    var hitPoint = hit.point;
-                    var movement = (hitPoint - playerView.transform.position).normalized;
-                    movement.y = 0; 
-                    
-                    var relatedSpeed = _speed * Time.deltaTime;
-                    var rb = playerView.Rigidbody;
-                    rb.MovePosition(rb.position + movement * relatedSpeed);
+                var movementSummary = Mathf.Abs(movementDirection.x) + Mathf.Abs(movementDirection.z);
+                var thresholdValue = 1f;
 
-                    var boxTransform = playerView.transform;
-                    var targetRotation = Quaternion.LookRotation(movement);
-                    boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
+                if (movementSummary > thresholdValue)
+                {
+                    _currentDirection = movementDirection;
                 }
+                
+                var relatedSpeed = _currentSpeed * Time.deltaTime;
+                var rb = playerView.Rigidbody;
+                rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
+
+                var boxTransform = playerView.transform;
+                var targetRotation = Quaternion.LookRotation(_currentDirection);
+                boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
             }
         }
 
         public void ExitState(BoxContext context)
         {
-            
         }
     }
 }

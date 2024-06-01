@@ -1,5 +1,5 @@
 ﻿using Components.Boxes.States;
-using Views.Impl;
+using Components.Boxes.Views.Impl;
 
 namespace Components.Boxes
 {

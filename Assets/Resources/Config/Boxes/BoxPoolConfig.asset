@@ -13,39 +13,39 @@ MonoBehaviour:
   m_Name: BoxPoolConfig
   m_EditorClassIdentifier: 
   config:
-  - grade: 1
-    maxCount: 400
-    initialCount: 200
   - grade: 2
-    maxCount: 400
-    initialCount: 150
-  - grade: 3
-    maxCount: 400
-    initialCount: 100
+    maxCount: 200
+    initialCount: 200
   - grade: 4
-    maxCount: 400
-    initialCount: 100
-  - grade: 5
-    maxCount: 200
-    initialCount: 100
-  - grade: 6
-    maxCount: 200
-    initialCount: 100
-  - grade: 7
     maxCount: 150
-    initialCount: 60
+    initialCount: 100
   - grade: 8
     maxCount: 150
     initialCount: 60
-  - grade: 9
+  - grade: 16
     maxCount: 100
     initialCount: 60
-  - grade: 10
-    maxCount: 100
+  - grade: 32
+    maxCount: 80
+    initialCount: 80
+  - grade: 64
+    maxCount: 1500
+    initialCount: 500
+  - grade: 128
+    maxCount: 80
+    initialCount: 80
+  - grade: 256
+    maxCount: 60
+    initialCount: 60
+  - grade: 512
+    maxCount: 50
     initialCount: 40
-  - grade: 11
-    maxCount: 100
-    initialCount: 20
-  - grade: 12
-    maxCount: 100
-    initialCount: 10
+  - grade: 1024
+    maxCount: 45
+    initialCount: 35
+  - grade: 2048
+    maxCount: 45
+    initialCount: 35
+  - grade: 4096
+    maxCount: 45
+    initialCount: 35

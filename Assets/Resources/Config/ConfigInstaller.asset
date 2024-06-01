@@ -17,3 +17,5 @@ MonoBehaviour:
   boxPoolConfig: {fileID: 11400000, guid: 4d5fb4696c4bd854794e1f4ce240f6c8, type: 2}
   soundsConfig: {fileID: 11400000, guid: 3265a88420d6278498691c0820ce4acf, type: 2}
   nicknamesConfig: {fileID: 11400000, guid: aee1515ec3650b143b5146c33251ec53, type: 2}
+  boostPrefabsConfig: {fileID: 11400000, guid: dc388783b0a9c08489b6687996b61bb9, type: 2}
+  boostPoolConfig: {fileID: 11400000, guid: 58ae0abb01c2daa4db4eeb8437825041, type: 2}

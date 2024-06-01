@@ -1,9 +1,9 @@
-﻿using Database;
+﻿using Components.Boxes.Views.Impl;
+using Database;
 using Enums;
+using Helpers;
 using Services.Impl;
-using Signals;
 using UnityEngine;
-using Views.Impl;
 using Zenject;
 
 namespace Components.Boxes.States.Impl
@@ -19,7 +19,10 @@ namespace Components.Boxes.States.Impl
         private readonly EBoxGrade _targetGrade;
 
         private float _mergeSpeed;
+        private float _currentSpeed;
+        private float _boostSpeed;
         private float _distanceForMerge;
+        private float _accelerationSpeed;
 
         public BoxMergeState(
             BoxService boxService,
@@ -43,33 +46,54 @@ namespace Components.Boxes.States.Impl
         public void EnterState(BoxContext context)
         {
             _mergeSpeed = _gameSettingsConfig.BoxMoveSpeedOnMerge;
+            _boostSpeed = _gameSettingsConfig.BoxBoostSpeed;
             _distanceForMerge = _gameSettingsConfig.DistanceForMerge;
+            _accelerationSpeed = _gameSettingsConfig.BoxAccelerationSpeed;
         }
 
         public void UpdateState(BoxContext context)
         {
             if(_boxToMerge == null || _boxToMerge.isDestroyed)
                 return;
-            
-            var boxTransform = context.BoxView.transform;
+
+            var box = context.BoxView;
+            var boxTransform = box.transform;
+            var boxPos = boxTransform.position;
             var targetBoxTransform = _boxToMerge.transform;
-            var distance = Vector3.Distance(boxTransform.position, targetBoxTransform.position);
+            var targetBoxPos = targetBoxTransform.position;
+
+            boxPos.y = 0;
+            targetBoxPos.y = 0;
+            
+            var distance = Vector3.Distance(boxPos, targetBoxPos);
+            
+            if (box.IsSpeedBoosted)
+            {
+                _currentSpeed = _mergeSpeed + _boostSpeed;
+            } 
+            else if (box.IsAccelerationActive)
+            {
+                _currentSpeed = _mergeSpeed + _accelerationSpeed;
+            }
+            else
+            {
+                _currentSpeed = _mergeSpeed;
+            }
+            
             if (distance > _distanceForMerge)
             {
-                var boxPos = boxTransform.position;
-                var targetBoxPos = targetBoxTransform.position;
                 var direction = (targetBoxPos - boxPos).normalized;
-
-                var speedTranslate = _mergeSpeed * Time.deltaTime;
-                boxPos += direction * speedTranslate;
-                boxTransform.position = boxPos;
-
+                var relatedSpeed = _currentSpeed * Time.deltaTime;
+                var rb = box.Rigidbody;
+                
+                rb.MovePosition(rb.position + direction * relatedSpeed);
+                
                 var lookDirection = (targetBoxPos - boxPos).normalized;
                 lookDirection.y = 0;
                 if (lookDirection != Vector3.zero)
                 {
                     var targetRotation = Quaternion.LookRotation(lookDirection);
-                    boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, speedTranslate);
+                    boxTransform.rotation = Quaternion.Slerp(boxTransform.rotation, targetRotation, relatedSpeed);
                 }
             }
             else
@@ -80,7 +104,7 @@ namespace Components.Boxes.States.Impl
 
         private void MergeBoxes(BoxView box1, BoxView box2, EBoxGrade targetGrade)
         {
-            var newGrade = (EBoxGrade)((int)targetGrade + 1);
+            var newGrade = targetGrade.Next();
 
             var newBox = _boxPool.GetBox(newGrade);
             newBox.transform.position = box2.transform.position;

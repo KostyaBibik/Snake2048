@@ -1,11 +1,11 @@
 ﻿using Components.Boxes.States;
 using Components.Boxes.States.Impl;
+using Components.Boxes.Views.Impl;
 using Database;
 using Enums;
 using Helpers;
 using Services.Impl;
 using UnityEngine;
-using Views.Impl;
 using Zenject;
 
 namespace Infrastructure.Factories.Impl

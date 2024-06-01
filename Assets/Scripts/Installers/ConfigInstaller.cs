@@ -13,6 +13,8 @@ namespace Installers
         [SerializeField] private BoxPoolConfig boxPoolConfig;
         [SerializeField] private SoundsConfig soundsConfig;
         [SerializeField] private NicknamesConfig nicknamesConfig;
+        [SerializeField] private BoostPrefabsConfig boostPrefabsConfig;
+        [SerializeField] private BoostPoolConfig boostPoolConfig;
         
         public override void InstallBindings()
         {
@@ -21,6 +23,8 @@ namespace Installers
             Container.BindInstance(boxPoolConfig);
             Container.BindInstance(soundsConfig);
             Container.BindInstance(nicknamesConfig);
+            Container.BindInstance(boostPrefabsConfig);   
+            Container.BindInstance(boostPoolConfig);
         }
     }
 }

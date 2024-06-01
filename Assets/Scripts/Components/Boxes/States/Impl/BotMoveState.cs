@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Components.Boxes.Views.Impl;
 using Database;
 using Helpers;
 using Services.Impl;
 using UnityEngine;
-using Views.Impl;
 using Random = UnityEngine.Random;
 
 namespace Components.Boxes.States.Impl
@@ -16,6 +16,8 @@ namespace Components.Boxes.States.Impl
         private readonly GameSettingsConfig _settingsConfig;
 
         private float _speed;
+        private float _boostSpeed;
+        private float _accelerationSpeed;
         private float _changeDirectionInterval;
         private float _timeSinceLastDirectionChange;
         private Vector3 _targetDirection;
@@ -29,6 +31,7 @@ namespace Components.Boxes.States.Impl
         private float _minimumTargetDistance = 1f;
         private float _randomChangeChance = 0.1f;
 
+        private float _currentSpeed;
         private Bounds _gameBounds;
 
         public BotMoveState(
@@ -46,6 +49,8 @@ namespace Components.Boxes.States.Impl
         {
             _botTransform = context.BoxView.transform;
             _speed = _settingsConfig.BoxMoveSpeed;
+            _boostSpeed = _settingsConfig.BoxBoostSpeed;
+            _accelerationSpeed = _settingsConfig.BoxAccelerationSpeed;
             _timeSinceLastDirectionChange = 0f;
             _changeDirectionInterval = .25f;
             _targetDirection = GetRandomDirection();
@@ -56,6 +61,20 @@ namespace Components.Boxes.States.Impl
         public void UpdateState(BoxContext context)
         {
             var botView = context.BoxView;
+            
+            if (botView.IsSpeedBoosted)
+            {
+                _currentSpeed = _speed + _boostSpeed;
+            } 
+            else if (botView.IsAccelerationActive)
+            {
+                _currentSpeed = _speed + _accelerationSpeed;
+            }
+            else
+            {
+                _currentSpeed = _speed;
+            }
+            
             _timeSinceLastTargetUpdate += Time.deltaTime;
             var targetIsDestroyed = _targetAimBox == null || _targetAimBox.isDestroyed;
             
@@ -85,10 +104,11 @@ namespace Components.Boxes.States.Impl
         private void MoveTowardsTarget(BoxView botView)
         {
             var direction = (_targetAimBox.transform.position - botView.transform.position).normalized;
-            _currentDirection = Vector3.Slerp(_currentDirection, direction, Time.deltaTime * _speed).normalized;
-            _currentDirection.y = 0;
-            var relatedSpeed = _speed * Time.deltaTime;
+            var relatedSpeed = _currentSpeed * Time.deltaTime;
             var rb = botView.Rigidbody;
+
+            _currentDirection = Vector3.Slerp(_currentDirection, direction, relatedSpeed).normalized;
+            _currentDirection.y = 0;
             rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
 
             _timeSinceLastDirectionChange = 0f;
@@ -96,6 +116,9 @@ namespace Components.Boxes.States.Impl
 
         private void Wander(BoxView boxView)
         {
+            var relatedSpeed = _currentSpeed * Time.deltaTime;
+            var rb = boxView.Rigidbody;
+            
             _timeSinceLastDirectionChange += Time.deltaTime;
 
             if (_timeSinceLastDirectionChange >= _changeDirectionInterval)
@@ -104,10 +127,8 @@ namespace Components.Boxes.States.Impl
                 _timeSinceLastDirectionChange = 0f;
             }
 
-            _currentDirection = Vector3.Slerp(_currentDirection, _targetDirection, Time.deltaTime * _speed).normalized;
+            _currentDirection = Vector3.Slerp(_currentDirection, _targetDirection, relatedSpeed).normalized;
             _currentDirection.y = 0;
-            var relatedSpeed = _speed * Time.deltaTime;
-            var rb = boxView.Rigidbody;
             rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
         }
 
@@ -115,6 +136,7 @@ namespace Components.Boxes.States.Impl
         {
             var position = _botTransform.position;
             var newDirection = _currentDirection;
+            var relatedSpeed = _currentSpeed * Time.deltaTime;
 
             if (position.x < _gameBounds.min.x || position.x > _gameBounds.max.x ||
                 position.z < _gameBounds.min.z || position.z > _gameBounds.max.z)
@@ -125,7 +147,7 @@ namespace Components.Boxes.States.Impl
 
             if (newDirection != _currentDirection)
             {
-                _currentDirection = Vector3.Slerp(_currentDirection, newDirection, Time.deltaTime * _speed).normalized;
+                _currentDirection = Vector3.Slerp(_currentDirection, newDirection, relatedSpeed).normalized;
             }
         }
 
@@ -216,7 +238,7 @@ namespace Components.Boxes.States.Impl
             if (targetBox.isIdle)
                 return true;
 
-            var team = _boxService.GetTeam(targetBox);
+            var team = _boxService.GetTeamByMember(targetBox);
             if (team == null || team.Leader == null)
                 return false;
 
