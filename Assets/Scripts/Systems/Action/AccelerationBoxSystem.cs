@@ -19,12 +19,10 @@ namespace Systems.Action
         
         private Dictionary<int, AccelerationTeamModel> _boostTimers;
         private ButtonInputContext _mouseMovementContext;
+        private float _timeCasting;
+        private float _delayBeforeHideUiContainer;
 
-        public AccelerationBoxSystem(
-            BoxService boxService,
-            GameInputManager inputManager,
-            SignalBus signalBus
-            )
+        public AccelerationBoxSystem(BoxService boxService, GameInputManager inputManager, SignalBus signalBus)
         {
             _boxService = boxService;
             _inputManager = inputManager;
@@ -34,36 +32,43 @@ namespace Systems.Action
         public void Initialize()
         {
             _boostTimers = new Dictionary<int, AccelerationTeamModel>();
-            
             _mouseMovementContext = _inputManager.GetContext<MousePressContext>();
-            
+
+            _timeCasting = 4f;
+            _delayBeforeHideUiContainer = .5f;
+
+            RegisterCallbacks();
+            SubscribeToSignals();
+            InitTeams();
+        }
+
+        private void RegisterCallbacks()
+        {
             _mouseMovementContext.RegisterButtonPressCallback(OnPressMouse, GameSystemType.PlayerHighPriority);
             _mouseMovementContext.RegisterButtonReleaseCallback(OnReleaseMouse, GameSystemType.PlayerHighPriority);
-            
+        }
+
+        private void SubscribeToSignals()
+        {
             _signalBus.Subscribe<RegisterTeamSignal>(OnRegisterNewTeam);
             _signalBus.Subscribe<AddBoxToTeamSignal>(OnAddBoxOnTeam);
-            
-            InitTeams();
         }
 
         private void OnRegisterNewTeam(RegisterTeamSignal signal)
         {
             var team = _boxService.GetTeamById(signal.id);
-            if(team.Leader == null || team.Leader.isIdle)
-                return;
+            if (team.Leader == null || team.Leader.isIdle) return;
 
-            var isPlayerTeam = team.Leader.isPlayer;
-            AddBoostTeamTimer(signal.id, isPlayerTeam);
+            AddBoostTeamTimer(signal.id, team.Leader.isPlayer);
         }
 
         private void OnAddBoxOnTeam(AddBoxToTeamSignal signal)
         {
             var idTeam = signal.idTeam;
-            var isForced = _boostTimers[idTeam].isForced;
-            SetAccelerationStatus(idTeam, isForced);
+            SetAccelerationStatus(idTeam, _boostTimers[idTeam].isForced, _boostTimers[idTeam].isForced);
         }
-        
-        private void AddBoostTeamTimer(int id, bool isPlayer = false)
+
+        private void AddBoostTeamTimer(int id, bool isPlayer)
         {
             var model = new AccelerationTeamModel
             {
@@ -71,115 +76,115 @@ namespace Systems.Action
                 isPlayer = isPlayer,
                 id = id
             };
-            
+
             _boostTimers.Add(id, model);
         }
-        
+
         private void InitTeams()
         {
-            var teams = _boxService
-                .GetAllTeams()
-                .Where(t => t.Members.Count > 0 && !t.Leader.isIdle);
-            
+            var teams = _boxService.GetAllTeams()
+                                   .Where(t => t.Members.Count > 0 && !t.Leader.isIdle);
+
             foreach (var team in teams)
             {
-                var id = team.GetId();
-                var isPlayerTeam = _boxService.GetTeamById(id).Leader.isPlayer;
-                AddBoostTeamTimer(id, isPlayerTeam);
+                AddBoostTeamTimer(team.GetId(), team.Leader.isPlayer);
             }
         }
 
         private void OnPressMouse()
         {
             var playerTeam = _boostTimers.Values.FirstOrDefault(x => x.isPlayer);
-            if (playerTeam == null)
-                return;
-            
+            if (playerTeam == null) return;
+
             playerTeam.tweenTimer?.Dispose();
             
             playerTeam.tweenTimer = Observable.FromCoroutine(() => AccelerateTeam(playerTeam))
                 .Subscribe();
         }
-        
+
         private void OnReleaseMouse()
         {
             var playerTeam = _boostTimers.Values.FirstOrDefault(x => x.isPlayer);
-            if (playerTeam == null)
-                return;
-            
-            SetAccelerationStatus(playerTeam.id, false);
-            
+            if (playerTeam == null) return;
+
+            SetAccelerationStatus(playerTeam.id, false, true);
             playerTeam.tweenTimer?.Dispose();
             
             playerTeam.tweenTimer = Observable.FromCoroutine(() => RecoverAbility(playerTeam))
                 .Subscribe();
         }
 
-         private IEnumerator AccelerateTeam(AccelerationTeamModel teamModel)
-         {
-             SetAccelerationStatus(teamModel.id, true);
-             
-             while (teamModel.abilityCapacity > 0)
-             {
-                 teamModel.abilityCapacity -= Time.deltaTime / 4f;
-                 var playerLeader = _boxService.GetHighestBoxInTeam(teamModel.id);
-                 if(playerLeader != null)
-                 {
-                     playerLeader.UpdateAccelerationSlider(teamModel.abilityCapacity, true);
-                 }
-                 
-                 yield return null;
-             }
+        private IEnumerator AccelerateTeam(AccelerationTeamModel teamModel)
+        {
+            SetAccelerationStatus(teamModel.id, true, true);
 
-             teamModel.abilityCapacity = 0f;
-             SetAccelerationStatus(teamModel.id, false);
-             
-             var player = _boxService.GetHighestBoxInTeam(teamModel.id);
-             player.UpdateAccelerationSlider(teamModel.abilityCapacity, false);
+            while (teamModel.abilityCapacity > 0)
+            {
+                teamModel.abilityCapacity -= Time.deltaTime / _timeCasting;
+                UpdateUIForPlayer(teamModel);
+                yield return null;
+            }
 
-             while (teamModel.abilityCapacity < 1)
-             {
-                 teamModel.abilityCapacity += Time.deltaTime / 4f;
+            teamModel.abilityCapacity = 0f;
+            SetAccelerationStatus(teamModel.id, false, true);
+            yield return RecoverAbility(teamModel);
+        }
 
-                 yield return null;
-             }
-         }
+        private IEnumerator RecoverAbility(AccelerationTeamModel teamModel)
+        {
+            var timeSinceUpdateUi = 0f;
 
-         private IEnumerator RecoverAbility(AccelerationTeamModel teamModel)
-         {
-             while (teamModel.abilityCapacity < 1)
-             {
-                 teamModel.abilityCapacity += Time.deltaTime / 4f;
+            while (teamModel.abilityCapacity < 1)
+            {
+                teamModel.abilityCapacity += Time.deltaTime / _timeCasting;
+                timeSinceUpdateUi += Time.deltaTime;
 
-                 yield return null;
-             }
-         }
-         
-        private void SetAccelerationStatus(int idTeam, bool enabled)
+                UpdateUIForPlayer(teamModel);
+
+                if (timeSinceUpdateUi >= _delayBeforeHideUiContainer)
+                {
+                    _boxService.GetHighestBoxInTeam(teamModel.id)?.UpdateAccelerationSliderStatus(teamModel.abilityCapacity, false);
+                }
+
+                yield return null;
+            }
+            
+            _boxService.GetHighestBoxInTeam(teamModel.id)?.UpdateAccelerationSliderStatus(teamModel.abilityCapacity, false);
+        }
+
+        private void UpdateUIForPlayer(AccelerationTeamModel teamModel)
+        {
+            if (!teamModel.isPlayer) return;
+
+            var leader = _boxService.GetHighestBoxInTeam(teamModel.id);
+            if (leader != null)
+            {
+                leader.UpdateAccelerationSliderStatus(teamModel.abilityCapacity);
+            }
+        }
+
+        private void SetAccelerationStatus(int idTeam, bool enabled, bool sliderFlag)
         {
             var team = _boxService.GetTeamById(idTeam);
-            
-            if(team == null || team.Members.Count <= 0)
-                return;
+            if (team == null || team.Members.Count <= 0) return;
 
             _boostTimers[idTeam].isForced = enabled;
             foreach (var box in team.Members)
             {
                 box.IsAccelerationActive = enabled;
             }
-
+            
             if (team.Leader.isPlayer)
             {
-                var playerLeader = team.Leader;
-                playerLeader.UpdateAccelerationSlider(_boostTimers[idTeam].abilityCapacity, enabled);
+                team.Leader.UpdateAccelerationSliderStatus(_boostTimers[idTeam].abilityCapacity, sliderFlag);
             }
         }
 
         public void Dispose()
         {
-            foreach (var boostTimer in _boostTimers)
+            foreach (var boostTimer in _boostTimers.Values)
             {
-                boostTimer.Value.tweenTimer?.Dispose();
+                boostTimer.tweenTimer?.Dispose();
             }
             _boostTimers.Clear();
         }

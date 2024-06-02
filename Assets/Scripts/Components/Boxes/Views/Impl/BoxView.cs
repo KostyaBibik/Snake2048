@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using Enums;
+using GameUtilities.CoroutineHelper;
 using Services;
 using Signals;
 using TMPro;
@@ -28,6 +29,7 @@ namespace Components.Boxes.Views.Impl
         private Tween _scaleTween;
         private SignalBus _signalBus;
         private GameMatchService _gameMatchService;
+        private CoroutineSequence _sliderSequence;
         
         public EBoxGrade Grade => grade;
         public Rigidbody Rigidbody => _rigidbody;
@@ -57,6 +59,7 @@ namespace Components.Boxes.Views.Impl
 
         private void Awake()
         {
+            _sliderSequence = new CoroutineSequence();
             _rigidbody = GetComponent<Rigidbody>();
             _originalScale = meshTransform.localScale;
             
@@ -67,7 +70,6 @@ namespace Components.Boxes.Views.Impl
             mesh.position = forcedPos;
             UpdateTransform(triggerCollider.transform, forcedPos, _originalScale);
             UpdateTransform(physicCollider.transform, forcedPos, _originalScale);
-            
         }
 
         private void UpdateTransform(Transform targetTransform, Vector3 position, Vector3 scale)
@@ -75,6 +77,7 @@ namespace Components.Boxes.Views.Impl
             targetTransform.position = position;
             targetTransform.localScale = scale;
         }
+        
         private void FixedUpdate()
         {
             if(isDestroyed)
@@ -115,11 +118,32 @@ namespace Components.Boxes.Views.Impl
             nickText.text = nick;
         }
 
-        public void UpdateAccelerationSlider(float value, bool isEnabled = true)
+        public void UpdateAccelerationSliderValue(float value)
+        {
+            accelerationSlider.value = value;
+        }
+        
+        public void UpdateAccelerationSliderStatus(float value, bool isEnabled = true)
         {
             accelerationSlider.value = value;
             if(accelerationSlider.gameObject.activeSelf != isEnabled)
-                accelerationSlider.gameObject.SetActive(isEnabled);
+            {
+                if(_sliderSequence.IsRunning)
+                    _sliderSequence.End();
+
+                if (isEnabled)
+                {
+                    _sliderSequence.Run(
+                        TweenBuilder.SetActive(accelerationSlider.gameObject, true),
+                        UITweens.FadeInUnscaled(UIConstantDictionary.Values.DefaultFadeDuration, accelerationSlider.gameObject));
+                }
+                else
+                {
+                    _sliderSequence.Run(
+                        UITweens.FadeOutUnscaled(UIConstantDictionary.Values.DefaultFadeDuration, accelerationSlider.gameObject),
+                        TweenBuilder.SetActive(accelerationSlider.gameObject, false));
+                }
+            }
         }
         
         public void AnimateUpscale(float delay)

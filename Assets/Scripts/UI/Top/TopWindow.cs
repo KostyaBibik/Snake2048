@@ -16,10 +16,11 @@ namespace UI.Top
     {
         [AutoSetupField] private TextMeshProUGUI _time;
         [AutoSetupField] private ButtonView _pause;
+        [AutoSetupField] private ContainerBoostView _containerBoostView;
         
         public override void Initialization()
         {
-            
+            _containerBoostView.BeginHide();
         }
 
         protected override void UpdateView(TopWindowModel model)

@@ -126,13 +126,14 @@ public class BoxPool : IInitializable, IDisposable
         box.isDestroyed = false;
         box.IsSpeedBoosted = false;
         box.DisableNick();
-        box.UpdateAccelerationSlider(0f, false);
+        box.UpdateAccelerationSliderStatus(0f, false);
     }
 
     private void OnReleaseBox(BoxView box)
     {
         box.isDestroyed = true;
         box.DisableNick();
+        box.UpdateAccelerationSliderStatus(0f, false);
         box.gameObject.SetActive(false);
     }
 

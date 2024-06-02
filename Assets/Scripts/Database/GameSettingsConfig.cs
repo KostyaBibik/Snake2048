@@ -24,7 +24,9 @@ namespace Database
 
         [SerializeField] private float distanceForMerge = 0.1f;
         public float DistanceForMerge => distanceForMerge;
-
+        
+        [SerializeField] private float boostSpeedDuration = 4f;
+        public float BoostSpeedDuration => boostSpeedDuration;
         [Space]
         [Header("Spawn Settings")]
         [SerializeField] private float minSpawnInterval = .3f;

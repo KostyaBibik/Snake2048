@@ -49,3 +49,18 @@ MonoBehaviour:
   - grade: 4096
     maxCount: 45
     initialCount: 35
+  - grade: 8192
+    maxCount: 50
+    initialCount: 25
+  - grade: 16384
+    maxCount: 30
+    initialCount: 25
+  - grade: 32768
+    maxCount: 30
+    initialCount: 25
+  - grade: 65536
+    maxCount: 30
+    initialCount: 25
+  - grade: 131072
+    maxCount: 30
+    initialCount: 25

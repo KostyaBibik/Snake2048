@@ -37,8 +37,6 @@ namespace Services.Impl
             if (_boxToTeamMap.ContainsKey(leader))
             {
                 throw new Exception("_boxToTeamMap.ContainsKey");
-                
-                return;
             }
 
             if (!Boxes.Contains(leader))
@@ -52,7 +50,6 @@ namespace Services.Impl
             _boxToTeamMap[leader] = newTeam;
             
             _signalBus.Fire(new RegisterTeamSignal { id = newTeam.GetId() });
-            //InvokeUpdateLeaderboard();
         }
 
         public void AddEntityOnService(BoxView entityView)
