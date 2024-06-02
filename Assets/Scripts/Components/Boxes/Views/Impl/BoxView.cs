@@ -66,7 +66,9 @@ namespace Components.Boxes.Views.Impl
             var mesh = meshTransform.transform;
             meshOffset = (_originalScale.y - 1);
             var forcedPos = mesh.position + new Vector3(0f, meshOffset / 2, 0f);
-            
+
+            nickText.transform.position += new Vector3(0f, meshOffset, 0f);
+            accelerationSlider.transform.position += new Vector3(0f, meshOffset, 0f);
             mesh.position = forcedPos;
             UpdateTransform(triggerCollider.transform, forcedPos, _originalScale);
             UpdateTransform(physicCollider.transform, forcedPos, _originalScale);
@@ -84,7 +86,10 @@ namespace Components.Boxes.Views.Impl
                 return;
             
             if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+            {
+                _rigidbody.velocity = Vector3.zero;
                 return;
+            }
 
             stateContext?.Update();
         }

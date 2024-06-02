@@ -6,6 +6,7 @@ using Enums;
 using Infrastructure.Factories.Impl;
 using Signals;
 using UI.Leaderboard;
+using UniRx;
 using Zenject;
 
 namespace Services.Impl
@@ -18,18 +19,23 @@ namespace Services.Impl
 
         private BoxStateFactory _stateFactory;
         private BoxPool _boxPool;
+        private GameMatchService _matchService;
         private SignalBus _signalBus;
 
         [Inject]
         public void Construct(
             BoxStateFactory stateFactory,
             BoxPool boxPool,
+            GameMatchService matchService,
             SignalBus signalBus
         )
         {
             _stateFactory = stateFactory;
             _boxPool = boxPool;
+            _matchService = matchService;
             _signalBus = signalBus;
+
+            _matchService.playerNickname.Subscribe(HandleUpdatePlayerNickname);
         }
 
         public void RegisterNewTeam(BoxView leader, string nickName)
@@ -195,13 +201,17 @@ namespace Services.Impl
 
         private void InvokeUpdateLeaderboard()
         {
-            var handledTeams = _teams.Where(x => !x.Leader.isIdle).ToArray();
+            var handledTeams = _teams
+                .Where(x => !x.Leader.isIdle)
+                .OrderByDescending(x => x.GetScore())
+                .Take(5)
+                .ToArray();
             
             var leaderboardElementsModel = new LeaderboardModel(handledTeams.Length);
             for (var i = 0; i < handledTeams.Length; i++)
             {
                 var handleTeam = handledTeams[i];
-                leaderboardElementsModel.Items[i] = new LeaderboardElementModel()
+                leaderboardElementsModel.Items[i] = new LeaderboardElementModel
                 {
                     nickname = handleTeam.Nickname,
                     score = handleTeam.GetScore()
@@ -262,6 +272,13 @@ namespace Services.Impl
         {
             var team = GetTeamByMember(boxView);
             return team?.Leader;
+        }
+
+        private void HandleUpdatePlayerNickname(string nick)
+        {
+            var playerTeam = _teams
+                .FirstOrDefault(t => t.Members.Count > 0 && t.Leader != null && t.Leader.isPlayer);
+            playerTeam?.UpdateNickname(nick);
         }
     }
 }

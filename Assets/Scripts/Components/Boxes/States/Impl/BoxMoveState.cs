@@ -74,8 +74,13 @@ namespace Components.Boxes.States.Impl
                 
                 var relatedSpeed = _currentSpeed * Time.deltaTime;
                 var rb = playerView.Rigidbody;
-                rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
 
+                var targetVector = _currentDirection * relatedSpeed;
+                targetVector.y = 0;
+               // rb.AddForce(/*rb.position +*/ _currentDirection * relatedSpeed);
+               // rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
+               rb.velocity = targetVector;
+               
                 var boxTransform = playerView.transform;
                 if(_currentDirection == Vector3.zero)
                     return;

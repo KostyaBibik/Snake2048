@@ -72,6 +72,13 @@ public class BotSpawnSystem : IInitializable, IDisposable
 
     private void SpawnInitialBots()
     {
+        Observable.FromCoroutine(InitialSpawn).Subscribe();
+    }
+    
+    private IEnumerator InitialSpawn()
+    {
+        yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+            
         var playerBoxView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
         var playerHighGrade = _boxService.GetHighGradeInTeam(playerBoxView);
 

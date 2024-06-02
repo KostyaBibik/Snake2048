@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16c7ae1a7ad454db3c7f8f291c3fdd7, type: 3}
   m_Name: GameSettingsConfig
   m_EditorClassIdentifier: 
-  boxMoveSpeed: 8
-  boxBoostSpeed: 6
-  boxAccelerationSpeed: 3
-  boxMoveSpeedOnMerge: 10
+  boxMoveSpeed: 350
+  boxBoostSpeed: 425
+  boxAccelerationSpeed: 160
+  boxMoveSpeedOnMerge: 450
   boxFollowDistance: 2.5
   distanceForMerge: 0.15
   boostSpeedDuration: 4
-  minSpawnInterval: 1
-  maxSpawnInterval: 3
+  minSpawnInterval: 555
+  maxSpawnInterval: 555
   spawnRadius: 2
-  initialIdleBoxCount: 80
+  initialIdleBoxCount: 55
   minSpawnCount: 4
   maxSpawnCount: 10
   boostSpawnInterval: 3
-  maxCountBots: 0
-  initialBotCount: 0
+  maxCountBots: 5
+  initialBotCount: 5
   minSpawnDistance: 4
   botSpawnInterval: 2

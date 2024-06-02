@@ -1,9 +1,11 @@
 ﻿using System;
 using Enums;
 using Helpers;
+using Services;
 using Signals;
 using UI.Loose;
 using UISystem;
+using UniRx;
 using Zenject;
 
 namespace UI.InitStages
@@ -17,7 +19,8 @@ namespace UI.InitStages
         
         public InitLoseWindowStage(
             SignalBus signalBus,
-            SceneLoader sceneLoader)
+            SceneLoader sceneLoader
+        )
         {
             _signalBus = signalBus;
             _sceneLoader = sceneLoader;
@@ -27,10 +30,11 @@ namespace UI.InitStages
         {
             _loseWindow = UIManager.Instance.GetUIElement<LoseWindow>();
             var loseModel = new LoseWindowModel();
-            loseModel.restartCallback = _sceneLoader.RestartScene; 
+            loseModel.restartCallback = _sceneLoader.RestartScene;
+            
             _loseWindow.InvokeUpdateView(loseModel);
             _loseWindow.BeginHide();
-            
+
             _signalBus.Subscribe<ChangeGameModeSignal>(OnChangeGameModeSignal);
         }
 

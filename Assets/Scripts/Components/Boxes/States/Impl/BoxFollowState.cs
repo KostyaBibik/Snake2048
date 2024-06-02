@@ -67,7 +67,11 @@ namespace Components.Boxes.States.Impl
             
             direction.y = 0;
 
-            rb.MovePosition(rb.position + direction * relatedSpeed);
+            //rb.MovePosition(rb.position + direction * relatedSpeed);
+            var targetVector = direction * relatedSpeed;
+            targetVector.y = 0;
+
+            rb.velocity = targetVector;
 
             if (direction == Vector3.zero)
                 return;

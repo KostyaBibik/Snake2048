@@ -1,6 +1,7 @@
 ﻿using System;
 using Enums;
 using Signals;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -8,6 +9,8 @@ namespace Services
 {
     public class GameMatchService : IInitializable, IDisposable
     {
+        public ReactiveProperty<string> playerNickname = new ReactiveProperty<string>();
+        
         private readonly SignalBus _signalBus;
 
         private EGameModeStatus _eGameModeStatus;

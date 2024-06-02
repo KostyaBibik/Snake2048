@@ -109,7 +109,11 @@ namespace Components.Boxes.States.Impl
 
             _currentDirection = Vector3.Slerp(_currentDirection, direction, relatedSpeed).normalized;
             _currentDirection.y = 0;
-            rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
+            var targetVector = _currentDirection * relatedSpeed;
+            targetVector.y = 0;
+
+            rb.velocity = targetVector;
+            //rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
 
             _timeSinceLastDirectionChange = 0f;
         }
@@ -129,7 +133,11 @@ namespace Components.Boxes.States.Impl
 
             _currentDirection = Vector3.Slerp(_currentDirection, _targetDirection, relatedSpeed).normalized;
             _currentDirection.y = 0;
-            rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
+            //rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
+            var targetVector = _currentDirection * relatedSpeed;
+            targetVector.y = 0;
+
+            rb.velocity = targetVector;
         }
 
         private void CheckBoundsAndAdjustDirection()
@@ -148,6 +156,7 @@ namespace Components.Boxes.States.Impl
             if (newDirection != _currentDirection)
             {
                 _currentDirection = Vector3.Slerp(_currentDirection, newDirection, relatedSpeed).normalized;
+                _currentDirection.y = 0;
             }
         }
 

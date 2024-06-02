@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Enums;
 using Input.Context;
+using Services;
 using Services.Impl;
 using Signals;
 using UniRx;
@@ -15,6 +17,7 @@ namespace Systems.Action
     {
         private readonly BoxService _boxService;
         private readonly GameInputManager _inputManager;
+        private readonly GameMatchService _gameMatchService;
         private readonly SignalBus _signalBus;
         
         private Dictionary<int, AccelerationTeamModel> _boostTimers;
@@ -22,10 +25,15 @@ namespace Systems.Action
         private float _timeCasting;
         private float _delayBeforeHideUiContainer;
 
-        public AccelerationBoxSystem(BoxService boxService, GameInputManager inputManager, SignalBus signalBus)
+        public AccelerationBoxSystem(
+            BoxService boxService,
+            GameInputManager inputManager,
+            GameMatchService gameMatchService,
+            SignalBus signalBus)
         {
             _boxService = boxService;
             _inputManager = inputManager;
+            _gameMatchService = gameMatchService;
             _signalBus = signalBus;
         }
 
@@ -93,6 +101,9 @@ namespace Systems.Action
 
         private void OnPressMouse()
         {
+            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+                return;
+            
             var playerTeam = _boostTimers.Values.FirstOrDefault(x => x.isPlayer);
             if (playerTeam == null) return;
 
@@ -104,6 +115,9 @@ namespace Systems.Action
 
         private void OnReleaseMouse()
         {
+            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+                return;
+            
             var playerTeam = _boostTimers.Values.FirstOrDefault(x => x.isPlayer);
             if (playerTeam == null) return;
 

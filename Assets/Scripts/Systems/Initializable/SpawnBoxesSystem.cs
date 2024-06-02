@@ -68,13 +68,20 @@ namespace Systems.Initializable
         
         private void SpawnInitialBoxes(int count)
         {
+            Observable.FromCoroutine(() => InitialSpawn(count)).Subscribe();
+        }
+
+        private IEnumerator InitialSpawn(int count)
+        {
+            yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+            
             for (var i = 0; i < count; i++)
             {
                 var randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
                 SpawnBox(randomGrade);
             }
         }
-
+        
         private void SpawnBox(EBoxGrade eBoxGrade)
         {
             Vector3 spawnPosition;

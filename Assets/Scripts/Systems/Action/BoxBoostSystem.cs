@@ -100,7 +100,10 @@ namespace Systems.Action
         {
             SetBoostStatus(teamModel.id, true);
             var containerBoostModel = new ContainerBoostModel();
-            _containerBoostView.BeginShow();
+            
+            if(teamModel.isPlayer)
+                _containerBoostView.BeginShow();
+
             teamModel.abilityCapacity = 1f;
 
             while (teamModel.abilityCapacity > 0)
@@ -117,9 +120,7 @@ namespace Systems.Action
             SetBoostStatus(teamModel.id, false);
             
             if (teamModel.isPlayer)
-            {
                 _containerBoostView.BeginHide();
-            }
 
             _boostTimers.Remove(teamModel.id);
         }

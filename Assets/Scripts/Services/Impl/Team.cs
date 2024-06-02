@@ -6,7 +6,7 @@ namespace Services.Impl
 {
     public class Team
     {
-        public string Nickname { get; }
+        public string Nickname { get; private set; }
         public List<BoxView> Members { get; } = new List<BoxView>();
         public BoxView Leader;
         public Guid Id { get; private set; }
@@ -46,6 +46,12 @@ namespace Services.Impl
             }
 
             return score;
+        }
+
+        public void UpdateNickname(string nickname)
+        {
+            Nickname = nickname;
+            Leader.SetNickname(nickname);
         }
         
         public int GetId()

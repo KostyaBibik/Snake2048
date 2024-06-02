@@ -4,6 +4,7 @@ using Database;
 using Enums;
 using Helpers;
 using Infrastructure.Pools;
+using Services;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -18,6 +19,7 @@ namespace Systems.Initializable
         
         private readonly GameSceneHandler _sceneHandler;
         private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly GameMatchService _gameMatchService;
         private readonly BoostPool _boostPool;
         private readonly Collider[] _overlapResults = new Collider[10];
         private const string BoxLayerMask = "Box";
@@ -26,11 +28,13 @@ namespace Systems.Initializable
         public SpawnBoostsSystem(
             GameSceneHandler sceneHandler,
             GameSettingsConfig gameSettingsConfig,
+            GameMatchService gameMatchService,
             BoostPool boostPool
         )
         {
             _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
+            _gameMatchService = gameMatchService;
             _boostPool = boostPool;
         }
         
@@ -41,7 +45,7 @@ namespace Systems.Initializable
             _boundsArea = _sceneHandler.FieldView.Collider.bounds;
             _spawnInterval = _gameSettingsConfig.BoostSpawnInterval;
 
-            _observer = Observable.FromCoroutine(SpawnBoxesWithDelay)
+            _observer = Observable.FromCoroutine(SpawnBoostsWithDelay)
                 .Subscribe();
         }
 
@@ -69,13 +73,15 @@ namespace Systems.Initializable
             instance.gameObject.SetActive(true);
         }
         
-        private IEnumerator SpawnBoxesWithDelay()
+        private IEnumerator SpawnBoostsWithDelay()
         {
             do
             {
                 var delay = Random.Range(_spawnInterval, _spawnInterval);
                 
                 yield return new WaitForSeconds(delay);
+                
+                yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
 
                 var spawnCount = Random.Range(1, 2);
 
@@ -87,8 +93,6 @@ namespace Systems.Initializable
                 }
 
             } while (true);
-            
-            yield return null;
         }
 
         private Vector3 GetRandomPositionInBounds()
