@@ -126,6 +126,7 @@ public class BoxPool : IInitializable, IDisposable
         box.isDestroyed = false;
         box.IsSpeedBoosted = false;
         box.DisableNick();
+        box.UpdateBoostVFXStatus(false);
         box.UpdateAccelerationSliderStatus(0f, false);
     }
 
@@ -133,6 +134,7 @@ public class BoxPool : IInitializable, IDisposable
     {
         box.isDestroyed = true;
         box.DisableNick();
+        box.UpdateBoostVFXStatus(false);
         box.UpdateAccelerationSliderStatus(0f, false);
         box.gameObject.SetActive(false);
     }

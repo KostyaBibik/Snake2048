@@ -89,9 +89,11 @@ namespace Systems.Action
 
             if (_boostTimers.ContainsKey(idTeam))
             {
-                foreach (var boxTeamMember in team.Members)
+                var teamLeader = team.Leader;
+                foreach (var box in team.Members)
                 {
-                    boxTeamMember.IsSpeedBoosted = true;
+                    box.IsSpeedBoosted = true;
+                    box.UpdateBoostVFXStatus(box == teamLeader);
                 }
             }
         }
@@ -131,9 +133,11 @@ namespace Systems.Action
             if (team == null || team.Members.Count <= 0) 
                 return;
 
+            var teamLeader = team.Leader;
             foreach (var box in team.Members)
             {
                 box.IsSpeedBoosted = enabled;
+                box.UpdateBoostVFXStatus(enabled && box == teamLeader);
             }
         }
         

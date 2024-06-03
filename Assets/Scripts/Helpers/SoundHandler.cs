@@ -2,23 +2,22 @@
 
 namespace Helpers
 {
-    [RequireComponent(typeof(AudioSource))]
     public class SoundHandler : MonoBehaviour
     {
-        private AudioSource _audioSource;
+        [SerializeField] private AudioSource BgSource;
+        [SerializeField] private AudioSource SoundEffectsSource;
         
         private void Awake()
         {
             transform.parent = null;
-            _audioSource = GetComponent<AudioSource>();
         }
 
-        public void PlayClip(AudioClip audioClip)
+        public void PlayEffectClip(AudioClip audioClip)
         {
-            if(_audioSource == null)
+            if(SoundEffectsSource == null)
                 return;
             
-            _audioSource.PlayOneShot(audioClip);
+            SoundEffectsSource.PlayOneShot(audioClip);
         }
     }
 }

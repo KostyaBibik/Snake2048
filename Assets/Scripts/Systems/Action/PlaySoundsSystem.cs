@@ -31,7 +31,7 @@ namespace Systems.Action
         private void PlaySound(PlaySoundSignal signal)
         {
             var clip = _soundsConfig.GetSound(signal.Type);
-            _soundHandler.PlayClip(clip);
+            _soundHandler.PlayEffectClip(clip);
         }
 
         public void Dispose()

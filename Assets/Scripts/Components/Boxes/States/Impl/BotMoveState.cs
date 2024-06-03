@@ -116,12 +116,18 @@ namespace Components.Boxes.States.Impl
             //rb.MovePosition(rb.position + _currentDirection * relatedSpeed);
 
             _timeSinceLastDirectionChange = 0f;
+            
+            if(_currentDirection == Vector3.zero)
+                return;
+                
+            var targetRotation = Quaternion.LookRotation(_currentDirection);
+            botView.transform.rotation = Quaternion.Slerp(botView.transform.rotation, targetRotation, relatedSpeed);
         }
 
-        private void Wander(BoxView boxView)
+        private void Wander(BoxView botView)
         {
             var relatedSpeed = _currentSpeed * Time.deltaTime;
-            var rb = boxView.Rigidbody;
+            var rb = botView.Rigidbody;
             
             _timeSinceLastDirectionChange += Time.deltaTime;
 
@@ -138,6 +144,12 @@ namespace Components.Boxes.States.Impl
             targetVector.y = 0;
 
             rb.velocity = targetVector;
+            
+            if(_currentDirection == Vector3.zero)
+                return;
+                
+            var targetRotation = Quaternion.LookRotation(_currentDirection);
+            botView.transform.rotation = Quaternion.Slerp(botView.transform.rotation, targetRotation, relatedSpeed);
         }
 
         private void CheckBoundsAndAdjustDirection()

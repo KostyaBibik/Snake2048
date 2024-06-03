@@ -4,6 +4,7 @@ using GameUtilities.CoroutineHelper;
 using Services;
 using Signals;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -24,6 +25,10 @@ namespace Components.Boxes.Views.Impl
         [SerializeField] private Collider triggerCollider;
         [SerializeField] private Collider physicCollider;
 
+        [Header("FX")] 
+        [SerializeField] private GameObject speedAccelerationFx;
+        [SerializeField] private GameObject speedBoostFx;
+        
         private Rigidbody _rigidbody;
         private Vector3 _originalScale;
         private Tween _scaleTween;
@@ -35,7 +40,7 @@ namespace Components.Boxes.Views.Impl
         public Rigidbody Rigidbody => _rigidbody;
         
         public bool IsAccelerationActive  { get; set; }
-        public bool IsSpeedBoosted  { get; set; }
+        public bool IsSpeedBoosted { get; set; }
         public bool isMerging { get; set; }
 
         public bool isDestroyed { get; set; }
@@ -69,7 +74,10 @@ namespace Components.Boxes.Views.Impl
 
             nickText.transform.position += new Vector3(0f, meshOffset, 0f);
             accelerationSlider.transform.position += new Vector3(0f, meshOffset, 0f);
+            speedAccelerationFx.transform.localScale = _originalScale;
+            speedBoostFx.transform.localScale = _originalScale;
             mesh.position = forcedPos;
+            
             UpdateTransform(triggerCollider.transform, forcedPos, _originalScale);
             UpdateTransform(physicCollider.transform, forcedPos, _originalScale);
         }
@@ -148,6 +156,8 @@ namespace Components.Boxes.Views.Impl
                         UITweens.FadeOutUnscaled(UIConstantDictionary.Values.DefaultFadeDuration, accelerationSlider.gameObject),
                         TweenBuilder.SetActive(accelerationSlider.gameObject, false));
                 }
+                
+                speedAccelerationFx.SetActive(isEnabled);
             }
         }
         
@@ -174,6 +184,11 @@ namespace Components.Boxes.Views.Impl
         {
             _scaleTween?.Kill();
             meshTransform.localScale = _originalScale;
+        }
+
+        public void UpdateBoostVFXStatus(bool flag)
+        {
+            speedBoostFx.gameObject.SetActive(flag);
         }
         
         private void OnDisable()

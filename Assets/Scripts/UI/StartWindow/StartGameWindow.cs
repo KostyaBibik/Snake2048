@@ -1,8 +1,10 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UIKit.Elements;
 using UIKit.Elements.Models;
 using UISystem;
+using UnityEngine;
 
 namespace UI.StartWindow
 {
@@ -14,8 +16,13 @@ namespace UI.StartWindow
     
     public class StartGameWindow : UIElementView<StartGameModel>
     {
+        [SerializeField] private float _fadeDuration = 1.0f;
+        
         [AutoSetupField] private ButtonView _bg;
         [AutoSetupField] private TMP_InputField _inputNick;
+        [AutoSetupField] private TextMeshProUGUI _labelStartGame;
+        
+        private Sequence _fadeSequence;
         
         protected override void UpdateView(StartGameModel model)
         {
@@ -24,6 +31,22 @@ namespace UI.StartWindow
             _bg.InvokeUpdateView(startPlayModel);
 
             _inputNick.onValueChanged.AddListener(text => model.onEditNickname.Invoke(text));
+            FadeAnimationTitle();
+        }
+
+        protected override void OnHideEnd()
+        {
+            _fadeSequence?.Kill();
+            
+            base.OnHideEnd();
+        }
+
+        private void FadeAnimationTitle()
+        {
+            _fadeSequence = DOTween.Sequence()
+                .Append(_labelStartGame.DOFade(0, _fadeDuration).SetEase(Ease.InOutSine))
+                .Append(_labelStartGame.DOFade(1, _fadeDuration).SetEase(Ease.InOutSine))
+                .SetLoops(-1, LoopType.Yoyo); 
         }
     }
 }
