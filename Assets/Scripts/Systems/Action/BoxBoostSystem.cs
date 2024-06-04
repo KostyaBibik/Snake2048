@@ -139,6 +139,11 @@ namespace Systems.Action
                 box.IsSpeedBoosted = enabled;
                 box.UpdateBoostVFXStatus(enabled && box == teamLeader);
             }
+
+            if (teamLeader.isPlayer && enabled)
+            {
+                _signalBus.Fire(new PlaySoundSignal {type = ESoundType.BoostMoving});
+            }
         }
         
         private void UpdateUIForPlayer(BoostTeamModel teamModel, ContainerBoostModel containerBoostModel)

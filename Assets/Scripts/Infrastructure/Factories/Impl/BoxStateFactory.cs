@@ -1,4 +1,5 @@
-﻿using Components.Boxes.States;
+﻿using Systems.Action;
+using Components.Boxes.States;
 using Components.Boxes.States.Impl;
 using Components.Boxes.Views.Impl;
 using Database;
@@ -15,17 +16,20 @@ namespace Infrastructure.Factories.Impl
         private readonly GameInputManager _inputManager;
         private readonly BotService _botService;
         private readonly GameSettingsConfig _gameSettingsConfig;
+        private readonly BotsSettingsConfig _botsSettingsConfig;
         private readonly GameSceneHandler _sceneHandler;
         private readonly Camera _camera;
         private readonly SignalBus _signalBus;
 
         private BoxService _boxService;
         private BoxPool _boxPool;
+        private AccelerationBoxSystem _accelerationBoxSystem;
 
         public BoxStateFactory(
             BotService botService,
             GameInputManager inputManager,
             GameSettingsConfig gameSettingsConfig,
+            BotsSettingsConfig botsSettingsConfig,
             GameSceneHandler sceneHandler,
             Camera camera,
             SignalBus signalBus
@@ -35,6 +39,7 @@ namespace Infrastructure.Factories.Impl
             _inputManager = inputManager;
             _sceneHandler = sceneHandler;
             _gameSettingsConfig = gameSettingsConfig;
+            _botsSettingsConfig = botsSettingsConfig;
             _camera = camera;
             _signalBus = signalBus;
         }
@@ -42,11 +47,12 @@ namespace Infrastructure.Factories.Impl
         [Inject]
         private void Construct(
             BoxService boxService,
-            BoxPool boxPool
-        )
+            BoxPool boxPool,
+            AccelerationBoxSystem accelerationBoxSystem)
         {
             _boxService = boxService;
             _boxPool = boxPool;
+            _accelerationBoxSystem = accelerationBoxSystem;
         }
         
         public IBoxState CreateFollowState(Transform leader, float leaderMeshOffset)
@@ -72,7 +78,8 @@ namespace Infrastructure.Factories.Impl
                 _boxPool,
                 _gameSettingsConfig,
                 boxToMerge,
-                targetGrade
+                targetGrade,
+                _signalBus
             );
         }
 
@@ -81,7 +88,9 @@ namespace Infrastructure.Factories.Impl
             return new BotMoveState(
                 _boxService,
                 _gameSettingsConfig,
-                _sceneHandler
+                _sceneHandler,
+                _accelerationBoxSystem,
+                _botsSettingsConfig
             );
         }
     }

@@ -27,7 +27,7 @@ namespace Systems.Runtime
 
         public void Tick()
         {
-            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+            if(!_gameMatchService.IsGameRunning())
                 return;
             
             _time += Time.deltaTime;

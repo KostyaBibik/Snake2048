@@ -10,7 +10,7 @@ namespace Helpers
     {
         public static IEnumerator ActivateHandlerOnStartGame(UIElementBase view, GameMatchService service)
         {
-            yield return new WaitUntil(() => service.EGameModeStatus == EGameModeStatus.Play);
+            yield return new WaitUntil(service.IsGameRunning);
 
             view.BeginShow();
         }

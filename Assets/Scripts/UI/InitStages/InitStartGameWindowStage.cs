@@ -35,6 +35,7 @@ namespace UI.InitStages
         {
             _startGameWindow.BeginHide();
             _signalBus.Fire(new ChangeGameModeSignal{ status = EGameModeStatus.Play });
+            _signalBus.Fire(new PlaySoundSignal { type = ESoundType.UiClick});
         }
 
         private void OnUpdateNickText(string nick)

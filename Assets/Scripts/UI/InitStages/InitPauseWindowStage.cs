@@ -31,6 +31,7 @@ namespace UI.InitStages
             pauseWindowModel.ContinuePlayCallback = () =>
             {
                 _signalBus.Fire(new ChangeGameModeSignal {status = EGameModeStatus.Play});
+                _signalBus.Fire(new PlaySoundSignal { type = ESoundType.UiClick});
                 pauseWindow.BeginHide();
                 topWindow.BeginShow();
             };

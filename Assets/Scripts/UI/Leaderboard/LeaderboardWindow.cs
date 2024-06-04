@@ -31,7 +31,7 @@ namespace UI.Leaderboard
         protected override void UpdateView(LeaderboardModel model)
         {
             var sortedItems = model.Items
-                .OrderBy(s => s.score)
+                .OrderByDescending(s => s.score)
                 .Take(5)
                 .ToArray();
             
@@ -65,10 +65,11 @@ namespace UI.Leaderboard
 
         private void UpdateContent(LeaderboardElementModel[] Items)
         {
-            for (var i = 0; i < Items.Length; i++)
+            for (var i = Items.Length - 1; i >= 0; i--)
             {
-                var line = _lines[Items.Length - 1 - i];
+                var line = _lines[i];
                 var lineModel = Items[i];
+                lineModel.nickname = $"{i + 1}. {lineModel.nickname}";
                 
                 line.InvokeUpdateView(lineModel);
             }

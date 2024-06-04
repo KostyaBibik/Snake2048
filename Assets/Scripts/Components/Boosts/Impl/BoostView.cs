@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Components.Boxes.Views.Impl;
 using Enums;
 using Infrastructure.Pools;
@@ -12,12 +13,15 @@ namespace Components.Boosts.Impl
     public class BoostView : MonoBehaviour, IBoostView
     {
         [SerializeField] private EBoxBoost boostType;
+        [SerializeField] private GameObject fxOnDestroy;
+        [SerializeField] private GameObject speedFx;
 
         private SignalBus _signalBus;
         private BoostPool _boostPool;
         
         public bool isDestroyed { get; set; }
         public EBoxBoost BoostType => boostType;
+        public bool IsInteractable { get; set; }
 
         [Inject]
         private void Construct(
@@ -29,9 +33,15 @@ namespace Components.Boosts.Impl
             _boostPool = pool;
         }
 
+        private void OnEnable()
+        {
+            speedFx.SetActive(true);
+            fxOnDestroy.SetActive(false);
+        }
+
         private void OnTriggerEnter(Collider other)
         {
-            if (isDestroyed)
+            if (isDestroyed || !IsInteractable)
                 return;
             
             if (other.transform.parent && other.transform.parent.TryGetComponent(out BoxView box))
@@ -41,9 +51,20 @@ namespace Components.Boosts.Impl
                     box = box,
                     boostType = BoostType
                 });
-                
-                _boostPool.ReturnToPool(this, BoostType);
+
+                IsInteractable = false;
+                StartCoroutine(nameof(DeactivateView));
             }
+        }
+
+        private IEnumerator DeactivateView()
+        {
+            speedFx.SetActive(false);
+            fxOnDestroy.SetActive(true);
+            
+            yield return new WaitForSeconds(1f);
+            
+            _boostPool.ReturnToPool(this, BoostType);
         }
     }
 }

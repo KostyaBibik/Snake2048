@@ -125,9 +125,11 @@ public class BoxPool : IInitializable, IDisposable
         box.isIdle = false;
         box.isDestroyed = false;
         box.IsSpeedBoosted = false;
+        box.Rigidbody.velocity = Vector3.zero;
         box.DisableNick();
         box.UpdateBoostVFXStatus(false);
         box.UpdateAccelerationSliderStatus(0f, false);
+        box.UpdateAccelerationFxStatus(false);
     }
 
     private void OnReleaseBox(BoxView box)
@@ -136,6 +138,8 @@ public class BoxPool : IInitializable, IDisposable
         box.DisableNick();
         box.UpdateBoostVFXStatus(false);
         box.UpdateAccelerationSliderStatus(0f, false);
+        box.UpdateAccelerationFxStatus(false);
+        box.Rigidbody.velocity = Vector3.zero;
         box.gameObject.SetActive(false);
     }
 

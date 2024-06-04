@@ -19,14 +19,14 @@ MonoBehaviour:
   boxFollowDistance: 2.5
   distanceForMerge: 0.15
   boostSpeedDuration: 4
-  minSpawnInterval: 555
-  maxSpawnInterval: 555
-  spawnRadius: 2
-  initialIdleBoxCount: 55
-  minSpawnCount: 4
-  maxSpawnCount: 10
-  boostSpawnInterval: 3
-  maxCountBots: 5
-  initialBotCount: 5
-  minSpawnDistance: 4
+  minSpawnInterval: 1.5
+  maxSpawnInterval: 3
+  spawnRadius: 3
+  initialIdleBoxCount: 120
+  minSpawnCount: 10
+  maxSpawnCount: 22
+  boostSpawnInterval: 12
+  maxCountBots: 20
+  initialBotCount: 12
+  minSpawnDistance: 5
   botSpawnInterval: 2

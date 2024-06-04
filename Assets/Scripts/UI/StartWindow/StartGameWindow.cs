@@ -13,10 +13,10 @@ namespace UI.StartWindow
         public Action startPlayCallback;
         public Action<string> onEditNickname;
     }
-    
+
     public class StartGameWindow : UIElementView<StartGameModel>
     {
-        [SerializeField] private float _fadeDuration = 1.0f;
+        [SerializeField] private float fadeDuration = 1.0f;
         
         [AutoSetupField] private ButtonView _bg;
         [AutoSetupField] private TMP_InputField _inputNick;
@@ -44,8 +44,8 @@ namespace UI.StartWindow
         private void FadeAnimationTitle()
         {
             _fadeSequence = DOTween.Sequence()
-                .Append(_labelStartGame.DOFade(0, _fadeDuration).SetEase(Ease.InOutSine))
-                .Append(_labelStartGame.DOFade(1, _fadeDuration).SetEase(Ease.InOutSine))
+                .Append(_labelStartGame.DOFade(0, fadeDuration).SetEase(Ease.InOutSine))
+                .Append(_labelStartGame.DOFade(1, fadeDuration).SetEase(Ease.InOutSine))
                 .SetLoops(-1, LoopType.Yoyo); 
         }
     }

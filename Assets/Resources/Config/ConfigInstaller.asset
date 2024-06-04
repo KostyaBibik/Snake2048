@@ -19,3 +19,4 @@ MonoBehaviour:
   nicknamesConfig: {fileID: 11400000, guid: aee1515ec3650b143b5146c33251ec53, type: 2}
   boostPrefabsConfig: {fileID: 11400000, guid: dc388783b0a9c08489b6687996b61bb9, type: 2}
   boostPoolConfig: {fileID: 11400000, guid: 58ae0abb01c2daa4db4eeb8437825041, type: 2}
+  botsSettingsConfig: {fileID: 11400000, guid: aee7833ffe129314ab72e50b2f070124, type: 2}

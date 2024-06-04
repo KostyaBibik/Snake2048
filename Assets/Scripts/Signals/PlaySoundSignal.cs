@@ -4,6 +4,6 @@ namespace Signals
 {
     public class PlaySoundSignal
     {
-        public ESoundType Type;
+        public ESoundType type;
     }
 }

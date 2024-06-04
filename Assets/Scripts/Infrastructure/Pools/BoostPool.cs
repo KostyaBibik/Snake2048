@@ -113,13 +113,16 @@ namespace Infrastructure.Pools
             }
         }
 
-        private void OnGetBoost(BoostView box)
+        private void OnGetBoost(BoostView view)
         {
+            view.IsInteractable = true;
+            view.isDestroyed = false;
         }
 
         private void OnReleaseBoost(BoostView view)
         {
             view.isDestroyed = true;
+            view.IsInteractable = false;
             view.gameObject.SetActive(false);
         }
 

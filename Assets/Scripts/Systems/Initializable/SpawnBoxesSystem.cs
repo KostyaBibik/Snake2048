@@ -73,7 +73,7 @@ namespace Systems.Initializable
 
         private IEnumerator InitialSpawn(int count)
         {
-            yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+            yield return new WaitUntil(() => _gameMatchService.IsGameRunning());
             
             for (var i = 0; i < count; i++)
             {
@@ -119,7 +119,7 @@ namespace Systems.Initializable
                 
                 yield return new WaitForSeconds(delay);
 
-                yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+                yield return new WaitUntil(() => _gameMatchService.IsGameRunning());
 
                 var spawnCount = Random.Range(_minSpawnCount, _maxSpawnCount);
 

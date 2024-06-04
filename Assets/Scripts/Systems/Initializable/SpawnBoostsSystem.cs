@@ -81,7 +81,7 @@ namespace Systems.Initializable
                 
                 yield return new WaitForSeconds(delay);
                 
-                yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+                yield return new WaitUntil(() => _gameMatchService.IsGameRunning());
 
                 var spawnCount = Random.Range(1, 2);
 

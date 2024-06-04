@@ -15,6 +15,7 @@ namespace Installers
         [SerializeField] private NicknamesConfig nicknamesConfig;
         [SerializeField] private BoostPrefabsConfig boostPrefabsConfig;
         [SerializeField] private BoostPoolConfig boostPoolConfig;
+        [SerializeField] private BotsSettingsConfig botsSettingsConfig;
         
         public override void InstallBindings()
         {
@@ -25,6 +26,7 @@ namespace Installers
             Container.BindInstance(nicknamesConfig);
             Container.BindInstance(boostPrefabsConfig);   
             Container.BindInstance(boostPoolConfig);
+            Container.BindInstance(botsSettingsConfig);
         }
     }
 }

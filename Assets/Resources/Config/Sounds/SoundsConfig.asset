@@ -15,3 +15,11 @@ MonoBehaviour:
   sounds:
   - type: 1
     clip: {fileID: 8300000, guid: 4861b5461c5a2de44bcb3554c322f15f, type: 3}
+  - type: 2
+    clip: {fileID: 8300000, guid: 7ac5de5d5f164e8458bd4810fc55deea, type: 3}
+  - type: 3
+    clip: {fileID: 8300000, guid: a39451e2661fd08459be8cd11768f2ad, type: 3}
+  - type: 4
+    clip: {fileID: 8300000, guid: 90e9963408a3a044b8102a2015ec6eb0, type: 3}
+  - type: 5
+    clip: {fileID: 8300000, guid: 7fb954e1c1961644d85f884b946f53b0, type: 3}

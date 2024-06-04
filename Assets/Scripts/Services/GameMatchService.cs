@@ -26,6 +26,12 @@ namespace Services
             _signalBus.Subscribe<ChangeGameModeSignal>(OnChangeGameMode);
         }
 
+        public bool IsGameRunning()
+        {
+            return _eGameModeStatus == EGameModeStatus.Play
+                   || _eGameModeStatus == EGameModeStatus.Lose;
+        }
+
         private void OnChangeGameMode(ChangeGameModeSignal signal)
         {
             _eGameModeStatus = signal.status;

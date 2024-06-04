@@ -30,7 +30,7 @@ namespace Systems.Action
 
         private void PlaySound(PlaySoundSignal signal)
         {
-            var clip = _soundsConfig.GetSound(signal.Type);
+            var clip = _soundsConfig.GetSound(signal.type);
             _soundHandler.PlayEffectClip(clip);
         }
 

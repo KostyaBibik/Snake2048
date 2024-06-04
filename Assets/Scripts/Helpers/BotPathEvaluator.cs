@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Components.Boxes.Views.Impl;
 using Services.Impl;
 using UnityEngine;
@@ -51,7 +52,7 @@ namespace Helpers
 
         private static bool IsThreatNearby(BoxService boxService, BoxView botView, Vector3 position)
         {
-            var boxes = boxService.GetAllBoxes();
+            var boxes = boxService.GetAllTeams().Select(b => b.Leader);
         
             foreach (var box in boxes)
             {

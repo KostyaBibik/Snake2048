@@ -12,12 +12,12 @@ namespace Helpers
             transform.parent = null;
         }
 
-        public void PlayEffectClip(AudioClip audioClip)
+        public void PlayEffectClip(AudioClip audioClip, float volume = 1)
         {
             if(SoundEffectsSource == null)
                 return;
             
-            SoundEffectsSource.PlayOneShot(audioClip);
+            SoundEffectsSource.PlayOneShot(audioClip, volume);
         }
     }
 }

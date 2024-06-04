@@ -3,7 +3,9 @@ using Database;
 using Enums;
 using Helpers;
 using Services.Impl;
+using Signals;
 using UnityEngine;
+using Zenject;
 
 namespace Components.Boxes.States.Impl
 {
@@ -15,6 +17,7 @@ namespace Components.Boxes.States.Impl
         private readonly GameSettingsConfig _gameSettingsConfig;
         private readonly BoxView _boxToMerge;
         private readonly EBoxGrade _targetGrade;
+        private readonly SignalBus _signalBus;
 
         private float _mergeSpeed;
         private float _currentSpeed;
@@ -28,7 +31,8 @@ namespace Components.Boxes.States.Impl
             BoxPool boxPool,
             GameSettingsConfig gameSettingsConfig,
             BoxView boxToMerge,
-            EBoxGrade targetGrade
+            EBoxGrade targetGrade,
+            SignalBus signalBus
         )
         {
             _boxService = boxService;
@@ -37,6 +41,7 @@ namespace Components.Boxes.States.Impl
             _gameSettingsConfig = gameSettingsConfig;
             _boxToMerge = boxToMerge;
             _targetGrade = targetGrade;
+            _signalBus = signalBus;
         }
 
         public void EnterState(BoxContext context)
@@ -115,6 +120,11 @@ namespace Components.Boxes.States.Impl
                 _botService.AddEntityOnService(newBox);
             }
 
+            if (newBox.isPlayer)
+            {
+                _signalBus.Fire(new PlaySoundSignal { type = ESoundType.MergeBoxes});
+            }
+            
             _boxService.AddBoxToTeam(box1, newBox);
 
             _botService.RemoveEntity(box1);

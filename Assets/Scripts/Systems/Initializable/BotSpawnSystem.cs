@@ -27,10 +27,14 @@ public class BotSpawnSystem : IInitializable, IDisposable
     private readonly BotService _botService;
     private readonly GameSettingsConfig _gameSettingsConfig;
     private readonly NicknamesConfig _nicknamesConfig;
+    private readonly BotsSettingsConfig _botsSettingsConfig;
     private readonly GameSceneHandler _sceneHandler;
     private readonly GameMatchService _gameMatchService;
 
     private readonly Collider[] _overlapResults = new Collider[10];
+    private float _spawnChanceGradeDifference3;
+    private float _spawnChanceGradeDifference2;
+    private float _spawnChanceGradeDifference1;
     private const string BoxLayerMask = "Box";
     
     public BotSpawnSystem(
@@ -40,6 +44,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
         BotService botService,
         GameSettingsConfig gameSettingsConfig,
         NicknamesConfig nicknamesConfig,
+        BotsSettingsConfig botsSettingsConfig,
         GameSceneHandler sceneHandler,
         GameMatchService gameMatchService
     )
@@ -50,6 +55,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
         _botService = botService;
         _gameSettingsConfig = gameSettingsConfig;
         _nicknamesConfig = nicknamesConfig;
+        _botsSettingsConfig = botsSettingsConfig;
         _sceneHandler = sceneHandler;
         _gameMatchService = gameMatchService;
     }
@@ -61,6 +67,10 @@ public class BotSpawnSystem : IInitializable, IDisposable
         _minSpawnDistance = _gameSettingsConfig.MinSpawnDistance;
         _spawnInterval = _gameSettingsConfig.BotSpawnInterval;
         _locationBounds = _sceneHandler.FieldView.Collider.bounds;
+        
+        _spawnChanceGradeDifference3 = _botsSettingsConfig.SpawnChanceGradeDifference3;
+        _spawnChanceGradeDifference2 = _botsSettingsConfig.SpawnChanceGradeDifference2;
+        _spawnChanceGradeDifference1 = _botsSettingsConfig.SpawnChanceGradeDifference1;
 
         SpawnInitialBots();
         
@@ -77,7 +87,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
     
     private IEnumerator InitialSpawn()
     {
-        yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+        yield return new WaitUntil(() => _gameMatchService.IsGameRunning());
             
         var playerBoxView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
         var playerHighGrade = _boxService.GetHighGradeInTeam(playerBoxView);
@@ -151,7 +161,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
 
             yield return new WaitUntil(() => _boxService.GetBotTeamsCount() < _maxBotCount);
             
-            yield return new WaitUntil(() => _gameMatchService.EGameModeStatus == EGameModeStatus.Play);
+            yield return new WaitUntil(() => _gameMatchService.IsGameRunning());
 
             var playerBoxView = _boxService.GetAllBoxes().FirstOrDefault(box => box.isPlayer);
             if (playerBoxView == null)
@@ -170,21 +180,17 @@ public class BotSpawnSystem : IInitializable, IDisposable
     
     private EBoxGrade CalculateBotGrade(EBoxGrade playerHighGrade)
     {
-        var probabilityGradeAdd3 = 0.15f;
-        var probabilityGradeAdd2 = 0.2f;
-        var probabilityGradeAdd1 = 0.15f;
-
         var randomValue = Random.value;
 
-        if (randomValue < probabilityGradeAdd3)
+        if (randomValue < _spawnChanceGradeDifference3)
         {
             return playerHighGrade.NextSteps(3);
         }
-        else if (randomValue < probabilityGradeAdd3 + probabilityGradeAdd2)
+        else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2)
         {
             return playerHighGrade.NextSteps(2);
         }
-        else if (randomValue < probabilityGradeAdd3 + probabilityGradeAdd2 + probabilityGradeAdd1)
+        else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2 + _spawnChanceGradeDifference1)
         {
             return playerHighGrade.Next();
         }

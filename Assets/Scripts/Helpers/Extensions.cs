@@ -42,12 +42,20 @@ namespace Helpers
                 throw new ArgumentException("T must be an enumerated type");
             }
 
-            Array values = Enum.GetValues(typeof(T));
-            int startIndex = Array.IndexOf(values, start);
-            int endIndex = Array.IndexOf(values, end);
+            var values = Enum.GetValues(typeof(T));
+            var startIndex = Array.IndexOf(values, start);
+            var endIndex = Array.IndexOf(values, end);
 
-            int randomIndex = random.Next(Math.Min(startIndex, endIndex), Math.Max(startIndex, endIndex) + 1);
+            var randomIndex = random.Next(Math.Min(startIndex, endIndex), Math.Max(startIndex, endIndex) + 1);
             return (T)values.GetValue(randomIndex);
+        }
+        
+        public static int IndexDifference<T>(this T from, T to) where T : Enum
+        {
+            var values = (T[])Enum.GetValues(typeof(T));
+            var fromIndex = Array.IndexOf(values, from);
+            var toIndex = Array.IndexOf(values, to);
+            return Math.Abs(toIndex - fromIndex);
         }
     }
 }

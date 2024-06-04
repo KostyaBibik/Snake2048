@@ -3,6 +3,7 @@ using System.Globalization;
 using TMPro;
 using UIKit.Elements;
 using UIKit.Elements.Models;
+using UnityEngine;
 
 namespace UI.Top
 {
@@ -10,6 +11,7 @@ namespace UI.Top
     {
         public float CurrentTime;
         public Action PauseGameCallback;
+        public bool hidePause;
     }
     
     public class TopWindow : UIWindow<TopWindowModel>
@@ -33,6 +35,12 @@ namespace UI.Top
                 var pauseBtnModel = new ButtonModel();
                 pauseBtnModel.ClickCallback = model.PauseGameCallback;
                 _pause.InvokeUpdateView(pauseBtnModel);
+                _pause.BeginShow();
+            }
+            
+            if(model.hidePause)
+            {
+                _pause.BeginHide();
             }
         }
     }

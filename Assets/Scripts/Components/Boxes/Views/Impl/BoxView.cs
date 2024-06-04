@@ -93,7 +93,7 @@ namespace Components.Boxes.Views.Impl
             if(isDestroyed)
                 return;
             
-            if(_gameMatchService.EGameModeStatus != EGameModeStatus.Play)
+            if(!_gameMatchService.IsGameRunning())
             {
                 _rigidbody.velocity = Vector3.zero;
                 return;
@@ -131,12 +131,7 @@ namespace Components.Boxes.Views.Impl
             nickText.text = nick;
         }
 
-        public void UpdateAccelerationSliderValue(float value)
-        {
-            accelerationSlider.value = value;
-        }
-        
-        public void UpdateAccelerationSliderStatus(float value, bool isEnabled = true)
+        public void UpdateAccelerationSliderStatus(float value, bool isEnabled)
         {
             accelerationSlider.value = value;
             if(accelerationSlider.gameObject.activeSelf != isEnabled)
@@ -156,9 +151,13 @@ namespace Components.Boxes.Views.Impl
                         UITweens.FadeOutUnscaled(UIConstantDictionary.Values.DefaultFadeDuration, accelerationSlider.gameObject),
                         TweenBuilder.SetActive(accelerationSlider.gameObject, false));
                 }
-                
-                speedAccelerationFx.SetActive(isEnabled);
             }
+        }
+
+        public void UpdateAccelerationFxStatus( bool isEnabled)
+        {
+            if(speedAccelerationFx.activeSelf != isEnabled)
+                speedAccelerationFx.SetActive(isEnabled);
         }
         
         public void AnimateUpscale(float delay)

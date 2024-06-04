@@ -131,7 +131,7 @@ namespace Systems.Action
             {
                 _signalBus.Fire(new PlaySoundSignal
                 {
-                    Type = ESoundType.Eat
+                    type = ESoundType.Eat
                 });
             }
         }
