@@ -4,7 +4,6 @@ using GameUtilities.CoroutineHelper;
 using Services;
 using Signals;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -169,7 +168,7 @@ namespace Components.Boxes.Views.Impl
 
             _scaleTween = DOTween.Sequence()
                 .PrependInterval(delay)
-                .Append(meshTransform.DOScale(_originalScale + new Vector3(.25f, .25f, .25f), .15f))
+                .Append(meshTransform.DOScale(_originalScale + new Vector3(.45f, .45f, .45f), .15f))
                 .Append(meshTransform.DOScale(_originalScale, .15f))
                 .Play();
         }

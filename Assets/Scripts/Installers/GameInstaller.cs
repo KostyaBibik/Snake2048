@@ -5,7 +5,7 @@ using Systems.Runtime;
 using Cinemachine;
 using Helpers;
 using Infrastructure.Factories.Impl;
-using Infrastructure.Pools;
+using Infrastructure.Pools.Impl;
 using Services;
 using Services.Impl;
 using Signals;
@@ -52,6 +52,7 @@ namespace Installers
             Container.DeclareSignal<AddBoxToTeamSignal>();
             Container.DeclareSignal<RegisterTeamSignal>();
             Container.DeclareSignal<LeaderboardUpdateSignal>();
+            Container.DeclareSignal<ChangeSoundSettingsSignal>();
         }
 
         private void BindGameMatcher()

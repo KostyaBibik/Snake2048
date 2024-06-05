@@ -3,10 +3,10 @@ using System.Collections;
 using Database;
 using Enums;
 using Helpers;
+using Infrastructure.Pools.Impl;
 using Services;
 using Services.Impl;
 using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 using IInitializable = Zenject.IInitializable;
 using Random = UnityEngine.Random;
@@ -31,6 +31,10 @@ namespace Systems.Initializable
         private int _initialCount;
         private Bounds _boundsArea;
         private readonly Collider[] _overlapResults = new Collider[10];
+        private float _spawnChanceGradeDifference3 = .01f;
+        private float _spawnChanceGradeDifference2 = .02f;
+        private float _spawnChanceGradeDifference1 = .04f;
+        
         private const string BoxLayerMask = "Box";
         
         private SpawnBoxesSystem(
@@ -121,11 +125,27 @@ namespace Systems.Initializable
 
                 yield return new WaitUntil(() => _gameMatchService.IsGameRunning());
 
+                Team first = null;
+                foreach (var b in _boxService.GetAllTeams())
+                {
+                    if (b.Leader.isPlayer)
+                    {
+                        first = b;
+                        break;
+                    }
+                }
+
+                var playerGrade = EBoxGrade.Grade_8;
+                if (first != null)
+                {
+                    playerGrade = first.Leader.Grade;
+                }
+
                 var spawnCount = Random.Range(_minSpawnCount, _maxSpawnCount);
 
                 for (var i = 0; i < spawnCount; i++)
                 {
-                    var randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
+                    var randomGrade = CalculateRandomGrade(playerGrade);
 
                     SpawnBox(randomGrade);
                 }
@@ -141,6 +161,28 @@ namespace Systems.Initializable
             var y = _boundsArea.max.y * 2;
             var z = Random.Range(_boundsArea.min.z, _boundsArea.max.z);
             return new Vector3(x, y, z);
+        }
+        
+        private EBoxGrade CalculateRandomGrade(EBoxGrade playerHighGrade)
+        {
+            var randomValue = Random.value;
+
+            if (randomValue < _spawnChanceGradeDifference3)
+            {
+                return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(3));
+            }
+            else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2)
+            {
+                return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(2));
+            }
+            else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2 + _spawnChanceGradeDifference1)
+            {
+                return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.Next());
+            }
+            else
+            {
+                return EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
+            }
         }
         
         private bool IsPositionOccupied(Vector3 position)

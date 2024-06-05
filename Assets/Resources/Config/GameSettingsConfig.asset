@@ -26,7 +26,7 @@ MonoBehaviour:
   minSpawnCount: 10
   maxSpawnCount: 22
   boostSpawnInterval: 12
-  maxCountBots: 20
-  initialBotCount: 12
+  maxCountBots: 45
+  initialBotCount: 30
   minSpawnDistance: 5
-  botSpawnInterval: 2
+  botSpawnInterval: 1.5

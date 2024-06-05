@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - type: 1
-    clip: {fileID: 8300000, guid: 4861b5461c5a2de44bcb3554c322f15f, type: 3}
+    clip: {fileID: 8300000, guid: e35993950b7eb9f4a80f82f80cfd8b0a, type: 3}
   - type: 2
     clip: {fileID: 8300000, guid: 7ac5de5d5f164e8458bd4810fc55deea, type: 3}
   - type: 3
-    clip: {fileID: 8300000, guid: a39451e2661fd08459be8cd11768f2ad, type: 3}
+    clip: {fileID: 8300000, guid: 45e88fedf72384a468234c3795620823, type: 3}
   - type: 4
     clip: {fileID: 8300000, guid: 90e9963408a3a044b8102a2015ec6eb0, type: 3}
   - type: 5

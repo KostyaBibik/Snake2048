@@ -27,6 +27,7 @@ namespace UI.InitStages
         {
             var pauseWindow = UIManager.Instance.GetUIElement<PauseWindow>();
             var topWindow = UIManager.Instance.GetUIElement<TopWindow>();
+            
             var pauseWindowModel = new PauseWindowModel();
             pauseWindowModel.ContinuePlayCallback = () =>
             {
@@ -35,11 +36,35 @@ namespace UI.InitStages
                 pauseWindow.BeginHide();
                 topWindow.BeginShow();
             };
+
+            pauseWindowModel.baseMusicValue = 1f;
+            pauseWindowModel.baseSoundValue = 0f;
+
+            pauseWindowModel.onChangeSoundsCallback = OnChangeSoundVolume;
+            pauseWindowModel.onChangeMusicCallback = OnChangeMusicVolume;
             
             Observable.FromCoroutine(() => UiViewHelper.ActivateHandlerOnStartGame(topWindow, _gameMatchService)).Subscribe();
 
             pauseWindow.InvokeUpdateView(pauseWindowModel);
             pauseWindow.BeginHide();
+        }
+
+        private void OnChangeSoundVolume(float volume)
+        {
+            _signalBus.Fire(new ChangeSoundSettingsSignal
+            {
+                source = EAudioType.SoundsFX,
+                volume = volume
+            });
+        }
+        
+        private void OnChangeMusicVolume(float volume)
+        {
+            _signalBus.Fire(new ChangeSoundSettingsSignal
+            {
+                source = EAudioType.Music,
+                volume = volume
+            });
         }
     }
 }

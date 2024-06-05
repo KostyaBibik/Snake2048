@@ -6,7 +6,6 @@ using UI.Pause;
 using UI.Top;
 using UISystem;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 namespace UI.InitStages
@@ -64,6 +63,11 @@ namespace UI.InitStages
                 var topWindowModel = new TopWindowModel();
                 topWindowModel.hidePause = true;
                 _topWindow.InvokeUpdateView(topWindowModel);
+            }
+            else
+            {
+                var topWindowModel = InitTopWindowModel();
+                _topWindow.InvokeUpdateView(topWindowModel);             
             }
         }
     }

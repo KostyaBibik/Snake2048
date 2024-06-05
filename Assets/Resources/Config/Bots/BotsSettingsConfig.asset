@@ -16,7 +16,7 @@ MonoBehaviour:
   distanceInfluenceForFindTarget: 1
   gradeInfluenceForFindTarget: 1.65
   chanceChangeTarget: 0.1
-  intiAccelerationChance: 0.1
-  spawnChanceGradeDifference3: 0.02
-  spawnChanceGradeDifference2: 0.05
-  spawnChanceGradeDifference1: 0.08
+  intiAccelerationChance: 0.2
+  spawnChanceGradeDifference3: 0.1
+  spawnChanceGradeDifference2: 0.1
+  spawnChanceGradeDifference1: 0.2

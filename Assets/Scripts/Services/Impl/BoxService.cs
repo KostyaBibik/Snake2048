@@ -4,6 +4,7 @@ using System.Linq;
 using Components.Boxes.Views.Impl;
 using Enums;
 using Infrastructure.Factories.Impl;
+using Infrastructure.Pools.Impl;
 using Signals;
 using UI.Leaderboard;
 using UniRx;
@@ -214,7 +215,8 @@ namespace Services.Impl
                 leaderboardElementsModel.Items[i] = new LeaderboardElementModel
                 {
                     nickname = handleTeam.Nickname,
-                    score = handleTeam.GetScore()
+                    score = handleTeam.GetScore(),
+                    isPlayer = handleTeam.Leader.isPlayer
                 };
             }
             

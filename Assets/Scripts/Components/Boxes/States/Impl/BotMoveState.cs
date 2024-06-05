@@ -299,10 +299,6 @@ namespace Components.Boxes.States.Impl
             if (targetBox.isIdle)
                 return true;
 
-            //var team = _boxService.GetTeamByMember(targetBox);
-            /*if (team == null || team.Leader == null)
-                return false;*/
-
             return targetBox.Grade <= selfBox.Grade;
         }
 

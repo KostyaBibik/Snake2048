@@ -7,6 +7,7 @@ using Services.Impl;
 using Enums;
 using Helpers;
 using Infrastructure.Factories.Impl;
+using Infrastructure.Pools.Impl;
 using Services;
 using UniRx;
 using IInitializable = Zenject.IInitializable;
@@ -184,19 +185,19 @@ public class BotSpawnSystem : IInitializable, IDisposable
 
         if (randomValue < _spawnChanceGradeDifference3)
         {
-            return playerHighGrade.NextSteps(3);
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(3));
         }
         else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2)
         {
-            return playerHighGrade.NextSteps(2);
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(2));
         }
         else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2 + _spawnChanceGradeDifference1)
         {
-            return playerHighGrade.Next();
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.Next());
         }
         else
         {
-            return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade);
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
         }
     }
     

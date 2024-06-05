@@ -10,11 +10,11 @@ namespace UI.Top
     
     public class ContainerBoostView : UIElementView<ContainerBoostModel>
     {
-        [AutoSetupField] private Image _speedBoost;
+        [AutoSetupField] private Slider _speedBoost;
         
         protected override void UpdateView(ContainerBoostModel model)
         {
-            _speedBoost.fillAmount = model.value;
+            _speedBoost.value = model.value;
         }
     }
 }

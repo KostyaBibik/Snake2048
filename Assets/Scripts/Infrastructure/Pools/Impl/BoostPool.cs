@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Zenject;
 
-namespace Infrastructure.Pools
+namespace Infrastructure.Pools.Impl
 {
     public class BoostPool : IInitializable, IDisposable
     {
