@@ -151,8 +151,6 @@ namespace Systems.Initializable
                 }
 
             } while (true);
-            
-            yield return null;
         }
 
         private Vector3 GetRandomPositionInBounds()

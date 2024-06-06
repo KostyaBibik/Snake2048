@@ -39,6 +39,17 @@ namespace UI.InitStages
             _topWindow.BeginHide();
 
             _signalBus.Subscribe<ChangeGameModeSignal>(OnChangeGameModeSignal);
+            _signalBus.Subscribe<KillTeamSignal>(OnKillTeamSignal);
+        }
+
+        private void OnKillTeamSignal(KillTeamSignal signal)
+        {
+            if(!signal.isPlayerKill)
+                return;
+            
+            var topWindowModel = InitTopWindowModel();
+            topWindowModel.AddKills = 1;
+            _topWindow.InvokeUpdateView(topWindowModel);         
         }
 
         private TopWindowModel InitTopWindowModel()

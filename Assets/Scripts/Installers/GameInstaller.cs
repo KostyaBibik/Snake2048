@@ -53,6 +53,7 @@ namespace Installers
             Container.DeclareSignal<RegisterTeamSignal>();
             Container.DeclareSignal<LeaderboardUpdateSignal>();
             Container.DeclareSignal<ChangeSoundSettingsSignal>();
+            Container.DeclareSignal<KillTeamSignal>();
         }
 
         private void BindGameMatcher()
@@ -108,6 +109,7 @@ namespace Installers
         {
             Container.BindInterfacesAndSelfTo<BoxService>().AsCached();
             Container.BindInterfacesAndSelfTo<BotService>().AsCached();
+            Container.BindInterfacesAndSelfTo<GameDataService>().AsCached();
         }
 
         private void BindUiInitStages()

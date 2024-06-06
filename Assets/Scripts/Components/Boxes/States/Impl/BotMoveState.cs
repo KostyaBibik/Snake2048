@@ -28,7 +28,6 @@ namespace Components.Boxes.States.Impl
         private float _currentSpeed;
         private Bounds _gameBounds;
 
-        private float _minimumTargetDistance = 1f;
         private float _randomChangeChance;
         private float _accelerationChance;
 
@@ -94,7 +93,10 @@ namespace Components.Boxes.States.Impl
             if (targetIsDestroyed || _timeSinceLastTargetUpdate >= _targetUpdateInterval)
             {
                 if (Random.value < _randomChangeChance)
+                {
                     _targetAimBox = FindRandomTargetBox(botView);
+                    targetIsDestroyed = _targetAimBox == null;
+                }
 
                 _timeSinceLastTargetUpdate = 0f;
             }
@@ -266,6 +268,12 @@ namespace Components.Boxes.States.Impl
 
             for (var i = 0; i < topBoxes.Length; i++)
             {
+                //todo::Expensive checkout method REWORK
+                /*if (!BotPathEvaluator.IsPathSafe(_boxService, botView, topBoxes[i].box))
+                {
+                    continue;
+                }*/
+                
                 var (box, distance) = topBoxes[i];
                 var gradeFactor = botView.Grade.IndexDifference(box.Grade);
 
@@ -290,7 +298,7 @@ namespace Components.Boxes.States.Impl
                     return box;
             }
 
-            return weightedBoxes.Last().box; 
+            return null; 
         }
 
 

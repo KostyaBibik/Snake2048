@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Kimicu.YandexGames;
 using Services;
 using Signals;
 using UI.StartWindow;
@@ -29,6 +30,8 @@ namespace UI.InitStages
             startGameModel.startPlayCallback = InitStartGame;
             startGameModel.onEditNickname = OnUpdateNickText;
             _startGameWindow.InvokeUpdateView(startGameModel);
+            
+            YandexGamesSdk.GameReady();
         }
 
         private void InitStartGame()

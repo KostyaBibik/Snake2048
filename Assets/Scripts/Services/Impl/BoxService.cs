@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Components.Boxes.Views.Impl;
 using Enums;
+using Helpers;
+using Helpers.Game;
 using Infrastructure.Factories.Impl;
 using Infrastructure.Pools.Impl;
 using Signals;
 using UI.Leaderboard;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 namespace Services.Impl
@@ -22,18 +25,22 @@ namespace Services.Impl
         private BoxPool _boxPool;
         private GameMatchService _matchService;
         private SignalBus _signalBus;
-
+        private GameDataService _gameDataService;
+        private PlayerTeamSavedData _playerTeamSavedData = new PlayerTeamSavedData();
+        
         [Inject]
         public void Construct(
             BoxStateFactory stateFactory,
             BoxPool boxPool,
             GameMatchService matchService,
+            GameDataService gameDataService,
             SignalBus signalBus
         )
         {
             _stateFactory = stateFactory;
             _boxPool = boxPool;
             _matchService = matchService;
+            _gameDataService = gameDataService;
             _signalBus = signalBus;
 
             _matchService.playerNickname.Subscribe(HandleUpdatePlayerNickname);
@@ -55,6 +62,12 @@ namespace Services.Impl
             newTeam.AddMember(leader);
             _teams.Add(newTeam);
             _boxToTeamMap[leader] = newTeam;
+
+            if (leader.isPlayer)
+            {
+                _playerTeamSavedData.maxGrade = leader.Grade;
+                _playerTeamSavedData.maxScore = newTeam.GetScore();
+            }
             
             _signalBus.Fire(new RegisterTeamSignal { id = newTeam.GetId() });
         }
@@ -63,7 +76,7 @@ namespace Services.Impl
         {
             if (Boxes.Contains(entityView))
                 return;
-
+            
             Boxes.Add(entityView);
         }
 
@@ -89,6 +102,17 @@ namespace Services.Impl
                 {
                     if (entityView.isPlayer)
                     {
+                        var progress = _gameDataService.PlayerProgress;
+                        
+                        var resultScore = ResultUtility.CalcResultScore(
+                            progress.CurrentLeaderTime,
+                            progress.CurrentTotalKills,
+                            _playerTeamSavedData.maxGrade,
+                            _playerTeamSavedData.maxScore
+                        );
+                        
+                        _gameDataService.UpdateTotalScore(resultScore);
+                        
                         _signalBus.Fire(new ChangeGameModeSignal()
                         {
                             status = EGameModeStatus.Lose
@@ -123,6 +147,14 @@ namespace Services.Impl
                     idTeam = team.GetId(),
                     newBox = box
                 });
+
+                if (box.isPlayer)
+                {
+                    if (team.Leader.Grade > _playerTeamSavedData.maxGrade)
+                        _playerTeamSavedData.maxGrade = team.Leader.Grade;
+                    if (team.GetScore() > _playerTeamSavedData.maxScore)
+                        _playerTeamSavedData.maxScore = team.GetScore();
+                }
                 
                 InvokeUpdateLeaderboard();
             }
@@ -282,5 +314,11 @@ namespace Services.Impl
                 .FirstOrDefault(t => t.Members.Count > 0 && t.Leader != null && t.Leader.isPlayer);
             playerTeam?.UpdateNickname(nick);
         }
+    }
+
+    public class PlayerTeamSavedData
+    {
+        public EBoxGrade maxGrade;
+        public int maxScore;
     }
 }

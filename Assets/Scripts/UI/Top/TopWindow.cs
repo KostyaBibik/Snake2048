@@ -10,6 +10,7 @@ namespace UI.Top
     public struct TopWindowModel
     {
         public float CurrentTime;
+        public int AddKills;
         public Action PauseGameCallback;
         public bool hidePause;
     }
@@ -17,8 +18,11 @@ namespace UI.Top
     public class TopWindow : UIWindow<TopWindowModel>
     {
         [AutoSetupField] private TextMeshProUGUI _time;
+        [AutoSetupField] private TextMeshProUGUI _kills;
         [AutoSetupField] private ButtonView _pause;
         [AutoSetupField] private ContainerBoostView _containerBoostView;
+
+        private int _countKills;
         
         public override void Initialization()
         {
@@ -27,8 +31,11 @@ namespace UI.Top
 
         protected override void UpdateView(TopWindowModel model)
         {
-            _time.text = model.CurrentTime.ToString(CultureInfo.InvariantCulture);
+            _time.text = FormatTime(model.CurrentTime);
+            _countKills += model.AddKills;
 
+            _kills.text = _countKills.ToString();
+            
             var pauseCallback = model.PauseGameCallback;
             if(pauseCallback != null)
             {
@@ -42,6 +49,13 @@ namespace UI.Top
             {
                 _pause.BeginHide();
             }
+        }
+        
+        private string FormatTime(float value)
+        {
+            var minutes = Mathf.FloorToInt(value / 60);
+            var seconds = Mathf.FloorToInt(value % 60);
+            return $"{minutes:00}:{seconds:00}";
         }
     }
 }

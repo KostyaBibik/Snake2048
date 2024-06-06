@@ -58,6 +58,16 @@ namespace Systems.Action
             var eatenTeam = _boxService.GetTeamByMember(eatenBox);
             var eatenBoxes = eatenTeam.Members
                 .Where(box => box.Grade <= eatenBox.Grade || box.isIdle).ToArray();
+
+            if (!eatenBox.isIdle && eatenBox == eatenTeam.Leader)
+            {
+                _signalBus.Fire(new KillTeamSignal()
+                {
+                    defeatedTeamNickname = eatenTeam.Nickname,
+                    isPlayerKill = owner.isPlayer,
+                    killingTeamNickname = _boxService.GetTeamByMember(owner).Nickname
+                });
+            }
             
             AddBoxesForTeam(eatenBoxes, owner);
         }
