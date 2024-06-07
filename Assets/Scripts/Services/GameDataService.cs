@@ -53,15 +53,12 @@ namespace Services
 
         private void SaveProgress(PlayerProgress progress)
         {
-            try
-            {
-                var json = JsonConvert.SerializeObject(progress, Formatting.Indented);
-                File.WriteAllText(SaveFilePath, json);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Error saving progress: " + ex.Message);
-            }
+            Cloud.SetValue(
+                ConstantsDataDictionary.Names.SaveFileName,
+                progress,
+                false,
+                null,
+                ex => Debug.LogError($"Error saving progress: {ex}"));
         }
 
         public PlayerProgress GetResultPlayerProgress()

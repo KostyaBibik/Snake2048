@@ -7,6 +7,7 @@ using Signals;
 using UI.Loose;
 using UISystem;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
 namespace UI.InitStages
@@ -18,6 +19,7 @@ namespace UI.InitStages
         private readonly GameDataService _gameDataService;
 
         private LoseWindow _loseWindow;
+        private bool _isShowingAd;
         
         public InitLoseWindowStage(
             SignalBus signalBus,
@@ -60,6 +62,8 @@ namespace UI.InitStages
             
             loseModel.CurrentLeaderTime = progress.CurrentLeaderTime;
             loseModel.HighestLeaderTime = progress.HighestLeaderTime;
+
+            loseModel.continueCallback = ShowAd;
             
             _loseWindow.InvokeUpdateView(loseModel);
             _loseWindow.BeginShow();
@@ -70,6 +74,49 @@ namespace UI.InitStages
             true,
                 () => { Debug.Log("Success Save on Cloud");}, 
                 value => Debug.Log($"Failed Save on cloud: {value}"));
+        }
+
+        private void ShowAd()
+        {
+            if(!_isShowingAd)
+            {
+                _isShowingAd = true;
+                
+                Advertisement.ShowVideoAd(
+                    OnOpenCallback,
+                    OnRewardedAD,
+                    OnCloseAD,
+                    OnErrorAd
+                );
+            }
+        }
+        
+        private void OnRewardedAD()
+        {
+            Debug.Log("OnRewarded");
+        }
+
+        private void OnCloseAD()
+        {
+            Debug.Log($"OnCloseAD");
+            
+            AudioListener.pause = false;
+            Time.timeScale = 1;
+            _isShowingAd = false;
+        }
+        
+        private void OnErrorAd(string ex)
+        {
+            Debug.Log($"OnErrorAd: {ex}");
+        }
+        
+        private void OnOpenCallback()
+        {
+            Debug.Log("OnOpenCallback");
+            
+            EventSystem.current.SetSelectedGameObject(null);
+            AudioListener.pause = true;
+            Time.timeScale = 0;
         }
 
         public void Dispose()

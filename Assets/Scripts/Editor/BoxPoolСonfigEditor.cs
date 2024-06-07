@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(BoxPoolConfig))]
-public class BoxPoolConfigEditor : Editor
+public class BoxPoolConfigEditor : UnityEditor.Editor
 {
     public override void OnInspectorGUI()
     {

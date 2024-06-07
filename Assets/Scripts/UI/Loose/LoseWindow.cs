@@ -7,6 +7,7 @@ namespace UI.Loose
     public struct LoseWindowModel
     {
         public Action restartCallback;
+        public Action continueCallback;
         public int CurrentTotalKills;
         public int HighestTotalKills;
         public int CurrentLeaderTime;
@@ -18,6 +19,7 @@ namespace UI.Loose
     public class LoseWindow : UIWindow<LoseWindowModel>
     {
         [AutoSetupField] private ButtonView _restart;
+        [AutoSetupField] private ButtonView _continue;
         [AutoSetupField] private StatsContainerView _highestStatsContainer;
         [AutoSetupField] private StatsContainerView _currentStatsContainer;
 
@@ -26,6 +28,10 @@ namespace UI.Loose
             var restartModel = new ButtonModel();
             restartModel.ClickCallback = model.restartCallback;
             _restart.InvokeUpdateView(restartModel);
+            
+            var continueModel = new ButtonModel();
+            continueModel.ClickCallback = model.continueCallback;
+            _continue.InvokeUpdateView(continueModel);
 
             var highestContainerModel =
                 CreateContainerModel(model.HighestLeaderTime, model.HighestTotalKills, model.HighestTotalScore, false);
