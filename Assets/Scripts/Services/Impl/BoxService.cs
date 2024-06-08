@@ -25,7 +25,7 @@ namespace Services.Impl
         private BoxPool _boxPool;
         private GameMatchService _matchService;
         private SignalBus _signalBus;
-        private GameDataService _gameDataService;
+        private PlayerDataService _playerDataService;
         private PlayerTeamSavedData _playerTeamSavedData = new PlayerTeamSavedData();
         
         [Inject]
@@ -33,14 +33,14 @@ namespace Services.Impl
             BoxStateFactory stateFactory,
             BoxPool boxPool,
             GameMatchService matchService,
-            GameDataService gameDataService,
+            PlayerDataService playerDataService,
             SignalBus signalBus
         )
         {
             _stateFactory = stateFactory;
             _boxPool = boxPool;
             _matchService = matchService;
-            _gameDataService = gameDataService;
+            _playerDataService = playerDataService;
             _signalBus = signalBus;
 
             _matchService.playerNickname.Subscribe(HandleUpdatePlayerNickname);
@@ -102,7 +102,7 @@ namespace Services.Impl
                 {
                     if (entityView.isPlayer)
                     {
-                        var progress = _gameDataService.PlayerProgress;
+                        var progress = _playerDataService.PlayerProgress;
                         
                         var resultScore = ResultUtility.CalcResultScore(
                             progress.CurrentLeaderTime,
@@ -111,7 +111,7 @@ namespace Services.Impl
                             _playerTeamSavedData.maxScore
                         );
                         
-                        _gameDataService.UpdateTotalScore(resultScore);
+                        _playerDataService.UpdateTotalScore(resultScore);
                         
                         _signalBus.Fire(new ChangeGameModeSignal()
                         {

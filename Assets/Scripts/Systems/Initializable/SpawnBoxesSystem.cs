@@ -105,13 +105,13 @@ namespace Systems.Initializable
             }
                 
             var idleBox = _boxPool.GetBox(eBoxGrade);
-            idleBox.gameObject.SetActive(true);
             idleBox.transform.position = spawnPosition;
             idleBox.isIdle = true;
             idleBox.isDestroyed = false;
             idleBox.isPlayer = false;
             idleBox.isBot = false;
-
+            idleBox.gameObject.SetActive(true);
+            
             _boxService.RegisterNewTeam(idleBox, string.Empty);
         }
         

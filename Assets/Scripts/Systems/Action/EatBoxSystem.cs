@@ -108,6 +108,7 @@ namespace Systems.Action
 
                 directionSpawn.y = 0;
                 newBox.transform.position = sortedMembers[0].transform.position + directionSpawn * _gameSettingsConfig.BoxFollowDistance;
+                newBox.gameObject.SetActive(true);
                 
                 if (newOwner.isBot)
                 {

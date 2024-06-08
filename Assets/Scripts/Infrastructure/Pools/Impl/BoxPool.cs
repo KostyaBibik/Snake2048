@@ -120,7 +120,6 @@ namespace Infrastructure.Pools.Impl
         {
             var idleState = _boxStateFactory.CreateIdleState();
             box.stateContext.SetState(idleState);
-            box.gameObject.SetActive(true);
             box.isBot = false;
             box.isPlayer = false;
             box.isMerging = false;
@@ -136,13 +135,13 @@ namespace Infrastructure.Pools.Impl
 
         private void OnReleaseBox(BoxView box)
         {
+            box.gameObject.SetActive(false);
             box.isDestroyed = true;
             box.DisableNick();
             box.UpdateBoostVFXStatus(false);
             box.UpdateAccelerationSliderStatus(0f, false);
             box.UpdateAccelerationFxStatus(false);
             box.Rigidbody.velocity = Vector3.zero;
-            box.gameObject.SetActive(false);
         }
 
         public void Dispose()

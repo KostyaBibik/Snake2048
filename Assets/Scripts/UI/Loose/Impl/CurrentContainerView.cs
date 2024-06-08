@@ -1,40 +1,21 @@
 ﻿using System.Collections;
-using System.Globalization;
 using DG.Tweening;
 using TMPro;
-using UISystem;
 using UnityEngine;
 
-namespace UI.Loose
+namespace UI.Loose.Impl
 {
-    public class StatsContainerModel
+    public class CurrentContainerView : StatsContainer
     {
-        public int totalKills;
-        public int totalScore;
-        public int leaderTime;
-        public bool isAnimating;
-    }
-    
-    public class StatsContainerView : UIElementView<StatsContainerModel>
-    {
-        [AutoSetupField] private TextMeshProUGUI _totalScore;
-        [AutoSetupField] private TextMeshProUGUI _totalKills;
-        [AutoSetupField] private TextMeshProUGUI _leaderTime;
+        [AutoSetupField] private RecordView _recordTime;
+        [AutoSetupField] private RecordView _recordKills;
+        [AutoSetupField] private RecordView _recordScore;
         
         private StatsContainerModel _savedModel;
         
         protected override void UpdateView(StatsContainerModel model)
         {
-            if(!model.isAnimating)
-            {
-                _totalScore.text = model.totalScore.ToString(CultureInfo.InvariantCulture);
-                _totalKills.text = model.totalKills.ToString(CultureInfo.InvariantCulture);
-                _leaderTime.text = FormatTime(model.leaderTime);
-            }
-            else
-            {
-                _savedModel = model;
-            }
+            _savedModel = model;
         }
 
         protected override void OnShowEnd()
@@ -49,11 +30,26 @@ namespace UI.Loose
 
         private IEnumerator AnimateContainer(StatsContainerModel model)
         {
-            yield return StartCoroutine(AnimateValueView(_leaderTime, model.leaderTime, 3f, true));
+            yield return StartCoroutine(AnimateValueView(leaderTime, model.leaderTime, 3f, true));
+
+            if (model.showRecordTime)
+            {
+                _recordTime.BeginShow();
+            }
             
-            yield return StartCoroutine(AnimateValueView(_totalKills, model.totalKills, 3f));
+            yield return StartCoroutine(AnimateValueView(totalKills, model.totalKills, 3f));
             
-            yield return StartCoroutine(AnimateValueView(_totalScore, model.totalScore, 5f));
+            if (model.showRecordKills)
+            {
+                _recordKills.BeginShow();
+            }
+            
+            yield return StartCoroutine(AnimateValueView(totalScore, model.totalScore, 5f));
+            
+            if (model.showRecordScore)
+            {
+                _recordScore.BeginShow();
+            }
         }
 
         private IEnumerator AnimateValueView(TextMeshProUGUI view, int finalValue, float animationDuration, bool isTimer = false)
@@ -92,13 +88,6 @@ namespace UI.Loose
             {
                 view.transform.DOScale(originalScale, 0.3f);
             });
-        }
-        
-        private string FormatTime(int value)
-        {
-            var minutes = Mathf.FloorToInt(value / 60);
-            var seconds = Mathf.FloorToInt(value % 60);
-            return $"{minutes:00}:{seconds:00}";
         }
     }
 }

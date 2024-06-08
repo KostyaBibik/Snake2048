@@ -57,6 +57,7 @@ namespace Systems.Action
             boxView.SetNickname("Player");
             boxView.name = "Player";
             boxView.transform.position = pos;
+            boxView.gameObject.SetActive(true);
             
             _signalBus.Fire(new CameraUpdateSignal
             {

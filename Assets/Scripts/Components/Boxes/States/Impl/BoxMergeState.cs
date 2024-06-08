@@ -93,7 +93,6 @@ namespace Components.Boxes.States.Impl
                 var targetVector = direction * relatedSpeed;
                 targetVector.y = 0;
                 rb.velocity = targetVector;
-                //rb.MovePosition(rb.position + direction * relatedSpeed);
 
                 if (direction != Vector3.zero)
                 {
@@ -115,6 +114,7 @@ namespace Components.Boxes.States.Impl
             newBox.transform.position = box2.transform.position;
             newBox.isPlayer = box1.isPlayer || box2.isPlayer;
             newBox.isBot = !newBox.isPlayer;
+            newBox.gameObject.SetActive(true);
             
             if (newBox.isBot)
             {

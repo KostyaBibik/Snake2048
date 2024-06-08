@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Services
 {
-    public class GameDataService : IInitializable
+    public class PlayerDataService : IInitializable
     {
         private readonly SignalBus _signalBus;
         private const string SaveFileName = ConstantsDataDictionary.Names.SaveFileName;
@@ -20,7 +20,7 @@ namespace Services
         private PlayerProgress _savedProgress;
         public PlayerProgress PlayerProgress => _playerProgress;
 
-        public GameDataService(
+        public PlayerDataService(
             SignalBus signalBus
             )
         {
@@ -30,6 +30,10 @@ namespace Services
         public void Initialize()
         {
             _playerProgress = LoadProgress();
+            Debug.Log($"_playerProgress.HighestLeaderTime: {_playerProgress.HighestLeaderTime}");
+            Debug.Log($"_playerProgress.HighestTotalScore: {_playerProgress.HighestTotalScore}");
+            Debug.Log($"_playerProgress.HighestTotalKills: {_playerProgress.HighestTotalKills}");
+            
             ResetRuntimeParameters();
             InitSavedData();
             
@@ -51,16 +55,41 @@ namespace Services
             _playerProgress.CurrentTotalKills = 0;
         }
 
-        private void SaveProgress(PlayerProgress progress)
+        private void SaveProgress(PlayerProgress progress, bool saveToCloud = false)
         {
             Cloud.SetValue(
                 ConstantsDataDictionary.Names.SaveFileName,
                 progress,
-                false,
-                null,
+                saveToCloud,
+                (() => { Debug.Log("success save progress");}),
                 ex => Debug.LogError($"Error saving progress: {ex}"));
         }
 
+        public void SaveToCloudProgress()
+        {
+            var resultProgress = new PlayerProgress();
+            
+            resultProgress.CurrentLeaderTime = _playerProgress.CurrentLeaderTime;
+            resultProgress.CurrentTotalKills = _playerProgress.CurrentTotalKills;
+            resultProgress.CurrentTotalScore = _playerProgress.CurrentTotalScore;
+            resultProgress.HighestLeaderTime =
+                _playerProgress.CurrentLeaderTime > _savedProgress.HighestLeaderTime
+                    ? _playerProgress.CurrentLeaderTime
+                    : _savedProgress.HighestLeaderTime;
+            
+            resultProgress.HighestTotalKills =
+                _playerProgress.CurrentTotalKills > _savedProgress.HighestTotalKills
+                    ? _playerProgress.CurrentTotalKills
+                    : _savedProgress.HighestTotalKills;
+            
+            resultProgress.HighestTotalScore = 
+                _playerProgress.CurrentTotalScore > _savedProgress.HighestTotalScore
+                    ? _playerProgress.CurrentTotalScore
+                    : _savedProgress.HighestTotalScore;
+
+            SaveProgress(resultProgress, true);
+        }
+        
         public PlayerProgress GetResultPlayerProgress()
         {
             var resultProgress = new PlayerProgress();
@@ -77,7 +106,7 @@ namespace Services
 
         private PlayerProgress LoadProgress()
         {
-            PlayerProgress progressCloud = Cloud.GetValue(ConstantsDataDictionary.Names.SaveFileName, new PlayerProgress());
+            var progressCloud = Cloud.GetValue(ConstantsDataDictionary.Names.SaveFileName, new PlayerProgress());
             
             return progressCloud;
             

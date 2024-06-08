@@ -20,8 +20,8 @@ namespace UI.Loose
     {
         [AutoSetupField] private ButtonView _restart;
         [AutoSetupField] private ButtonView _continue;
-        [AutoSetupField] private StatsContainerView _highestStatsContainer;
-        [AutoSetupField] private StatsContainerView _currentStatsContainer;
+        [AutoSetupField] private StatsContainer _highestStatsContainer;
+        [AutoSetupField] private StatsContainer _currentStatsContainer;
 
         protected override void UpdateView(LoseWindowModel model)
         {
@@ -34,10 +34,16 @@ namespace UI.Loose
             _continue.InvokeUpdateView(continueModel);
 
             var highestContainerModel =
-                CreateContainerModel(model.HighestLeaderTime, model.HighestTotalKills, model.HighestTotalScore, false);
+                CreateContainerModel(model.HighestLeaderTime, model.HighestTotalKills, model.HighestTotalScore);
             
-            var currentContainerModel =
-                CreateContainerModel(model.CurrentLeaderTime, model.CurrentTotalKills, model.CurrentTotalScore, true);
+            var currentContainerModel = CreateContainerModel(
+                model.CurrentLeaderTime,
+                model.CurrentTotalKills,
+                model.CurrentTotalScore,
+                showRecordKills: model.CurrentTotalKills > model.HighestTotalKills,
+                showRecordScore: model.CurrentTotalScore > model.HighestTotalScore,
+                showRecordTime: model.CurrentLeaderTime > model.HighestLeaderTime
+                );
             
             _highestStatsContainer.InvokeUpdateView(highestContainerModel);
             _currentStatsContainer.InvokeUpdateView(currentContainerModel);
@@ -55,7 +61,9 @@ namespace UI.Loose
             int leaderTime,
             int totalKills,
             int totalScore,
-            bool isAnimating
+            bool showRecordTime = false,
+            bool showRecordScore = false,
+            bool showRecordKills = false
         )
         {
             var model = new StatsContainerModel();
@@ -63,7 +71,9 @@ namespace UI.Loose
             model.leaderTime = leaderTime;
             model.totalKills = totalKills;
             model.totalScore = totalScore;
-            model.isAnimating = isAnimating;
+            model.showRecordTime = showRecordTime;
+            model.showRecordKills = showRecordKills;
+            model.showRecordScore = showRecordScore;
             
             return model;
         }

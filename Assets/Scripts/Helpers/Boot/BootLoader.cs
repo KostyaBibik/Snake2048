@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text;
+using DG.Tweening;
 using Kimicu.YandexGames;
 using TMPro;
 using UnityEngine;
@@ -17,45 +18,46 @@ namespace Helpers.Boot
         
         private const string SceneName = "GameScene";
 
-        private void Start()
+        public void Start()
         {
             levelLoader = SceneManager.LoadSceneAsync(SceneName);
             levelLoader.allowSceneActivation = false;
-            
-            StartCoroutine(nameof(LevelLoadSync));
+
+            SetGameSettings();
+            StartCoroutine(nameof(UpdateLoadingSlider));
             StartCoroutine(nameof(InitYaServices));
+        }
+
+        private void SetGameSettings()
+        {
+            DOTween.SetTweensCapacity(500, 312);
         }
 
         private IEnumerator InitYaServices()
         {
-            // Обязательно к вызову. Вызывать в 1 очередь!!!
             yield return YandexGamesSdk.Initialize();
 
-// При необходимости.
             yield return Cloud.Initialize();
 
-// При необходимости.
             Advertisement.Initialize();
 
-// При необходимости.
                 // yield return Billing.Initialize();
 
-// При необходимости.
             WebApplication.Initialize();
             
             yield return null;
             
             levelLoader.allowSceneActivation = true;
         }
-        
-        private IEnumerator LevelLoadSync()
+
+        private IEnumerator UpdateLoadingSlider()
         {
             var textBuilder = new StringBuilder
             {
                 Capacity = 18
             };
 
-            levelLoader.allowSceneActivation = true;
+            levelLoader.allowSceneActivation = false;
             while (!levelLoader.isDone)
             {
                 var progressValue = levelLoader.progress;

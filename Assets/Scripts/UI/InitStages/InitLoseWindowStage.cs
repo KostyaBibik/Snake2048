@@ -16,7 +16,7 @@ namespace UI.InitStages
     {
         private readonly SignalBus _signalBus;
         private readonly SceneLoader _sceneLoader;
-        private readonly GameDataService _gameDataService;
+        private readonly PlayerDataService _playerDataService;
 
         private LoseWindow _loseWindow;
         private bool _isShowingAd;
@@ -24,12 +24,12 @@ namespace UI.InitStages
         public InitLoseWindowStage(
             SignalBus signalBus,
             SceneLoader sceneLoader,
-            GameDataService gameDataService
+            PlayerDataService playerDataService
         )
         {
             _signalBus = signalBus;
             _sceneLoader = sceneLoader;
-            _gameDataService = gameDataService;
+            _playerDataService = playerDataService;
         }
 
         public void Initialize()
@@ -45,7 +45,7 @@ namespace UI.InitStages
             if(signal.status != EGameModeStatus.Lose)
                 return;
             
-            var progress = _gameDataService.GetResultPlayerProgress();
+            var progress = _playerDataService.GetResultPlayerProgress();
             var loseModel = new LoseWindowModel();
             
             loseModel.restartCallback = () =>
@@ -68,12 +68,7 @@ namespace UI.InitStages
             _loseWindow.InvokeUpdateView(loseModel);
             _loseWindow.BeginShow();
             
-            Cloud.SetValue( 
-            ConstantsDataDictionary.Names.SaveFileName,
-            progress, 
-            true,
-                () => { Debug.Log("Success Save on Cloud");}, 
-                value => Debug.Log($"Failed Save on cloud: {value}"));
+            _playerDataService.SaveToCloudProgress();
         }
 
         private void ShowAd()

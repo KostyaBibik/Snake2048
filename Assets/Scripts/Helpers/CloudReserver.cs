@@ -1,13 +1,9 @@
-﻿using System.Collections;
-using Kimicu.YandexGames;
-using UnityEditor;
-using UnityEngine;
-
+﻿
 namespace Helpers
 {
     public class CloudReserver 
     {
-        private static CoroutineRunner coroutineRunner;
+        /*private static CoroutineRunner coroutineRunner;
 
         [MenuItem("Custom Tools/CloudReserver/Clear Data")]
         private static void ClearData()
@@ -39,6 +35,6 @@ namespace Helpers
             }
         }
         
-        private class CoroutineRunner : MonoBehaviour { }
+        private class CoroutineRunner : MonoBehaviour { }*/
     }
 }

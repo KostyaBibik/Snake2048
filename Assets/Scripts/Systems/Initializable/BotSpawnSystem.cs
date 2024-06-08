@@ -114,8 +114,8 @@ public class BotSpawnSystem : IInitializable, IDisposable
                 var bot = _boxPool.GetBox(eBoxGrade); 
                 
                 bot.isBot = true;
-                bot.gameObject.name = "Bot"; 
                 bot.transform.position = spawnPosition;
+                bot.gameObject.SetActive(true);
                 var nick = _nicknamesConfig.GetRandomNickname();
                 bot.SetNickname(nick);
                 

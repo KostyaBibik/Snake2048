@@ -10,7 +10,7 @@ namespace Systems.Runtime
     public class UpdateTimeSystem : ITickable, IInitializable
     {
         private readonly GameMatchService _gameMatchService;
-        private readonly GameDataService _gameDataService;
+        private readonly PlayerDataService _playerDataService;
         private readonly SignalBus _signalBus;
 
         private TopWindow _topWindow;
@@ -22,12 +22,12 @@ namespace Systems.Runtime
         
         public UpdateTimeSystem(
             GameMatchService gameMatchService,
-            GameDataService gameDataService,
+            PlayerDataService playerDataService,
             SignalBus signalBus
         )
         {
             _gameMatchService = gameMatchService;
-            _gameDataService = gameDataService;
+            _playerDataService = playerDataService;
             _signalBus = signalBus;
         }
         
@@ -61,7 +61,7 @@ namespace Systems.Runtime
             {
                 _topWindowModel.CurrentTime = (int) _time;
                 _topWindow.InvokeUpdateView(_topWindowModel);
-                _gameDataService.UpdateTime(_timePlayerLead);
+                _playerDataService.UpdateTime(_timePlayerLead);
 
                 _timeSinceLastUpdate = 0;
             }

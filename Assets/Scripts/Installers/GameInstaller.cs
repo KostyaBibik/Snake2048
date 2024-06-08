@@ -109,7 +109,7 @@ namespace Installers
         {
             Container.BindInterfacesAndSelfTo<BoxService>().AsCached();
             Container.BindInterfacesAndSelfTo<BotService>().AsCached();
-            Container.BindInterfacesAndSelfTo<GameDataService>().AsCached();
+            Container.BindInterfacesAndSelfTo<PlayerDataService>().AsCached();
         }
 
         private void BindUiInitStages()
