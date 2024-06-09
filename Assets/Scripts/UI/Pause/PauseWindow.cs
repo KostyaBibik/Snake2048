@@ -1,6 +1,7 @@
 ﻿using System;
 using UIKit.Elements;
 using UIKit.Elements.Models;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.Pause
@@ -32,6 +33,11 @@ namespace UI.Pause
         
         protected override void UpdateView(PauseWindowModel model)
         {
+            _musicSlider.value = model.baseMusicValue;
+            _soundsSlider.value = model.baseSoundValue;
+            SetIcon(_musicActiveIcon.gameObject, _musicDisableIcon.gameObject, model.baseMusicValue);
+            SetIcon(_soundActiveIcon.gameObject, _soundDisableIcon.gameObject, model.baseSoundValue);
+            
             var continueBtnModel = new ButtonModel();
             continueBtnModel.ClickCallback = model.ContinuePlayCallback;
             _continue.InvokeUpdateView(continueBtnModel);
@@ -40,31 +46,14 @@ namespace UI.Pause
             _soundsSlider.onValueChanged.AddListener(value =>
             {
                 model.onChangeSoundsCallback?.Invoke(value);
-                if (value > 0f)
-                {
-                    _soundActiveIcon.gameObject.SetActive(true);
-                    _soundDisableIcon.gameObject.SetActive(false);
-                }
-                else
-                {
-                    _soundDisableIcon.gameObject.SetActive(true);
-                    _soundActiveIcon.gameObject.SetActive(false);
-                }
+                SetIcon(_soundActiveIcon.gameObject, _soundDisableIcon.gameObject, value);
             });
+            
             
             _musicSlider.onValueChanged.AddListener(value =>
             {
                 model.onChangeMusicCallback?.Invoke(value);
-                if (value > 0f)
-                {
-                    _musicActiveIcon.gameObject.SetActive(true);
-                    _musicDisableIcon.gameObject.SetActive(false);
-                }
-                else
-                {
-                    _musicDisableIcon.gameObject.SetActive(true);
-                    _musicActiveIcon.gameObject.SetActive(false);
-                }
+                SetIcon(_musicActiveIcon.gameObject, _musicDisableIcon.gameObject, value);
             });
             
             var restartBtnModel = new ButtonModel();
@@ -74,9 +63,20 @@ namespace UI.Pause
             var languageBtnModel = new ButtonModel();
             languageBtnModel.ClickCallback = model.ChangeLanguageCallback;
             _language.InvokeUpdateView(languageBtnModel);
+        }
 
-            _musicSlider.value = model.baseMusicValue;
-            _soundsSlider.value = model.baseSoundValue;
+        private void SetIcon(GameObject enabledIcon, GameObject disabledIcon, float value)
+        {
+            if (value > 0f)
+            {
+                enabledIcon.gameObject.SetActive(true);
+                disabledIcon.gameObject.SetActive(false);
+            }
+            else
+            {
+                disabledIcon.gameObject.SetActive(true);
+                enabledIcon.gameObject.SetActive(false);
+            }
         }
     }
 }

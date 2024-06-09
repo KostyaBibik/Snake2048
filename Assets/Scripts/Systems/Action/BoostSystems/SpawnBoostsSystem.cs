@@ -3,7 +3,6 @@ using System.Collections;
 using Database;
 using Enums;
 using Helpers;
-using Infrastructure.Pools;
 using Infrastructure.Pools.Impl;
 using Services;
 using UniRx;
@@ -11,7 +10,7 @@ using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
-namespace Systems.Initializable
+namespace Systems.Action.BoostSystems
 {
     public class SpawnBoostsSystem : IInitializable, IDisposable
     {
@@ -91,9 +90,8 @@ namespace Systems.Initializable
 
                 for (var i = 0; i < spawnCount; i++)
                 {
-                    //var randomGrade = (EBoxBoost)Random.Range((int)EBoxBoost.Speed, (int)EBoxBoost.AddGrades);
                     var randomGrade = EBoxBoost.Speed.GetRandomEnumBetween(EBoxBoost.AddGrades);
-                    Debug.Log($"randomGrade: {randomGrade}");
+                    
                     SpawnBoostBox(randomGrade);
                 }
 

@@ -1,4 +1,4 @@
-﻿namespace Database.Progress
+﻿namespace Database.Cloud
 {
     [System.Serializable]
     public class PlayerProgress

@@ -13,13 +13,17 @@ namespace UI.InitStages
     public class InitPauseWindowStage: IInitializable
     {
         private readonly GameMatchService _gameMatchService;
+        private readonly GameSettingsService _gameSettingsService;
         private readonly SignalBus _signalBus;
         
         public InitPauseWindowStage(
             GameMatchService gameMatchService,
-            SignalBus signalBus)
+            GameSettingsService gameSettingsService,
+            SignalBus signalBus
+        )
         {
             _gameMatchService = gameMatchService;
+            _gameSettingsService = gameSettingsService;
             _signalBus = signalBus;
         }
         
@@ -37,8 +41,12 @@ namespace UI.InitStages
                 topWindow.BeginShow();
             };
 
-            pauseWindowModel.baseMusicValue = 1f;
-            pauseWindowModel.baseSoundValue = 0f;
+            var gameSettingsData = _gameSettingsService.Data;
+            var savedMusicVolume = gameSettingsData.MusicVolume;
+            var savedSoundVolume = gameSettingsData.SoundVolume;
+            
+            pauseWindowModel.baseMusicValue = savedMusicVolume;
+            pauseWindowModel.baseSoundValue = savedSoundVolume;
 
             pauseWindowModel.onChangeSoundsCallback = OnChangeSoundVolume;
             pauseWindowModel.onChangeMusicCallback = OnChangeMusicVolume;
@@ -56,6 +64,8 @@ namespace UI.InitStages
                 source = EAudioType.SoundsFX,
                 volume = volume
             });
+            
+            _gameSettingsService.UpdateSoundVolume(volume);
         }
         
         private void OnChangeMusicVolume(float volume)
@@ -65,6 +75,8 @@ namespace UI.InitStages
                 source = EAudioType.Music,
                 volume = volume
             });
+            
+            _gameSettingsService.UpdateMusicVolume(volume);
         }
     }
 }

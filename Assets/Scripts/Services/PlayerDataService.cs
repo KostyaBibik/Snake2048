@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Database.Progress;
+using Database.Cloud;
 using Helpers;
 using Kimicu.YandexGames;
 using Signals;
@@ -50,10 +50,10 @@ namespace Services
         private void SaveProgress(PlayerProgress progress, bool saveToCloud = false)
         {
             Cloud.SetValue(
-                ConstantsDataDictionary.Names.SaveFileName,
+                ConstantsDataDictionary.PlayerProgress.SaveFileName,
                 progress,
                 saveToCloud,
-                (() => { Debug.Log("success save progress");}),
+                null,
                 ex => Debug.LogError($"Error saving progress: {ex}"));
         }
 
@@ -98,7 +98,7 @@ namespace Services
 
         private PlayerProgress LoadProgress()
         {
-            var progressCloud = Cloud.GetValue(ConstantsDataDictionary.Names.SaveFileName, new PlayerProgress());
+            var progressCloud = Cloud.GetValue(ConstantsDataDictionary.PlayerProgress.SaveFileName, new PlayerProgress());
             
             return progressCloud;
         }
@@ -109,31 +109,31 @@ namespace Services
                 return;
 
             var currentKills = _playerProgress.CurrentTotalKills + 1;
-            UpdateProgress(ConstantsDataDictionary.Names.CurrentTotalKills, currentKills);
+            UpdateProgress(ConstantsDataDictionary.PlayerProgress.CurrentTotalKills, currentKills);
 
             if (currentKills > _playerProgress.HighestTotalKills)
             {
-                UpdateProgress(ConstantsDataDictionary.Names.HighestTotalKills, currentKills);
+                UpdateProgress(ConstantsDataDictionary.PlayerProgress.HighestTotalKills, currentKills);
             }
         }
 
         public void UpdateTime(float time)
         {
-            UpdateProgress(ConstantsDataDictionary.Names.CurrentLeaderTime, (int) time);
+            UpdateProgress(ConstantsDataDictionary.PlayerProgress.CurrentLeaderTime, (int) time);
             
             if (time > _playerProgress.HighestLeaderTime)
             {
-                UpdateProgress(ConstantsDataDictionary.Names.HighestLeaderTime, (int) time);
+                UpdateProgress(ConstantsDataDictionary.PlayerProgress.HighestLeaderTime, (int) time);
             }
         }
         
         public void UpdateTotalScore(int resultScore)
         {
-            UpdateProgress(ConstantsDataDictionary.Names.CurrentTotalScore, resultScore);
+            UpdateProgress(ConstantsDataDictionary.PlayerProgress.CurrentTotalScore, resultScore);
             
             if (resultScore > _playerProgress.HighestTotalScore)
             {
-                UpdateProgress(ConstantsDataDictionary.Names.HighestTotalScore, resultScore);
+                UpdateProgress(ConstantsDataDictionary.PlayerProgress.HighestTotalScore, resultScore);
             }
         }
         

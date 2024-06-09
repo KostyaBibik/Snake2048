@@ -2,7 +2,7 @@
 {
     public class ConstantsDataDictionary
     {
-        public static class Names
+        public static class PlayerProgress
         {
             public const string SaveFileName  = "PlayerProgress.json";
             public const string HighestTotalScore = "HighestTotalScore";
@@ -11,6 +11,13 @@
             public const string CurrentTotalScore = "CurrentTotalScore";
             public const string CurrentTotalKills = "CurrentTotalKills";
             public const string CurrentLeaderTime = "CurrentLeaderTime";
+        }
+        
+        public static class GameSettings
+        {
+            public const string SaveFileName = "GameSettingsData.json";
+            public const string MusicVolume = "MusicVolume";
+            public const string SoundVolume = "SoundVolume";
         }
     }
 }
