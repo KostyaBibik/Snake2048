@@ -1,5 +1,6 @@
 ﻿using System;
 using Systems.Action;
+using Systems.Action.BoostSystems;
 using Systems.Initializable;
 using Systems.Runtime;
 using Cinemachine;
@@ -100,7 +101,8 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<EatBoxSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<BotSpawnSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<UpdateTimeSystem>().AsCached().NonLazy(); 
-            Container.BindInterfacesAndSelfTo<BoxBoostSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<SpeedBoostSystem>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<AddGradesBoostSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<AccelerationBoxSystem>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<LeaderboardHandleSystem>().AsCached().NonLazy();
         }

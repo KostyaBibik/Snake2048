@@ -3,7 +3,6 @@ using System.IO;
 using Database.Progress;
 using Helpers;
 using Kimicu.YandexGames;
-using Newtonsoft.Json;
 using Signals;
 using UnityEngine;
 using Zenject;
@@ -13,16 +12,12 @@ namespace Services
     public class PlayerDataService : IInitializable
     {
         private readonly SignalBus _signalBus;
-        private const string SaveFileName = ConstantsDataDictionary.Names.SaveFileName;
-        private string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveFileName);
         
         private PlayerProgress _playerProgress;
         private PlayerProgress _savedProgress;
         public PlayerProgress PlayerProgress => _playerProgress;
 
-        public PlayerDataService(
-            SignalBus signalBus
-            )
+        public PlayerDataService(SignalBus signalBus)
         {
             _signalBus = signalBus;
         }
@@ -30,9 +25,6 @@ namespace Services
         public void Initialize()
         {
             _playerProgress = LoadProgress();
-            Debug.Log($"_playerProgress.HighestLeaderTime: {_playerProgress.HighestLeaderTime}");
-            Debug.Log($"_playerProgress.HighestTotalScore: {_playerProgress.HighestTotalScore}");
-            Debug.Log($"_playerProgress.HighestTotalKills: {_playerProgress.HighestTotalKills}");
             
             ResetRuntimeParameters();
             InitSavedData();
@@ -109,29 +101,6 @@ namespace Services
             var progressCloud = Cloud.GetValue(ConstantsDataDictionary.Names.SaveFileName, new PlayerProgress());
             
             return progressCloud;
-            
-            if (File.Exists(SaveFilePath))
-            {
-                try
-                {
-                    var json = File.ReadAllText(SaveFilePath);
-                    var progress = JsonConvert.DeserializeObject<PlayerProgress>(json);
-                    return progress;
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("Error loading progress: " + ex.Message);
-                    return null;
-                }
-            }
-            else
-            {
-                var progress = new PlayerProgress();
-                
-                SaveProgress(progress);
-                
-                return progress;
-            }
         }
 
         private void OnKillTeamSignal(KillTeamSignal signal)

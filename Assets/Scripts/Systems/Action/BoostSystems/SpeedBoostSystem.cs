@@ -12,9 +12,9 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Systems.Action
+namespace Systems.Action.BoostSystems
 {
-    public class BoxBoostSystem : IInitializable, IDisposable
+    public class SpeedBoostSystem : IInitializable, IDisposable
     {
         private readonly BoxService _boxService;
         private readonly GameSettingsConfig _settingsConfig;
@@ -24,7 +24,7 @@ namespace Systems.Action
         private ContainerBoostView _containerBoostView;
         private float _speedBoostDuration;
 
-        public BoxBoostSystem(
+        public SpeedBoostSystem(
             BoxService boxService,
             GameSettingsConfig gameSettingsConfig,
             SignalBus signalBus
@@ -48,17 +48,13 @@ namespace Systems.Action
 
         private void OnGetBoostSignal(BoxBoostSignal signal)
         {
-            switch (signal.boostType)
-            {
-                case EBoxBoost.Speed:
-                    OnGetBoostSpeedSignal(signal.box);
-                    break;
-                default:
-                    break;
-            }
+            if(signal.boostType != EBoxBoost.Speed)
+                return;
+            
+            RegisterBoostToBoxTeam(signal.box);
         }
 
-        private void OnGetBoostSpeedSignal(BoxView box)
+        private void RegisterBoostToBoxTeam(BoxView box)
         {
             var boxTeam = _boxService.GetTeamByMember(box);
             var idTeam = boxTeam.GetId();

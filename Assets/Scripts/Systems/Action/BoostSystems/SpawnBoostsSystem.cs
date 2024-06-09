@@ -52,6 +52,9 @@ namespace Systems.Initializable
 
         private void SpawnBoostBox(EBoxBoost boostType)
         {
+            if(boostType == EBoxBoost.None)
+                return;
+            
             Vector3 spawnPosition;
             var attempts = 0;
             const int maxAttempts = 10;
@@ -68,7 +71,7 @@ namespace Systems.Initializable
                 return;
             }
             
-            var instance = _boostPool.GetBoost(EBoxBoost.Speed);
+            var instance = _boostPool.GetBoost(boostType);
             instance.transform.position = spawnPosition;
             instance.isDestroyed = false;
             instance.gameObject.SetActive(true);
@@ -88,8 +91,9 @@ namespace Systems.Initializable
 
                 for (var i = 0; i < spawnCount; i++)
                 {
-                    var randomGrade = (EBoxBoost)Random.Range((int)EBoxBoost.Speed, (int)EBoxBoost.Speed);
-
+                    //var randomGrade = (EBoxBoost)Random.Range((int)EBoxBoost.Speed, (int)EBoxBoost.AddGrades);
+                    var randomGrade = EBoxBoost.Speed.GetRandomEnumBetween(EBoxBoost.AddGrades);
+                    Debug.Log($"randomGrade: {randomGrade}");
                     SpawnBoostBox(randomGrade);
                 }
 

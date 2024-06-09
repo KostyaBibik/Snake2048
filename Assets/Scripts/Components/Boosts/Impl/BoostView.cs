@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Components.Boxes.Views.Impl;
 using Enums;
-using Infrastructure.Pools;
 using Infrastructure.Pools.Impl;
-using Services;
 using Signals;
 using UnityEngine;
 using Zenject;
@@ -15,7 +12,7 @@ namespace Components.Boosts.Impl
     {
         [SerializeField] private EBoxBoost boostType;
         [SerializeField] private GameObject fxOnDestroy;
-        [SerializeField] private GameObject speedFx;
+        [SerializeField] private GameObject boostFX;
 
         private SignalBus _signalBus;
         private BoostPool _boostPool;
@@ -36,7 +33,7 @@ namespace Components.Boosts.Impl
 
         private void OnEnable()
         {
-            speedFx.SetActive(true);
+            boostFX.SetActive(true);
             fxOnDestroy.SetActive(false);
         }
 
@@ -60,7 +57,7 @@ namespace Components.Boosts.Impl
 
         private IEnumerator DeactivateView()
         {
-            speedFx.SetActive(false);
+            boostFX.SetActive(false);
             fxOnDestroy.SetActive(true);
             
             yield return new WaitForSeconds(1f);

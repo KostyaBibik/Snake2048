@@ -22,8 +22,10 @@ namespace Services.Impl
             if (Members.Contains(member))
                 return;
 
-            if (Members.Count <= 0)
+            if (Members.Count <= 0 || (Leader != null && member.Grade > Leader.Grade))
+            {
                 Leader = member;
+            }
                 
             Members.Add(member);
         }

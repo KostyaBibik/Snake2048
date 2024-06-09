@@ -9,7 +9,8 @@ namespace Services
 {
     public class GameMatchService : IInitializable, IDisposable
     {
-        public ReactiveProperty<string> playerNickname = new ReactiveProperty<string>();
+        public ReactiveProperty<string> playerNickname
+            = new ReactiveProperty<string>() {Value = "Player"};
         
         private readonly SignalBus _signalBus;
 

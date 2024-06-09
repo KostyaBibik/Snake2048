@@ -15,8 +15,8 @@ namespace Systems.Initializable
 
         public void Initialize()
         {
-            _signalBus.Fire(new ChangeGameModeSignal{ status = EGameModeStatus.Pause });
-            _signalBus.Fire(new PlayerSpawnSignal());
+            _signalBus.Fire(new ChangeGameModeSignal { status = EGameModeStatus.Pause });
+            _signalBus.Fire(new PlayerSpawnSignal { grade = EBoxGrade.Grade_4 });
         }
     }
 }

@@ -31,6 +31,7 @@ namespace UI.Loose
             
             var continueModel = new ButtonModel();
             continueModel.ClickCallback = model.continueCallback;
+            continueModel.ClickCallback += () => { _continue.BeginHide();};
             _continue.InvokeUpdateView(continueModel);
 
             var highestContainerModel =

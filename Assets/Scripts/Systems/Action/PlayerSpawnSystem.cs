@@ -3,6 +3,7 @@ using Enums;
 using Helpers;
 using Infrastructure.Factories.Impl;
 using Infrastructure.Pools.Impl;
+using Services;
 using Services.Impl;
 using Signals;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace Systems.Action
         private readonly BoxPool _boxPool;
         private readonly BoxStateFactory _boxStateFactory;
         private readonly BoxService _boxService;
+        private readonly GameMatchService _gameMatchService;
         private readonly SignalBus _signalBus;
         private readonly Collider[] _overlapResults = new Collider[10];
         private readonly Bounds _fieldBounds;
@@ -28,12 +30,14 @@ namespace Systems.Action
             BoxStateFactory boxStateFactory,
             BoxService boxService,
             GameSceneHandler gameSceneHandler,
+            GameMatchService gameMatchService, 
             SignalBus signalBus
         )
         {
             _boxPool = boxPool;
             _boxStateFactory = boxStateFactory;
             _boxService = boxService;
+            _gameMatchService = gameMatchService;
             _signalBus = signalBus;
             _fieldBounds = gameSceneHandler.FieldView.Collider.bounds;
         }
@@ -47,18 +51,18 @@ namespace Systems.Action
 
         private void SpawnPlayer(PlayerSpawnSignal signal)
         {
-            var boxView = _boxPool.GetBox(EBoxGrade.Grade_4);
-            _boxService.RegisterNewTeam(boxView, "Player");
+            var boxView = _boxPool.GetBox(signal.grade);
 
             var state = _boxStateFactory.CreateMoveState();
             var pos = GetPosToSpawn();
+            var nick = _gameMatchService.playerNickname.Value;
             boxView.stateContext.SetState(state);
             boxView.isPlayer = true;
-            boxView.SetNickname("Player");
-            boxView.name = "Player";
+            boxView.SetNickname(nick);
             boxView.transform.position = pos;
             boxView.gameObject.SetActive(true);
-            
+            _boxService.RegisterNewTeam(boxView, nick);
+
             _signalBus.Fire(new CameraUpdateSignal
             {
                 followBox = boxView

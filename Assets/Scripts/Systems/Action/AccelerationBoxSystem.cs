@@ -61,6 +61,7 @@ namespace Systems.Action
         {
             _signalBus.Subscribe<RegisterTeamSignal>(OnRegisterNewTeam);
             _signalBus.Subscribe<AddBoxToTeamSignal>(OnAddBoxOnTeam);
+            _signalBus.Subscribe<ChangeGameModeSignal>(OnLoseGameSignal);
         }
 
         private void OnRegisterNewTeam(RegisterTeamSignal signal)
@@ -78,6 +79,21 @@ namespace Systems.Action
             SetAccelerationStatus(idTeam, _boostTimers[idTeam].isForced, _boostTimers[idTeam].isForced);
         }
 
+        private void OnLoseGameSignal(ChangeGameModeSignal signal)
+        {
+            if(signal.status != EGameModeStatus.Lose)
+                return;
+
+            var playerTimer = _boostTimers.Values.FirstOrDefault(t => t.isPlayer);
+
+            if (playerTimer != null)
+            {
+                var keyToRemove = _boostTimers.FirstOrDefault(x => x.Value.Equals(playerTimer)).Key;
+
+                _boostTimers.Remove(keyToRemove);
+            }
+        }
+        
         private void AddBoostTeamTimer(int id, bool isPlayer)
         {
             var model = new AccelerationTeamModel

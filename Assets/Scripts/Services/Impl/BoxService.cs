@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Components.Boxes.Views.Impl;
 using Enums;
-using Helpers;
 using Helpers.Game;
 using Infrastructure.Factories.Impl;
 using Infrastructure.Pools.Impl;
 using Signals;
 using UI.Leaderboard;
 using UniRx;
-using UnityEngine;
 using Zenject;
 
 namespace Services.Impl
@@ -306,6 +304,11 @@ namespace Services.Impl
         {
             var team = GetTeamByMember(boxView);
             return team?.Leader;
+        }
+
+        public EBoxGrade GetHighestPlayerGrade()
+        {
+            return _playerTeamSavedData.maxGrade;
         }
 
         private void HandleUpdatePlayerNickname(string nick)
