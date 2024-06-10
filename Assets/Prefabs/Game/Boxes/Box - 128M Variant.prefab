@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &8753191714252077237
+--- !u!1001 &5090958109932507279
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -11,22 +11,7 @@ PrefabInstance:
     - target: {fileID: 860260022202706771, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: m_Name
-      value: Box - 2096K Variant
-      objectReference: {fileID: 0}
-    - target: {fileID: 1078445966545970906, guid: 8b91192adbb77f949807b4a74a6901ec,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 6.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1078445966545970906, guid: 8b91192adbb77f949807b4a74a6901ec,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 6.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1078445966545970906, guid: 8b91192adbb77f949807b4a74a6901ec,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 6.1
+      value: Box - 128M Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2506669758411646977, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
@@ -78,15 +63,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2926502010564472813, guid: 8b91192adbb77f949807b4a74a6901ec,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 650a6a08753cf4f4a9bc77c883d79d72, type: 2}
     - target: {fileID: 4812963530254665070, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: grade
-      value: 2096000
+      value: 128000000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5209720003331617272, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 49cac91b13f233a42b03540fb14dd64b, type: 2}
+    - target: {fileID: 6343188550599314071, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 7.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6343188550599314071, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 7.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6343188550599314071, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 7.3
       objectReference: {fileID: 0}
     - target: {fileID: 8888697504089630724, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}

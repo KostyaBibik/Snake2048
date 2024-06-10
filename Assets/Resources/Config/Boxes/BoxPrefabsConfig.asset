@@ -51,7 +51,23 @@ MonoBehaviour:
     view: {fileID: 4619348063497414975, guid: 35d21d0cb5afad24682177b623ae14b7, type: 3}
   - grade: 524000
     view: {fileID: 594940887331180853, guid: 494768b37e127374e9f75674ae21dda5, type: 3}
-  - grade: 1048000
+  - grade: 1000000
     view: {fileID: 5835844999413357595, guid: 5a3a83657c57fba44a8691fc27d7302e, type: 3}
-  - grade: 2096000
+  - grade: 2000000
     view: {fileID: 4301643154716523995, guid: 0da85cb1b63819d4aa50508a8678cb4f, type: 3}
+  - grade: 4000000
+    view: {fileID: 4047724583136824625, guid: d1bfa545cedf24348be07991dc20c1a1, type: 3}
+  - grade: 8000000
+    view: {fileID: 7987677685990813138, guid: d97f385aede3ec045805bdc8a06e961b, type: 3}
+  - grade: 16000000
+    view: {fileID: 6049777154178033941, guid: 5e90d82930b79fc42ad3682b0e6aa264, type: 3}
+  - grade: 32000000
+    view: {fileID: 1777161635150735635, guid: 5ec280a1ad403d7468b5b0c810c51058, type: 3}
+  - grade: 64000000
+    view: {fileID: 9056256965807872006, guid: 9888010eb9b5d4d47b81f32b1f22c923, type: 3}
+  - grade: 128000000
+    view: {fileID: 319091164338099681, guid: 02a2b3cbd3a81244696bcebc1467b74d, type: 3}
+  - grade: 256000000
+    view: {fileID: 3845520446041684574, guid: cce19667ad9ec65438ac3caab3b1c63d, type: 3}
+  - grade: 512000000
+    view: {fileID: 7021409023413698802, guid: a39405c71c93e7d41a14cfc9d57cd92e, type: 3}

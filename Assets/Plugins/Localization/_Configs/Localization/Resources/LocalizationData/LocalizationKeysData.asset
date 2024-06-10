@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f428ad137a74fd59757330795d905d5, type: 3}
+  m_Name: LocalizationKeysData
+  m_EditorClassIdentifier: 
+  <Keys>k__BackingField:
+  - Name: None
+    InspectorName: 
+  - Name: Loading
+    InspectorName: 
+  - Name: EnterNickname
+    InspectorName: 
+  - Name: TapToStart
+    InspectorName: 
+  - Name: Continue
+    InspectorName: 
+  - Name: Restart
+    InspectorName: 
+  - Name: Pause
+    InspectorName: 
+  - Name: SoundFx
+    InspectorName: 
+  - Name: Music
+    InspectorName: 
+  - Name: GameOver
+    InspectorName: 
+  - Name: PlayerStats
+    InspectorName: 
+  - Name: BestLeaderTime
+    InspectorName: 
+  - Name: BestTotalKills
+    InspectorName: 
+  - Name: BestTotalScore
+    InspectorName: 
+  - Name: CurrentleaderTime
+    InspectorName: 
+  - Name: CurrentTotalKills
+    InspectorName: 
+  - Name: CurrentTotalScore
+    InspectorName: 
+  - Name: NewRecord
+    InspectorName: 

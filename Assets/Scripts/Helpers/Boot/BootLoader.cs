@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Text;
 using DG.Tweening;
 using Kimicu.YandexGames;
+using LocalizationSystem.Data.KeyGeneration;
+using LocalizationSystem.Main;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,10 +21,15 @@ namespace Helpers.Boot
         
         private const string SceneName = "GameScene";
 
+        private void Awake()
+        {
+            Localization.SetLocalization("en");
+        }
+
         public void Start()
         {
             levelLoader = SceneManager.LoadSceneAsync(SceneName);
-            levelLoader.allowSceneActivation = false;
+             levelLoader.allowSceneActivation = false;
 
             SetGameSettings();
             StartCoroutine(nameof(UpdateLoadingSlider));
@@ -36,6 +44,15 @@ namespace Helpers.Boot
         private IEnumerator InitYaServices()
         {
             yield return YandexGamesSdk.Initialize();
+
+            if(YandexGamesSdk.IsInitialized)
+            {
+                Localization.SetLocalization(YandexGamesSdk.Environment.i18n.lang);
+            }
+            else
+            {
+                Localization.SetLocalization("ru");
+            }
 
             yield return Cloud.Initialize();
 
@@ -57,13 +74,14 @@ namespace Helpers.Boot
                 Capacity = 18
             };
 
-            levelLoader.allowSceneActivation = false;
             while (!levelLoader.isDone)
             {
+                Localization.TryGetText(LocalizationKey.Loading.ToString(), out var textLoadingByLang);
+                
                 var progressValue = levelLoader.progress;
                 progressSlider.value = progressValue;
                 textBuilder.Clear();
-                textBuilder.Append("Loading... ");
+                textBuilder.Append($"{textLoadingByLang}... ");
                 textBuilder.Insert(10, (int) (progressSlider.value * 100));
                 textBuilder.Append("%");
                 progressText.text = textBuilder.ToString();

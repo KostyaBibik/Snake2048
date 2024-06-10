@@ -1,0 +1,22 @@
+{
+  "Items": {
+    "None": "",
+    "Loading": "Loading",
+    "Continue" : "Continue",
+    "EnterNickname" : "Enter Nickname",
+    "TapToStart" : "Tap to Start",
+    "Restart" : "Restart",
+    "Pause" : "Pause",
+    "SoundFx" : "SoundFx",
+    "Music" : "Music",
+    "GameOver" : "Game Over",
+    "PlayerStats" : "PlayerStats",
+    "BestLeaderTime" : "BestLeaderTime",
+    "BestTotalKills" : "BestTotalKills",
+    "BestTotalScore" : "BestTotalScore",
+    "CurrentTotalTime" : "CurrentTotalTime",
+    "CurrentTotalKills" : "CurrentTotalKills",
+    "CurrentTotalScore" : "CurrentTotalScore",
+    "NewRecord" : "New Record"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "Items" : {
+    "None": "",
+    "Loading": "Загрузка",
+    "Continue" : "Продолжить",
+    "EnterNickname" : "Введите никнейм",
+    "TapToStart" : "Нажмите чтобы играть",
+    "Restart" : "Перезапуск",
+    "Pause" : "Пауза",
+    "SoundFx" : "Звуки",
+    "Music" : "Музыка",
+    "GameOver" : "Игра окончена",
+    "PlayerStats" : "Статистика игрока",
+    "BestLeaderTime" : "Рекорд продолжительность лидерства",
+    "BestTotalKills" : "Рекорд количества убийств",
+    "BestTotalScore" : "Рекорд количества очков",
+    "CurrentTotalTime" : "Текущая продолжительность лидерства",
+    "CurrentTotalKills" : "Текущее количество убийств",
+    "CurrentTotalScore" : "Текущее количество очков",
+    "NewRecord" : "Новый рекорд"    
+  }
+}
