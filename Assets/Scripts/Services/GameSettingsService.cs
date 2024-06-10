@@ -35,6 +35,11 @@ namespace Services
             UpdateValue(ConstantsDataDictionary.GameSettings.MusicVolume, value);
         }
         
+        public void AddCountPlays()
+        {
+            UpdateValue(ConstantsDataDictionary.GameSettings.CountPlays, Data.CountPlays + 1);
+        }
+        
         private void UpdateValue(string key, object value)
         {
             var property = typeof(GameSettingsData).GetProperty(key);

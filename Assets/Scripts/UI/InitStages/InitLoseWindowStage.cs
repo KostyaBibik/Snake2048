@@ -20,23 +20,27 @@ namespace UI.InitStages
         private readonly SignalBus _signalBus;
         private readonly SceneLoader _sceneLoader;
         private readonly PlayerDataService _playerDataService;
+        private readonly GameSettingsService _gameSettingsService;
         private readonly BoxService _boxService;
 
         private LoseWindow _loseWindow;
         private TopWindow _topWindow;
         private LeaderboardWindow _leaderboardWindow;
-        private bool _isShowingAd;
-        
+        private bool _isShowingRewardAd;
+        private bool _canShowAd = true;
+
         public InitLoseWindowStage(
             SignalBus signalBus,
             SceneLoader sceneLoader,
             PlayerDataService playerDataService,
+            GameSettingsService gameSettingsService,
             BoxService boxService
         )
         {
             _signalBus = signalBus;
             _sceneLoader = sceneLoader;
             _playerDataService = playerDataService;
+            _gameSettingsService = gameSettingsService;
             _boxService = boxService;
         }
 
@@ -58,12 +62,8 @@ namespace UI.InitStages
             
             var progress = _playerDataService.GetResultPlayerProgress();
             var loseModel = new LoseWindowModel();
-            
-            loseModel.restartCallback = () =>
-            {
-                _signalBus.Fire(new PlaySoundSignal { type = ESoundType.UiClick});
-                _sceneLoader.RestartScene();
-            };
+
+            loseModel.restartCallback = Restart;
             
             loseModel.CurrentTotalKills = progress.CurrentTotalKills;
             loseModel.HighestTotalKills = progress.HighestTotalKills;
@@ -74,7 +74,7 @@ namespace UI.InitStages
             loseModel.CurrentLeaderTime = progress.CurrentLeaderTime;
             loseModel.HighestLeaderTime = progress.HighestLeaderTime;
 
-            loseModel.continueCallback = ShowAd;
+            loseModel.continueCallback = ShowRewardAd;
             
             _loseWindow.InvokeUpdateView(loseModel);
             _loseWindow.BeginShow();
@@ -85,11 +85,11 @@ namespace UI.InitStages
             _playerDataService.SaveToCloudProgress();
         }
 
-        private void ShowAd()
+        private void ShowRewardAd()
         {
-            if(!_isShowingAd)
+            if(!_isShowingRewardAd)
             {
-                _isShowingAd = true;
+                _isShowingRewardAd = true;
                 
                 Advertisement.ShowVideoAd(
                     OnOpenCallback,
@@ -98,6 +98,35 @@ namespace UI.InitStages
                     OnErrorAd
                 );
             }
+        }
+
+        private void Restart()
+        {
+            if (_canShowAd && CheckForShowAD())
+            {
+                Advertisement.ShowInterstitialAd(
+                    OnOpenCallback, 
+                    OnCloseAD, 
+                    OnErrorAd, 
+                    OnOfflineAD
+                );
+                _canShowAd = false;
+            }
+            else
+            {
+                _gameSettingsService.AddCountPlays();
+                _signalBus.Fire(new PlaySoundSignal { type = ESoundType.UiClick });
+                _sceneLoader.RestartScene();   
+            }
+        }
+
+        private bool CheckForShowAD()
+        {
+            var countPlays = _gameSettingsService.Data.CountPlays;
+
+            Debug.Log($"countPlays: {countPlays}");
+
+            return countPlays % 3 == 0;
         }
         
         private void OnRewardedAD()
@@ -112,11 +141,17 @@ namespace UI.InitStages
             _leaderboardWindow.BeginShow();
         }
 
+        private void OnOfflineAD()
+        {
+            OnCloseAD();
+        }
+        
         private void OnCloseAD()
         {
+            _canShowAd = false;
             AudioListener.pause = false;
             Time.timeScale = 1;
-            _isShowingAd = false;
+            _isShowingRewardAd = false;
         }
         
         private void OnErrorAd(string ex)

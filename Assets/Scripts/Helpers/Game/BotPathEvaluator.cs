@@ -4,13 +4,13 @@ using Components.Boxes.Views.Impl;
 using Services.Impl;
 using UnityEngine;
 
-namespace Helpers
+namespace Helpers.Game
 {
     public static class BotPathEvaluator
     {
-        private const float ThreatRadiusSquared = 4f;
+        private const float ThreatRadiusSquared = 6f;
         private const float PathStep = 1f; 
-        private const int MaxIterations = 25; 
+        private const int MaxIterations = 3; 
 
         public static bool IsPathSafe(BoxService boxService, BoxView botView, BoxView targetBox)
         {
@@ -33,14 +33,13 @@ namespace Helpers
             var direction = (end - start).normalized;
             var currentPosition = start;
             var iterationCount = 0;
+            path.Add(currentPosition);
         
             while (Vector3.SqrMagnitude(currentPosition - end) > 0.5625f)
             {
                 if (iterationCount >= MaxIterations)
-                {
-                    return null;
-                }
-
+                    break;
+                
                 currentPosition += direction * PathStep; 
                 path.Add(currentPosition);
 

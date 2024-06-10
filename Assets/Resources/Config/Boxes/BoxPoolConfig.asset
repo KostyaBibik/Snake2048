@@ -64,3 +64,15 @@ MonoBehaviour:
   - grade: 131072
     maxCount: 30
     initialCount: 25
+  - grade: 262000
+    maxCount: 30
+    initialCount: 15
+  - grade: 524000
+    maxCount: 30
+    initialCount: 15
+  - grade: 1048000
+    maxCount: 30
+    initialCount: 15
+  - grade: 2096000
+    maxCount: 30
+    initialCount: 15

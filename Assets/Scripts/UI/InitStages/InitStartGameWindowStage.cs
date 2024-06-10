@@ -1,9 +1,12 @@
-﻿using Enums;
+﻿using System;
+using Enums;
 using Kimicu.YandexGames;
 using Services;
 using Signals;
 using UI.StartWindow;
 using UISystem;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using Zenject;
 
 namespace UI.InitStages
@@ -12,6 +15,7 @@ namespace UI.InitStages
     {
         private readonly SignalBus _signalBus;
         private readonly GameMatchService _matchService;
+
         private StartGameWindow _startGameWindow;
 
         public InitStartGameWindowStage(
@@ -22,18 +26,18 @@ namespace UI.InitStages
             _signalBus = signalBus;
             _matchService = matchService;
         }
-        
+
         public void Initialize()
         {
+            YandexGamesSdk.GameReady();
+            
             _startGameWindow = UIManager.Instance.GetUIElement<StartGameWindow>();
             var startGameModel = new StartGameModel();
             startGameModel.startPlayCallback = InitStartGame;
             startGameModel.onEditNickname = OnUpdateNickText;
             _startGameWindow.InvokeUpdateView(startGameModel);
-            
-            YandexGamesSdk.GameReady();
         }
-
+        
         private void InitStartGame()
         {
             _startGameWindow.BeginHide();

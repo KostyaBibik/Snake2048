@@ -5,6 +5,7 @@ using Systems.Action;
 using Components.Boxes.Views.Impl;
 using Database;
 using Helpers;
+using Helpers.Game;
 using Services.Impl;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -90,7 +91,8 @@ namespace Components.Boxes.States.Impl
             _timeSinceLastTargetUpdate += Time.deltaTime;
             var targetIsDestroyed = _targetAimBox == null || _targetAimBox.isDestroyed;
 
-            if (targetIsDestroyed || _timeSinceLastTargetUpdate >= _targetUpdateInterval)
+            if (targetIsDestroyed
+                || _timeSinceLastTargetUpdate >= _targetUpdateInterval)
             {
                 if (Random.value < _randomChangeChance)
                 {
@@ -100,9 +102,16 @@ namespace Components.Boxes.States.Impl
 
                 _timeSinceLastTargetUpdate = 0f;
             }
-
+            
             if (!targetIsDestroyed)
             {
+                if (Random.value < .25 && !BotPathEvaluator.IsPathSafe(_boxService, botView, _targetAimBox))
+                {
+                    _targetAimBox = FindRandomTargetBox(botView);
+                    if(_targetAimBox == null || _targetAimBox.isDestroyed)
+                        return;
+                }
+                
                 MoveTowardsTarget(botView);
             }
             else
@@ -269,11 +278,9 @@ namespace Components.Boxes.States.Impl
             for (var i = 0; i < topBoxes.Length; i++)
             {
                 //todo::Expensive checkout method REWORK
-                /*if (!BotPathEvaluator.IsPathSafe(_boxService, botView, topBoxes[i].box))
-                {
+                if (!BotPathEvaluator.IsPathSafe(_boxService, botView, topBoxes[i].box))                
                     continue;
-                }*/
-                
+
                 var (box, distance) = topBoxes[i];
                 var gradeFactor = botView.Grade.IndexDifference(box.Grade);
 

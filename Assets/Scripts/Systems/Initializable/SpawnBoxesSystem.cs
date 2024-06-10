@@ -164,23 +164,31 @@ namespace Systems.Initializable
         private EBoxGrade CalculateRandomGrade(EBoxGrade playerHighGrade)
         {
             var randomValue = Random.value;
-
+            var randomGrade = EBoxGrade.Grade_2;
+            
             if (randomValue < _spawnChanceGradeDifference3)
             {
-                return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(3));
+                randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(3));
             }
             else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2)
             {
-                return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(2));
+                randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(2));
             }
             else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2 + _spawnChanceGradeDifference1)
             {
-                return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.Next());
+                randomGrade =  EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.Next());
             }
             else
             {
-                return EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
+                randomGrade = EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
             }
+
+            if (randomGrade > EBoxGrade.Grade_64)
+            {
+                randomGrade = EBoxGrade.Grade_32.GetRandomEnumBetween(EBoxGrade.Grade_128);
+            }
+            
+            return randomGrade;
         }
         
         private bool IsPositionOccupied(Vector3 position)

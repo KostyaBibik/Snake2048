@@ -21,7 +21,7 @@ MonoBehaviour:
   boostSpeedDuration: 5
   minSpawnInterval: 1.5
   maxSpawnInterval: 3
-  spawnRadius: 3
+  spawnRadius: 2.5
   initialIdleBoxCount: 120
   minSpawnCount: 10
   maxSpawnCount: 22

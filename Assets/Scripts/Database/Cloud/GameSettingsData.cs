@@ -5,6 +5,7 @@
     {
         public float MusicVolume { get; set; }
         public float SoundVolume { get; set; }
+        public int CountPlays { get; set; }
 
         public GameSettingsData()
         {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   changeRandomDirectionInterval: 0.3
   distanceInfluenceForFindTarget: 1
-  gradeInfluenceForFindTarget: 1.65
+  gradeInfluenceForFindTarget: 1.8
   chanceChangeTarget: 0.1
   intiAccelerationChance: 0.2
   spawnChanceGradeDifference3: 0.1
