@@ -43,7 +43,19 @@ namespace Systems.Action.BoostSystems
         private void ApplyBoostToTeam(BoxView signalBox)
         {
             var boxTeam = _boxService.GetTeamByMember(signalBox);
-            var teamMembers = boxTeam.Members;
+            var leader = boxTeam.Leader;
+            var newBox = _boxPool.GetBox(leader.Grade.NextSteps(stepGrades));
+
+            newBox.isPlayer = leader.isPlayer;
+            newBox.isBot = leader.isBot;
+            newBox.IsAccelerationActive = leader.IsAccelerationActive;
+            newBox.transform.position = leader.transform.position;
+            newBox.gameObject.SetActive(true);
+            
+            _boxService.AddBoxToTeam(leader, newBox);
+            _boxService.RemoveEntity(leader);
+            
+            /*var teamMembers = boxTeam.Members;
 
             for (var i = 0; i < teamMembers.Count; i++)
             {
@@ -58,9 +70,9 @@ namespace Systems.Action.BoostSystems
                 
                 _boxService.AddBoxToTeam(currentBox, newBox);
                 _boxService.RemoveEntity(currentBox);
-            }
+            }*/
             
-            _boxService.UpdateTeamStates(boxTeam.Leader);
+            _boxService.UpdateTeamStates(newBox);
         }
     }
 }

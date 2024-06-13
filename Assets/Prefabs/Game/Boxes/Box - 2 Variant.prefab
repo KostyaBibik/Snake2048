@@ -114,11 +114,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -1225318344, guid: 4d062076118a92642b59a9533234b9ae,
         type: 3}
+    - target: {fileID: 6954790766567865219, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8005675014759179712, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 0bcdc0a20f79d7f49ac48f06bbd9de8f, type: 2}
+    - target: {fileID: 8852678534805173597, guid: 8b91192adbb77f949807b4a74a6901ec,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8888697504089630724, guid: 8b91192adbb77f949807b4a74a6901ec,
         type: 3}
       propertyPath: m_AnchorMax.x

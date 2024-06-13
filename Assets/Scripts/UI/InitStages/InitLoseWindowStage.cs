@@ -124,9 +124,7 @@ namespace UI.InitStages
         {
             var countPlays = _gameSettingsService.Data.CountPlays;
 
-            Debug.Log($"countPlays: {countPlays}");
-
-            return countPlays % 3 == 0;
+            return countPlays % 2 == 0;
         }
         
         private void OnRewardedAD()

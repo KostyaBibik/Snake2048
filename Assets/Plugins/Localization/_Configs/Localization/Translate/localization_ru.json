@@ -14,7 +14,7 @@
     "BestLeaderTime" : "Рекорд продолжительность лидерства",
     "BestTotalKills" : "Рекорд количества убийств",
     "BestTotalScore" : "Рекорд количества очков",
-    "CurrentTotalTime" : "Текущая продолжительность лидерства",
+    "CurrentLeaderTime" : "Текущая продолжительность лидерства",
     "CurrentTotalKills" : "Текущее количество убийств",
     "CurrentTotalScore" : "Текущее количество очков",
     "NewRecord" : "Новый рекорд"    

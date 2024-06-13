@@ -57,9 +57,7 @@ namespace Helpers.Boot
             yield return Cloud.Initialize();
 
             Advertisement.Initialize();
-
-                // yield return Billing.Initialize();
-
+            
             WebApplication.Initialize();
             
             yield return null;

@@ -90,8 +90,8 @@ namespace Systems.Action.BoostSystems
 
                 for (var i = 0; i < spawnCount; i++)
                 {
-                    //var randomGrade = EBoxBoost.Speed.GetRandomEnumBetween(EBoxBoost.AddGrades);
-                    var randomGrade = EBoxBoost.Speed;
+                    var randomGrade = EBoxBoost.Speed.GetRandomEnumBetween(EBoxBoost.AddGrades);
+                    //var randomGrade = EBoxBoost.Speed;
                     SpawnBoostBox(randomGrade);
                 }
 
