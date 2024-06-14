@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: BoxPrefabsConfig
   m_EditorClassIdentifier: 
   prefabs:
+  - grade: 0
+    view: {fileID: 4812963530254665070, guid: 8b91192adbb77f949807b4a74a6901ec, type: 3}
   - grade: 2
     view: {fileID: 3450382164369011459, guid: ce077464a48785d409cc0b36a462ace3, type: 3}
   - grade: 4

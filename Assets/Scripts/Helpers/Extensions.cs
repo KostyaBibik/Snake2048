@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = System.Random;
@@ -9,6 +10,35 @@ namespace Helpers
     {
         private static Random random = new Random();
 
+        private static readonly Dictionary<Type, Dictionary<Enum, int>> EnumValueIndices = new Dictionary<Type, Dictionary<Enum, int>>();
+
+        public static int IndexDifference<T>(this T from, T to) where T : Enum
+        {
+            var enumType = typeof(T);
+
+            if (!EnumValueIndices.ContainsKey(enumType))
+            {
+                InitializeEnumIndices(enumType);
+            }
+
+            var fromIndex = EnumValueIndices[enumType][from];
+            var toIndex = EnumValueIndices[enumType][to];
+
+            return Math.Abs(toIndex - fromIndex);
+        }
+
+        private static void InitializeEnumIndices(Type enumType)
+        {
+            var values = Enum.GetValues(enumType);
+            var indexDict = new Dictionary<Enum, int>();
+            for (var i = 0; i < values.Length; i++)
+            {
+                indexDict[(Enum)values.GetValue(i)] = i;
+            }
+            EnumValueIndices[enumType] = indexDict;
+        }
+    
+        
         public static T Next<T>(this T enumValue) where T : Enum
         {
             var values = (T[])Enum.GetValues(typeof(T));
@@ -48,14 +78,6 @@ namespace Helpers
 
             var randomIndex = random.Next(Math.Min(startIndex, endIndex), Math.Max(startIndex, endIndex) + 1);
             return (T)values.GetValue(randomIndex);
-        }
-        
-        public static int IndexDifference<T>(this T from, T to) where T : Enum
-        {
-            var values = (T[])Enum.GetValues(typeof(T));
-            var fromIndex = Array.IndexOf(values, from);
-            var toIndex = Array.IndexOf(values, to);
-            return Math.Abs(toIndex - fromIndex);
         }
     }
 }

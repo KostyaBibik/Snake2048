@@ -105,7 +105,7 @@ namespace Components.Boxes.States.Impl
             
             if (!targetIsDestroyed)
             {
-                if (Random.value < .25 /*&& !BotPathEvaluator.IsPathSafe(_boxService, botView, _targetAimBox)*/)
+                if (Random.value < .25 && !BotPathEvaluator.IsPathSafe(_boxService, botView, _targetAimBox))
                 {
                     _targetAimBox = FindRandomTargetBox(botView);
                     if(_targetAimBox == null || _targetAimBox.isDestroyed)
@@ -214,36 +214,6 @@ namespace Components.Boxes.States.Impl
             var randomAngle = Random.Range(0, 360);
             return new Vector3(Mathf.Cos(randomAngle), 0, Mathf.Sin(randomAngle)).normalized;
         }
-
-
-        /*private BoxView FindRandomTargetBox(BoxView botView)
-        {
-            var validBoxes = _boxService.GetAllBoxes()
-                .Where(box => box != botView)
-                .Where(box => !_boxService.AreInSameTeam(botView, box))
-                .Where(box => (box.isIdle && box.Grade <= botView.Grade) || (box.Grade < botView.Grade))
-                .Where(box => HasHigherOrEqualGradeInTeam(box, botView))
-                //.Where(box => BotPathEvaluator.IsPathSafe(_boxService, botView, box))
-                .OrderBy(box => Vector3.Distance(botView.transform.position, box.transform.position))
-                .Take(10) 
-                .ToList();
-
-            if (!validBoxes.Any())
-            {
-                return null;
-            }
-
-            var weightedBoxes = validBoxes.Select(box =>
-            {
-                var distance = Vector3.Distance(botView.transform.position, box.transform.position);
-                var gradeFactor = botView.Grade - box.Grade;
-                var weight = gradeFactor / distance;
-                return (box, weight);
-            }).OrderByDescending(x => x.weight).ToList();
-
-            var randomValue = Random.Range(0, weightedBoxes.Count);
-            return weightedBoxes[randomValue].box;
-        }*/
 
         private BoxView FindRandomTargetBox(BoxView botView)
         {

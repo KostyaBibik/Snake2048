@@ -15,16 +15,19 @@ namespace UI.InitStages
     {
         private readonly SignalBus _signalBus;
         private readonly GameMatchService _matchService;
+        private readonly GameSettingsService _gameSettingsService;
 
         private StartGameWindow _startGameWindow;
 
         public InitStartGameWindowStage(
             SignalBus signalBus,
-            GameMatchService matchService
+            GameMatchService matchService,
+            GameSettingsService gameSettingsService
         )
         {
             _signalBus = signalBus;
             _matchService = matchService;
+            _gameSettingsService = gameSettingsService;
         }
 
         public void Initialize()
@@ -32,9 +35,11 @@ namespace UI.InitStages
             YandexGamesSdk.GameReady();
             
             _startGameWindow = UIManager.Instance.GetUIElement<StartGameWindow>();
+            var savedNickname = _gameSettingsService.Data.PlayerNickname;
             var startGameModel = new StartGameModel();
             startGameModel.startPlayCallback = InitStartGame;
             startGameModel.onEditNickname = OnUpdateNickText;
+            startGameModel.savedNickname = savedNickname;
             _startGameWindow.InvokeUpdateView(startGameModel);
         }
         
@@ -50,6 +55,7 @@ namespace UI.InitStages
             _matchService.playerNickname.Value = string.IsNullOrEmpty(nick) 
                 ? "Player"
                 : nick;
+            _gameSettingsService.UpdatePlayerNickname(nick);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace UI.StartWindow
     {
         public Action startPlayCallback;
         public Action<string> onEditNickname;
+        public string savedNickname;
     }
 
     public class StartGameWindow : UIElementView<StartGameModel>
@@ -30,7 +31,9 @@ namespace UI.StartWindow
             startPlayModel.ClickCallback = model.startPlayCallback;
             _bg.InvokeUpdateView(startPlayModel);
 
-            _inputNick.onValueChanged.AddListener(text => model.onEditNickname.Invoke(text));
+            _inputNick.onValueChanged.AddListener(text => model?.onEditNickname.Invoke(text));
+            _inputNick.text = model.savedNickname;
+
             FadeAnimationTitle();
         }
 

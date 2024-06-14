@@ -39,6 +39,13 @@ namespace Services
         {
             UpdateValue(ConstantsDataDictionary.GameSettings.CountPlays, Data.CountPlays + 1);
         }
+
+        public void UpdatePlayerNickname(string nickname)
+        {
+            _data ??= LoadData();
+
+            UpdateValue(ConstantsDataDictionary.GameSettings.PlayerNickname, nickname);
+        }
         
         private void UpdateValue(string key, object value)
         {

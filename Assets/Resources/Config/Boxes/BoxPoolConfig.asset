@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: BoxPoolConfig
   m_EditorClassIdentifier: 
   config:
+  - grade: 0
+    maxCount: 25
+    initialCount: 25
   - grade: 2
     maxCount: 550
     initialCount: 500

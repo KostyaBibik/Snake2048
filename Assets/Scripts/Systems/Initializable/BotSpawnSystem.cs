@@ -172,15 +172,17 @@ public class BotSpawnSystem : IInitializable, IDisposable
             }
             
             var playerHighGrade = _boxService.GetHighGradeInTeam(playerBoxView);
-            var botGrade = CalculateBotGrade(playerHighGrade);
-            saveGrade = botGrade;
+            saveGrade = CalculateBotGrade(playerHighGrade);
             
-            SpawnBot(botGrade);
+            SpawnBot(saveGrade);
         }
     }
     
     private EBoxGrade CalculateBotGrade(EBoxGrade playerHighGrade)
     {
+        if(playerHighGrade == EBoxGrade.None)
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
+        
         var randomValue = Random.value;
 
         if (randomValue < _spawnChanceGradeDifference3)

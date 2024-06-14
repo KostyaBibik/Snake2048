@@ -19,7 +19,7 @@ namespace LocalizationSystem.Data.KeyGeneration
 		BestLeaderTime, 
 		BestTotalKills, 
 		BestTotalScore, 
-		CurrentleaderTime, 
+		CurrentLeaderTime, 
 		CurrentTotalKills, 
 		CurrentTotalScore, 
 		NewRecord, 

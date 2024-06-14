@@ -41,7 +41,7 @@ MonoBehaviour:
     InspectorName: 
   - Name: BestTotalScore
     InspectorName: 
-  - Name: CurrentleaderTime
+  - Name: CurrentLeaderTime
     InspectorName: 
   - Name: CurrentTotalKills
     InspectorName: 

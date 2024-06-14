@@ -16,6 +16,7 @@
         public static class GameSettings
         {
             public const string SaveFileName = "GameSettingsData.json";
+            public const string PlayerNickname = "PlayerNickname";
             public const string MusicVolume = "MusicVolume";
             public const string SoundVolume = "SoundVolume";
             public const string CountPlays = "CountPlays";

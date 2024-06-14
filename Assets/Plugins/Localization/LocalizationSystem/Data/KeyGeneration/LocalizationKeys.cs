@@ -22,7 +22,7 @@ namespace LocalizationSystem.Data.KeyGeneration
 			{LocalizationKey.BestLeaderTime, LocalizationKey.BestLeaderTime.ToString()},
 			{LocalizationKey.BestTotalKills, LocalizationKey.BestTotalKills.ToString()},
 			{LocalizationKey.BestTotalScore, LocalizationKey.BestTotalScore.ToString()},
-			{LocalizationKey.CurrentleaderTime, LocalizationKey.CurrentleaderTime.ToString()},
+			{LocalizationKey.CurrentLeaderTime, LocalizationKey.CurrentLeaderTime.ToString()},
 			{LocalizationKey.CurrentTotalKills, LocalizationKey.CurrentTotalKills.ToString()},
 			{LocalizationKey.CurrentTotalScore, LocalizationKey.CurrentTotalScore.ToString()},
 			{LocalizationKey.NewRecord, LocalizationKey.NewRecord.ToString()},

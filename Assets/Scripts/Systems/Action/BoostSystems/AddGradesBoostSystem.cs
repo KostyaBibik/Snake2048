@@ -10,7 +10,7 @@ namespace Systems.Action.BoostSystems
 {
     public class AddGradesBoostSystem : IInitializable
     {
-        private const int stepGrades = 2;
+        private const int stepGrades = 1;
         
         private readonly BoxService _boxService;
         private readonly BoxPool _boxPool;
