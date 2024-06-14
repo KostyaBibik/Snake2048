@@ -18,22 +18,23 @@ namespace Helpers.Game
             if (path == null)
                 return false;
 
-            foreach (var position in path)
+            for (var index = 0; index < path.Length; index++)
             {
+                var position = path[index];
                 if (IsThreatNearby(boxService, botView, position))
                     return false;
             }
-        
+
             return true;
         }
 
-        private static List<Vector3> CalculatePath(Vector3 start, Vector3 end)
+        private static Vector3[] CalculatePath(Vector3 start, Vector3 end)
         {
-            var path = new List<Vector3>();
+            var path = new Vector3[MaxIterations];
             var direction = (end - start).normalized;
             var currentPosition = start;
             var iterationCount = 0;
-            path.Add(currentPosition);
+            path[iterationCount] = currentPosition;
         
             while (Vector3.SqrMagnitude(currentPosition - end) > 0.5625f)
             {
@@ -41,7 +42,7 @@ namespace Helpers.Game
                     break;
                 
                 currentPosition += direction * PathStep; 
-                path.Add(currentPosition);
+                path[iterationCount] = currentPosition;
 
                 iterationCount++;
             }
@@ -51,14 +52,17 @@ namespace Helpers.Game
 
         private static bool IsThreatNearby(BoxService boxService, BoxView botView, Vector3 position)
         {
-            var boxes = boxService.GetAllTeams().Select(b => b.Leader);
-        
-            foreach (var box in boxes)
+            var boxes = boxService
+                .GetAllTeams()
+                .Where(b => b.Leader != botView);
+
+            foreach (var t in boxes)
             {
+                var box = t.Leader;
                 if (box.isIdle)
                     continue;
-            
-                if (!boxService.AreInSameTeam(botView, box) && box.Grade > botView.Grade)
+
+                if (box.Grade > botView.Grade)
                 {
                     if (Vector3.SqrMagnitude(box.transform.position - position) < ThreatRadiusSquared)
                     {
@@ -66,7 +70,7 @@ namespace Helpers.Game
                     }
                 }
             }
-        
+
             return false;
         }
     }

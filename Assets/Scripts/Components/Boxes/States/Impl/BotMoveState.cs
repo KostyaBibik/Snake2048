@@ -105,7 +105,7 @@ namespace Components.Boxes.States.Impl
             
             if (!targetIsDestroyed)
             {
-                if (Random.value < .25 && !BotPathEvaluator.IsPathSafe(_boxService, botView, _targetAimBox))
+                if (Random.value < .25 /*&& !BotPathEvaluator.IsPathSafe(_boxService, botView, _targetAimBox)*/)
                 {
                     _targetAimBox = FindRandomTargetBox(botView);
                     if(_targetAimBox == null || _targetAimBox.isDestroyed)
@@ -278,8 +278,8 @@ namespace Components.Boxes.States.Impl
             for (var i = 0; i < topBoxes.Length; i++)
             {
                 //todo::Expensive checkout method REWORK
-                if (!BotPathEvaluator.IsPathSafe(_boxService, botView, topBoxes[i].box))                
-                    continue;
+                /*if (!BotPathEvaluator.IsPathSafe(_boxService, botView, topBoxes[i].box))                
+                    continue;*/
 
                 var (box, distance) = topBoxes[i];
                 var gradeFactor = botView.Grade.IndexDifference(box.Grade);
