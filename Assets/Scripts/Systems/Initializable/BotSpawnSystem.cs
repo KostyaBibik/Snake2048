@@ -187,7 +187,7 @@ public class BotSpawnSystem : IInitializable, IDisposable
 
         if (randomValue < _spawnChanceGradeDifference3)
         {
-            return EBoxGrade.Grade_2.GetRandomEnumBetween(playerHighGrade.NextSteps(3));
+            return playerHighGrade.GetRandomEnumBetween(playerHighGrade.NextSteps(3));
         }
         else if (randomValue < _spawnChanceGradeDifference3 + _spawnChanceGradeDifference2)
         {
@@ -199,7 +199,10 @@ public class BotSpawnSystem : IInitializable, IDisposable
         }
         else
         {
-            return EBoxGrade.Grade_2.GetRandomEnumBetween(EBoxGrade.Grade_4);
+            var maxBotGrade = EBoxGrade.Grade_4;
+            if (playerHighGrade > EBoxGrade.Grade_1024)
+                maxBotGrade = EBoxGrade.Grade_256;
+            return EBoxGrade.Grade_2.GetRandomEnumBetween(maxBotGrade);
         }
     }
     

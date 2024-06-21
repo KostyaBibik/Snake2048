@@ -122,6 +122,7 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<InitLoseWindowStage>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<InitLeaderboardWindowStage>().AsCached().NonLazy();
             Container.BindInterfacesAndSelfTo<InitStartGameWindowStage>().AsCached().NonLazy();
+            Container.BindInterfacesAndSelfTo<InitKillTeamWindowStage>().AsCached().NonLazy();
         }
 
         private void BindPools()

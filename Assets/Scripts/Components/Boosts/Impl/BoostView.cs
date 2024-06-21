@@ -44,6 +44,9 @@ namespace Components.Boosts.Impl
             
             if (other.transform.parent && other.transform.parent.TryGetComponent(out BoxView box))
             {
+                if(box.isIdle || box.isDestroyed)
+                    return;
+                
                 _signalBus.Fire(new BoxBoostSignal
                 {
                     box = box,

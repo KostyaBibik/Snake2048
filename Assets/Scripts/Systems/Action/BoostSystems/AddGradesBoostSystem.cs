@@ -44,7 +44,7 @@ namespace Systems.Action.BoostSystems
         {
             var boxTeam = _boxService.GetTeamByMember(signalBox);
             var leader = boxTeam.Leader;
-            var newBox = _boxPool.GetBox(leader.Grade.NextSteps(stepGrades));
+            var newBox = _boxPool.GetBox(leader.Grade.Next());
 
             newBox.isPlayer = leader.isPlayer;
             newBox.isBot = leader.isBot;

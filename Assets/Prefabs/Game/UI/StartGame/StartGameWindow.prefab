@@ -169,7 +169,7 @@ RectTransform:
   m_AnchorMin: {x: 0.45, y: 0.3}
   m_AnchorMax: {x: 0.55, y: 0.35}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 264.0906, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4377498324684657456
 CanvasRenderer:
@@ -201,8 +201,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Tap to start
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 45a5cbc3990060840a92f5b901d43d91, type: 2}
+  m_sharedMaterial: {fileID: 4911959856331733342, guid: 45a5cbc3990060840a92f5b901d43d91,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -526,8 +527,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter nickname...
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 45a5cbc3990060840a92f5b901d43d91, type: 2}
+  m_sharedMaterial: {fileID: 4911959856331733342, guid: 45a5cbc3990060840a92f5b901d43d91,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -848,8 +850,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 45a5cbc3990060840a92f5b901d43d91, type: 2}
+  m_sharedMaterial: {fileID: 4911959856331733342, guid: 45a5cbc3990060840a92f5b901d43d91,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
