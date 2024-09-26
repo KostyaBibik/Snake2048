@@ -32,26 +32,21 @@ public class BoxPoolConfigEditor : UnityEditor.Editor
             if (grade == EBoxGrade.None)
                 continue;
 
-            // Проверяем, есть ли уже в списке элемент с текущим грейдом
             bool gradeExists = config.config.Exists(option => option.grade == grade);
 
-            // Если элемент с текущим грейдом уже существует, пропускаем его
             if (gradeExists)
                 continue;
 
-            // Создаем новый элемент с базовыми значениями
             BoxPoolOption newOption = new BoxPoolOption
             {
                 grade = grade,
-                maxCount = 1500, // Установите желаемые базовые значения
-                initialCount = 500 // Установите желаемые базовые значения
+                maxCount = 1500, 
+                initialCount = 500
             };
 
-            // Добавляем новый элемент в список
             config.config.Add(newOption);
         }
 
-        // Сортировка по грейдам в порядке возрастания
         config.config.Sort((x, y) => x.grade.CompareTo(y.grade));
     }
 
